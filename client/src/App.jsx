@@ -9,6 +9,7 @@ import StudentDashboard from './pages/StudentDashboard';
 import { useAppcontext } from './context/Appcontext';
 import About from './pages/Aboutus';
 import Contact from './pages/Contactus';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   const {
@@ -19,7 +20,7 @@ const App = () => {
   } = useAppcontext();
 
   const location = useLocation();
-  const isSellerPath = location.pathname.includes("seller");
+  const isSellerPath = location.pathname.includes("seller") || location.pathname.includes("vendor");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -41,19 +42,33 @@ const App = () => {
       <div className="flex-grow px-6 pt-[80px]">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/student/dashboard" element={<StudentDashboard />} />
-          <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+          <Route 
+            path="/student/dashboard" 
+            element={
+              <ProtectedRoute requiredRole="student">
+                <StudentDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/vendor/dashboard" 
+            element={
+              <ProtectedRoute requiredRole="vendor">
+                <VendorDashboard />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/about" element={<About />} />
-          <Route path="contact" element={<Contact/>}/>
+          <Route path="/contact" element={<Contact/>} />
         </Routes>
       </div>
 
       {/* Footer - not shown on seller/vendor routes */}
       {!isSellerPath && (
-  <div className="mt-10">
-    <Footer />
-  </div>
-)}
+        <div className="mt-10">
+          <Footer />
+        </div>
+      )}
     </div>
   );
 };
