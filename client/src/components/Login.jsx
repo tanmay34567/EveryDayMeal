@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { useAppcontext } from '../context/Appcontext';
-import { useNavigate } from "react-router-dom";
 
 const Login = ({ onClose, isVendor = false }) => {
-  const { setStudent, setseller } = useAppcontext();
+  const { setStudent, setseller, navigate } = useAppcontext();
   const [state, setState] = useState("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  const navigate = useNavigate(); // ✅
 
   const getStorageKey = () => isVendor ? "vendors" : "students";
 
@@ -57,7 +54,7 @@ const Login = ({ onClose, isVendor = false }) => {
       return;
     }
 
-    // ✅ Set context and redirect to the appropriate dashboard
+    // Set context and redirect to the appropriate dashboard
     if (isVendor) {
       setseller(account);
       navigate("/vendor/dashboard");
