@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
- const userSchema = new mongoose.Schema({
+ const VendorSchema = new mongoose.Schema({
     name: {type: String,required: true},
     email: {type: String,required: true,unique: true},
     password: {type: String,required: true},
@@ -7,6 +7,6 @@ import mongoose from "mongoose";
 
  })
 
- const User = mongoose.models.user || mongoose.model('user',userSchema)
+ const Vendor = mongoose.models.Vendor || mongoose.model('Vendor',VendorSchema)
  
-export default User;
+export default Vendor;

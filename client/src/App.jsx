@@ -10,6 +10,7 @@ import { useAppcontext } from './context/Appcontext';
 import About from './pages/Aboutus';
 import Contact from './pages/Contactus';
 import ProtectedRoute from './components/ProtectedRoute';
+import StudentVendorMenu from './pages/StudentVendorMenu';
 
 const App = () => {
   const {
@@ -56,19 +57,20 @@ const App = () => {
               <ProtectedRoute requiredRole="vendor">
                 <VendorDashboard />
               </ProtectedRoute>
-            } 
+            }
           />
+          <Route path="/student/menu/:vendorEmail" element={<StudentVendorMenu />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact/>} />
         </Routes>
       </div>
 
-      {/* Footer - not shown on seller/vendor routes */}
-      {!isSellerPath && (
+    
+      
         <div className="mt-10">
           <Footer />
         </div>
-      )}
+      
     </div>
   );
 };

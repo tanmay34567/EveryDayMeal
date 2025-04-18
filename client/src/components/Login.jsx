@@ -50,20 +50,22 @@ const Login = ({ onClose, isVendor = false }) => {
 
     const account = findAccount(email, password);
     if (!account) {
-      setError("Invalid credentials or account does not exist.");
+      setError("Invalid credentials or account doesn't exist.");
       return;
     }
 
-    // Set context and redirect to the appropriate dashboard
+    // Set user state and navigate to dashboard
     if (isVendor) {
       setseller(account);
+      // Close modal before navigation
+      onClose();
       navigate("/vendor/dashboard");
     } else {
       setStudent(account);
+      // Close modal before navigation
+      onClose();
       navigate("/student/dashboard");
     }
-
-    onClose();
   };
 
   return (
@@ -137,6 +139,8 @@ const Login = ({ onClose, isVendor = false }) => {
             Click here
           </span>
         </p>
+
+        
 
         <button
           type="submit"

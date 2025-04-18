@@ -3,8 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import connectDB from './configs/db.js';
 import 'dotenv/config';
-import userRouter from './routes/userRoute.js';
-import productRouter from './routes/productRoute.js';
+import StudentRouter from './routes/StudentRoute.js';
+import VendorRouter from './routes/VendorRoute.js';
 
 
 const app = express();
@@ -28,8 +28,10 @@ app.get('/', (req, res) => {
   res.send("API is working");
 });
 
-app.use('/api/user', userRouter)
-app.use('/api/product',productRouter)
+app.use('/api/Student', StudentRouter)
+app.use('/api/Vendor', VendorRouter)
+
+
 
 // Start server
 app.listen(port, () => {

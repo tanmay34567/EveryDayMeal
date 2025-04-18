@@ -1,17 +1,20 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = import.meta.env.VITE_BACAKEND_URL;
 
 export const Appcontext = createContext();
 
 export const Appcontextprovider = ({ children }) => {
   const navigate = useNavigate();
 
-  // Initialize state from localStorage if available
   const [Student, setStudent] = useState(() => {
     const savedData = localStorage.getItem("currentStudent");
     return savedData ? JSON.parse(savedData) : null;
   });
-  
+
   const [seller, setseller] = useState(() => {
     const savedData = localStorage.getItem("currentVendor");
     return savedData ? JSON.parse(savedData) : null;
@@ -22,7 +25,6 @@ export const Appcontextprovider = ({ children }) => {
   const [ShowVendorLogin, setShowVendorLogin] = useState(false);
   const [MenuOpen, setMenuOpen] = useState(false);
 
-  // Update localStorage when user state changes
   useEffect(() => {
     if (Student) {
       localStorage.setItem("currentStudent", JSON.stringify(Student));
@@ -41,7 +43,6 @@ export const Appcontextprovider = ({ children }) => {
     }
   }, [seller]);
 
-  // Custom setters that clear the session
   const clearStudent = () => {
     setStudent(null);
     navigate("/");
@@ -56,12 +57,12 @@ export const Appcontextprovider = ({ children }) => {
     navigate,
     Student,
     setStudent: (student) => {
-      if (student && seller) clearSeller(); // Ensure only one role is active
+      if (student && seller) clearSeller();
       setStudent(student);
     },
     seller,
     setseller: (vendor) => {
-      if (vendor && Student) clearStudent(); // Ensure only one role is active
+      if (vendor && Student) clearStudent();
       setseller(vendor);
     },
     isseller,
@@ -72,14 +73,18 @@ export const Appcontextprovider = ({ children }) => {
     setShowVendorLogin,
     MenuOpen,
     setMenuOpen,
-    // Helper methods
+    axios,
     logout: () => {
       clearStudent();
       clearSeller();
     }
   };
 
-  return <Appcontext.Provider value={value}>{children}</Appcontext.Provider>;
+  return (
+    <Appcontext.Provider value={value}>
+      {children}
+    </Appcontext.Provider>
+  );
 };
 
 export const useAppcontext = () => {

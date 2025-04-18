@@ -11,7 +11,7 @@ const Home = () => {
   return (
     <div className='mt-10'>
       {!isLoggedIn && <Mainbanner />}
-      {/* You can add more content for logged in users below */}
+      
     </div>
   );
 };
