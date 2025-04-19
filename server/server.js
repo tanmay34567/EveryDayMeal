@@ -5,8 +5,11 @@ import connectDB from './configs/db.js';
 import 'dotenv/config';
 import StudentRouter from './routes/StudentRoute.js';
 import VendorRouter from './routes/VendorRoute.js';
+import router from './routes/contactRoutes.js';
 
-
+// At the beginning of the file
+console.log("Server is starting...");
+ 
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -30,7 +33,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/Student', StudentRouter)
 app.use('/api/Vendor', VendorRouter)
-
+app.use('/api', router);
 
 
 // Start server

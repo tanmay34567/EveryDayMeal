@@ -1,22 +1,23 @@
 import jwt from 'jsonwebtoken';
 
 const authStudent = async (req, res, next) => {
-  const { token } = req.cookies;
+  const token = req.cookies?.Studentlogintoken;
 
   if (!token) {
-    return res.json({ success: false, message: 'Not Authorized' });
+    return res.status(401).json({ success: false, message: 'Not Authorized, token missing' });
   }
 
   try {
-    const tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
-    if (tokenDecode.id) {
-      req.StudentId = tokenDecode.id; // ✅ Fix: attach to req directly
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded?.id) {
+      req.StudentId = decoded.id;
       next();
     } else {
-      return res.json({ success: false, message: 'Not Authorized' });
+      return res.status(401).json({ success: false, message: 'Not Authorized, invalid payload' });
     }
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    return res.status(401).json({ success: false, message: 'Invalid or expired token' });
   }
 };
 

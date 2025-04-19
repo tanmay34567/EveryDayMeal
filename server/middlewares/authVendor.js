@@ -1,22 +1,28 @@
 import jwt from 'jsonwebtoken';
 
-const authVendor = async (req, res, next) => {
-  const { token } = req.cookies;
+const authVendor = (req, res, next) => {
+  // Try getting token from cookie first
+  let token = req.cookies?.Vendorlogintoken;
 
+  // Fallback to Authorization header if not in cookie
+  if (!token && req.headers.authorization) {
+    const bearer = req.headers.authorization.split(' ');
+    if (bearer[0] === 'Bearer' && bearer[1]) {
+      token = bearer[1];
+    }
+  }
+
+  // If no token found
   if (!token) {
-    return res.json({ success: false, message: 'Not Authorized' });
+    return res.status(401).json({ success: false, message: 'Not Authorized, token missing' });
   }
 
   try {
-    const tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
-    if (tokenDecode.id) {
-      req.VendorId = tokenDecode.id; // ✅ Fix: attach to req directly
-      next();
-    } else {
-      return res.json({ success: false, message: 'Not Authorized' });
-    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.VendorId = decoded.id; // Attach decoded vendor ID to request
+    next();
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    return res.status(401).json({ success: false, message: 'Invalid or expired token' });
   }
 };
 
