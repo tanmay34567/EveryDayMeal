@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { assets } from "../assets/assets";
 
 const Contact = () => {
   const [userData, setUserData] = useState({ name: "", email: "", message: "" });
@@ -32,7 +33,14 @@ const Contact = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div className="relative w-full h-screen overflow-hidden">
+          {/* Fixed Background Image */}
+          <img
+            src={assets.bg}
+            alt="bg"
+            className="fixed top-0 left-0 w-full h-screen object-cover z-[-1] animate-slow-spin"
+          />
+      <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 h-[500px] overflow-y-auto bg-white shadow-lg rounded-2xl">
       <h1 className="text-3xl font-bold text-indigo-600 mb-4">Contact Us</h1>
       <p className="text-gray-700 text-lg mb-4">
         Have questions, suggestions, or just want to say hi?
@@ -83,6 +91,8 @@ const Contact = () => {
         </button>
       </form>
     </div>
+    </div>
+    
   );
 };
 

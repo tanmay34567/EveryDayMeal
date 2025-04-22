@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { assets } from "../assets/assets";
 
 const capitalize = (str = "") =>
     str
@@ -22,7 +23,14 @@ const StudentVendorMenu = () => {
   }, [vendorEmail]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-blue-50 p-6">
+    <div className="relative w-full min-h-screen overflow-hidden">
+              {/* Fixed Background Image */}
+              <img
+                src={assets.bg}
+                alt="Background"
+                className="fixed top-0 left-0 w-full h-full object-cover z-[-1] animate-slow-spin"
+              />
+    
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
       <h1 className="text-3xl font-bold text-indigo-700 text-center mb-6">
         {capitalize(vendorName) } (Menu)

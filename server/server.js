@@ -6,6 +6,7 @@ import 'dotenv/config';
 import StudentRouter from './routes/StudentRoute.js';
 import VendorRouter from './routes/VendorRoute.js';
 import router from './routes/contactRoutes.js';
+import scheduleMenuDeletion from './cron/deleteMenus.js';
 
 // At the beginning of the file
 console.log("Server is starting...");
@@ -35,6 +36,7 @@ app.use('/api/Student', StudentRouter)
 app.use('/api/Vendor', VendorRouter)
 app.use('/api', router);
 
+scheduleMenuDeletion();
 
 // Start server
 app.listen(port, () => {

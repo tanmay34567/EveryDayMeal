@@ -55,7 +55,8 @@ export const login = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, student.password);
     if (!isMatch) {
-      return res.json({ success: false, message: 'Invalid email or password' });
+      return res.json({ success: false, message: 'Invalid email or password' });h
+      
     }
 
     const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET, {

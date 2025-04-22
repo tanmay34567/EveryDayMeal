@@ -6,6 +6,7 @@ const Login = ({ onClose, isVendor = false }) => {
   const [state, setState] = useState("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [contactNumber, setcontactNumber] = useState("")
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -27,6 +28,20 @@ const Login = ({ onClose, isVendor = false }) => {
     return accounts.find(acc => acc.email === email && (!password || acc.password === password));
   };
 
+  const handleContactNumberChange = (e) => {
+    let value = e.target.value;
+
+    // Ensure the user doesn't delete +91 or input anything before it
+    if (!value.startsWith('+91')) {
+      value = '+91' + value.replace('+91', ''); // Prepend +91 if not already present
+    }
+
+    // Only allow up to 10 digits after +91
+    if (value.length <= 13) {
+      setContactNumber(value);
+    }
+  };
+
   const onSubmitHandler = (event) => {
     event.preventDefault();
     setError("");
@@ -37,11 +52,12 @@ const Login = ({ onClose, isVendor = false }) => {
         return;
       }
 
-      const newAccount = { name, email, password };
+      const newAccount = { name, contactNumber,email, password };
       saveAccount(newAccount);
 
       setState("login");
       setName("");
+      setcontactNumber("")
       setEmail("");
       setPassword("");
       setError("Account created! Please login.");
@@ -66,6 +82,7 @@ const Login = ({ onClose, isVendor = false }) => {
       onClose();
       navigate("/student/dashboard");
     }
+
   };
 
   return (
@@ -87,7 +104,7 @@ const Login = ({ onClose, isVendor = false }) => {
           {state === "login" ? "Login" : "Sign Up"}
         </p>
 
-        {state === "register" && (
+        {state === "register"  && (
           <div className="w-full">
             <p>Name</p>
             <input
@@ -99,7 +116,23 @@ const Login = ({ onClose, isVendor = false }) => {
               required
             />
           </div>
-        )}
+        ) }
+
+        {state === "register"  && (
+          <div className="w-full">
+            <p>Contact Number</p>
+            <input
+              onChange={(e) => setcontactNumber(e.target.value)}
+              value={contactNumber}
+              placeholder="Type here"
+              className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
+              type="text"
+              required
+              pattern="^\d{10}$" 
+              title="Phone number should exactly contain 10 digits."
+            />
+          </div>
+        ) }
 
         <div className="w-full">
           <p>Email</p>

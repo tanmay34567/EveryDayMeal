@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAppcontext } from "../context/Appcontext";
+import { assets } from "../assets/assets";
 
 const capitalize = (str) => {
   if (!str) return "";
@@ -152,7 +153,13 @@ const VendorDashboard = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-6">
+    <div className="relative w-full min-h-screen overflow-hidden">
+              {/* Fixed Background Image */}
+              <img
+                src={assets.bg}
+                alt="Background"
+                className="fixed top-0 left-0 w-full h-full object-cover z-[-1] animate-slow-spin"
+              />
       <div ref={formRef} className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-8">
         <h1 className="text-4xl font-bold text-center text-indigo-700 mb-8">
           <span>{capitalize(seller?.name) || "Vendor"}</span> Dashboard
@@ -293,6 +300,7 @@ const VendorDashboard = () => {
         )}
       </div>
     </div>
+    
   );
 };
 

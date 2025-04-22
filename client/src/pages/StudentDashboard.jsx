@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { assets } from "../assets/assets";
 
 const capitalize = (str) =>
   str
@@ -22,7 +23,13 @@ const StudentDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-blue-50 p-6">
+    <div className="relative w-full min-h-screen overflow-hidden">
+          {/* Fixed Background Image */}
+          <img
+            src={assets.bg}
+            alt="Background"
+            className="fixed top-0 left-0 w-full h-full object-cover z-[-1] animate-slow-spin"
+          />
       <div className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
         <h1 className="text-3xl font-bold text-center text-indigo-700 mb-6">Student Dashboard</h1>
         <h2 className="text-xl font-semibold text-gray-700 mb-4">Available Vendors:</h2>
@@ -44,6 +51,7 @@ const StudentDashboard = () => {
         )}
       </div>
     </div>
+   
   );
 };
 
