@@ -61,24 +61,16 @@ const StudentDashboard = () => {
           setVendors(validVendors);
           setError(null);
         } else {
-          // If no valid vendors were returned, use mock data
-          console.log('No valid vendors returned, using mock data');
-          setVendors([
-            { name: 'Test Vendor 1', email: 'vendor1@test.com' },
-            { name: 'Test Vendor 2', email: 'vendor2@test.com' },
-            { name: 'Campus Cafe', email: 'campus.cafe@example.com' },
-            { name: 'Healthy Bites', email: 'healthy.bites@example.com' }
-          ]);
+          // If no valid vendors were returned, set empty array and show message
+          console.log('No vendors available');
+          setVendors([]);
+          setError('No vendors are currently available. Please check back later.');
         }
       } catch (err) {
         console.error('Error fetching vendors:', err);
-        // Use mock data if the API call fails
-        setVendors([
-          { name: 'Test Vendor 1', email: 'vendor1@test.com' },
-          { name: 'Test Vendor 2', email: 'vendor2@test.com' },
-          { name: 'Campus Cafe', email: 'campus.cafe@example.com' },
-          { name: 'Healthy Bites', email: 'healthy.bites@example.com' }
-        ]);
+        // Set empty array and show error message
+        setVendors([]);
+        setError('Unable to fetch vendors. Please try again later.');
       } finally {
         setLoading(false);
       }
