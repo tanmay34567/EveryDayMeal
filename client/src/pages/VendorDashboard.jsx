@@ -226,7 +226,7 @@ const VendorDashboard = () => {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-blue-700">
-                    Welcome to your dashboard! You haven't created any menus yet. Use the form below to create your first menu.
+                    Welcome to your dashboard! You haven't created any menus yet.
                   </p>
                 </div>
               </div>
@@ -344,7 +344,6 @@ const VendorDashboard = () => {
             <div className="text-center mb-6">
               <h3 className="text-xl font-medium text-gray-800 mb-2">Welcome to Your Dashboard!</h3>
               <p className="text-gray-600 mb-2">You haven't created a menu yet.</p>
-              <p className="text-gray-500 text-sm">Create your first menu to start receiving orders from students.</p>
             </div>
             <button
               onClick={() => setIsEditing(true)}
