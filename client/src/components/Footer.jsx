@@ -1,10 +1,12 @@
 import React from "react";
 import { assets } from "../assets/assets";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAppcontext } from "../context/Appcontext";
 
 const Footer = () => {
   const { Student, seller } = useAppcontext();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Function to scroll to the top of the page
   const handleScrollToTop = () => {
@@ -12,6 +14,20 @@ const Footer = () => {
       top: 0,
       behavior: "smooth", // Ensures smooth scroll to the top
     });
+  };
+  
+  // Handle navigation with smooth scrolling
+  const handleNavigation = (path, e) => {
+    e.preventDefault();
+    
+    // If we're already on the same page, just scroll to top
+    if (location.pathname === path) {
+      handleScrollToTop();
+      return;
+    }
+    
+    // Navigate to the page and then scroll to top
+    navigate(path);
   };
 
   return (
@@ -39,8 +55,22 @@ const Footer = () => {
                   Home
                 </Link>
               </li>
-              <li><Link to="/about">About Us</Link></li>
-              <li><Link to="/contact">Contact Us</Link></li>
+              <li>
+                <Link 
+                  to="/about" 
+                  onClick={(e) => handleNavigation('/about', e)}
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/contact" 
+                  onClick={(e) => handleNavigation('/contact', e)}
+                >
+                  Contact Us
+                </Link>
+              </li>
             </ul>
           </div>
 

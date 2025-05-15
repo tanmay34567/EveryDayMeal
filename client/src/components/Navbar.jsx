@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useAppcontext } from "../context/Appcontext";
 
@@ -15,6 +15,8 @@ const Navbar = () => {
   } = useAppcontext();
 
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const user = Student || seller;
   const userType = Student ? "student" : seller ? "vendor" : null;
@@ -42,14 +44,31 @@ const Navbar = () => {
     ? "/vendor/dashboard"
     : "/";
 
-  // Ref for scrolling
+  // Refs for scrolling
   const topRef = useRef(null);
 
   const handleScrollToTop = () => {
-    if (topRef.current) {
-      topRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Handle navigation with smooth scrolling
+  const handleNavigation = (path, e) => {
+    e.preventDefault();
+    
+    // If we're already on the same page, just scroll to top
+    if (location.pathname === path) {
+      handleScrollToTop();
+      return;
+    }
+    
+    // Navigate to the page and then scroll to top
+    navigate(path);
+  };
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location.pathname]);
 
   return (
     <>
@@ -76,6 +95,7 @@ const Navbar = () => {
           </NavLink>
           <NavLink
             to="/about"
+            onClick={(e) => handleNavigation('/about', e)}
             className={({ isActive }) =>
               isActive ? "font-medium text-indigo-600" : "text-black hover:text-indigo-600"
             }
@@ -84,6 +104,7 @@ const Navbar = () => {
           </NavLink>
           <NavLink
             to="/contact"
+            onClick={(e) => handleNavigation('/contact', e)}
             className={({ isActive }) =>
               isActive ? "font-medium text-indigo-600" : "text-black hover:text-indigo-600"
             }
@@ -178,9 +199,9 @@ const Navbar = () => {
               </NavLink>
               <NavLink
                 to="/about"
-                onClick={() => {
+                onClick={(e) => {
                   setMenuOpen(false);
-                  handleScrollToTop();  // Scroll to top when About is clicked on mobile
+                  handleNavigation('/about', e);
                 }}
                 className={({ isActive }) =>
                   isActive ? "font-medium text-indigo-600" : "text-black"
@@ -190,9 +211,9 @@ const Navbar = () => {
               </NavLink>
               <NavLink
                 to="/contact"
-                onClick={() => {
+                onClick={(e) => {
                   setMenuOpen(false);
-                  handleScrollToTop();  // Scroll to top when Contact is clicked on mobile
+                  handleNavigation('/contact', e);
                 }}
                 className={({ isActive }) =>
                   isActive ? "font-medium text-indigo-600" : "text-black"
