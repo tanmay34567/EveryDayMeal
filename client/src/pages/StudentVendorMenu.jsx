@@ -28,33 +28,13 @@ const StudentVendorMenu = () => {
           setMenu(menuData);
           setVendorName(menuData.vendorName || "");
         } else {
-          // If no menu data is returned, create mock data based on the vendor email
-          console.log("No menu found, using mock data");
-          const mockMenu = {
-            vendorEmail: vendorEmail,
-            vendorName: vendorEmail.split('@')[0].split('.').map(capitalize).join(' '),
-            date: new Date().toISOString().split('T')[0],
-            day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()],
-            meals: {
-              breakfast: {
-                items: 'Eggs, Toast, Fruit, Coffee',
-                startTime: '7:00 AM',
-                endTime: '9:30 AM'
-              },
-              lunch: {
-                items: 'Sandwich, Salad, Soup, Juice',
-                startTime: '12:00 PM',
-                endTime: '2:30 PM'
-              },
-              dinner: {
-                items: 'Rice, Curry, Naan, Dessert',
-                startTime: '6:00 PM',
-                endTime: '8:30 PM'
-              }
-            }
-          };
-          setMenu(mockMenu);
-          setVendorName(mockMenu.vendorName);
+          // If no menu data is returned, set menu to null and show a message
+          console.log("No menu found for this vendor");
+          setMenu(null);
+          // Extract a readable vendor name from the email for display purposes
+          const readableVendorName = vendorEmail.split('@')[0].split('.').map(capitalize).join(' ');
+          setVendorName(readableVendorName);
+          setError(`${readableVendorName} hasn't created a menu yet.`);
         }
       } catch (err) {
         console.error("Error fetching vendor menu:", err);
@@ -140,7 +120,22 @@ const StudentVendorMenu = () => {
             </Link>
           </div>
         ) : !menu ? (
-          <p className="text-center text-gray-500">No menu found for this vendor.</p>
+          <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200 p-6">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <h3 className="text-xl font-medium text-gray-800 mb-2">No Menu Available</h3>
+            <p className="text-gray-600 mb-4">{capitalize(vendorName)} hasn't created a menu yet.</p>
+            <Link 
+              to="/student/dashboard" 
+              className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              Return to Dashboard
+            </Link>
+          </div>
         ) : (
           <>
             <div className="mb-6 text-center">
