@@ -8,7 +8,7 @@ const Login = ({ onClose, isVendor = false }) => {
   const [state, setState] = useState("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [contactNumber, setcontactNumber] = useState("+91");
+  const [contactNumber, setcontactNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,6 +18,13 @@ const Login = ({ onClose, isVendor = false }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [lockoutUntil, setLockoutUntil] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({
+    name: "",
+    email: "",
+    contactNumber: "",
+    password: "",
+    confirmPassword: ""
+  });
   
   // Check if user is locked out
   useEffect(() => {
@@ -79,53 +86,48 @@ const Login = ({ onClose, isVendor = false }) => {
   };
 
 
+  // Validate contact number
+  const validateContactNumber = (number) => {
+    // Should be exactly 10 digits
+    const contactRegex = /^\d{10}$/;
+    return contactRegex.test(number);
+  };
+
+  // Handle contact number input
   const handleContactNumberChange = (e) => {
-    let value = e.target.value;
+    const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
     
-    // Always start with +91
-    if (!value.startsWith('+91')) {
-      // If user tries to enter a number without +91, add it
-      value = '+91' + value.replace(/\D/g, '');
-    } else {
-      // If +91 is already there, keep it and process the rest
-      const prefix = '+91';
-      const inputAfterPrefix = value.substring(prefix.length).replace(/\D/g, '');
-      value = prefix + inputAfterPrefix;
-    }
-    
-    // Extract only the digits after +91
-    const digitsAfterCode = value.substring(3).replace(/\D/g, '');
-    
-    // Limit to exactly 10 digits after +91
-    const limitedDigits = digitsAfterCode.substring(0, 10);
-    
-    // Format the number for display
-    if (limitedDigits.length > 0) {
-      // Create visual groups for better readability
-      if (limitedDigits.length <= 5) {
-        // Format: +91 XXXXX
-        setcontactNumber(`+91 ${limitedDigits}`);
+    // Only allow up to 10 digits
+    if (value.length <= 10) {
+      setcontactNumber(value);
+      
+      // Validate contact number
+      if (value.length > 0 && value.length !== 10) {
+        setValidationErrors(prev => ({
+          ...prev,
+          contactNumber: "Contact number must be exactly 10 digits"
+        }));
       } else {
-        // Format: +91 XXXXX XXXXX
-        const firstPart = limitedDigits.substring(0, 5);
-        const secondPart = limitedDigits.substring(5);
-        setcontactNumber(`+91 ${firstPart} ${secondPart}`);
+        setValidationErrors(prev => ({
+          ...prev,
+          contactNumber: ""
+        }));
       }
-    } else {
-      // Just the country code if no digits entered yet
-      setcontactNumber('+91');
     }
   };
   
-  // Function to normalize contact number before submission (remove spaces)
+  // Function to normalize contact number before submission (add +91 prefix)
   const normalizeContactNumber = (number) => {
-    return number.replace(/\s/g, '');
+    // Add +91 prefix if it's a valid 10-digit number
+    if (validateContactNumber(number)) {
+      return `+91${number}`;
+    }
+    return number;
   };
   
-  // Function to check if the contact number is complete (has exactly 10 digits after +91)
+  // Function to check if the contact number is valid
   const isValidContactNumber = (number) => {
-    const normalized = normalizeContactNumber(number);
-    return normalized.startsWith('+91') && normalized.length === 13 && /^\+91\d{10}$/.test(normalized);
+    return validateContactNumber(number);
   };
   
   // Validate email format
@@ -145,40 +147,46 @@ const Login = ({ onClose, isVendor = false }) => {
     
     // Check if user is locked out
     if (lockoutUntil && lockoutUntil > new Date()) {
-      const timeLeft = Math.ceil((lockoutUntil - new Date()) / 1000 / 60);
-      setError(`Too many failed attempts. Please try again in ${timeLeft} minutes.`);
+      const remainingMinutes = Math.ceil((lockoutUntil - new Date()) / (60 * 1000));
+      setError(`Account locked due to too many failed attempts. Try again in ${remainingMinutes} minutes.`);
       return;
     }
     
-    // Validate inputs for registration
+    // Basic validation
     if (state === "register") {
-      // Name validation
-      if (!isValidName(name)) {
-        setError("Name must be at least 3 characters long");
+      if (!name || name.length < 3) {
+        setError("Name must be at least 3 characters long.");
         return;
       }
       
-      // Email validation
       if (!isValidEmail(email)) {
-        setError("Please enter a valid email address");
+        setError("Please enter a valid email address.");
         return;
       }
       
-      // Contact number validation
-      if (!isValidContactNumber(contactNumber)) {
-        setError("Please enter a valid 10-digit contact number");
+      if (!validateContactNumber(contactNumber)) {
+        setError("Please enter a valid 10-digit contact number.");
         return;
       }
       
-      // Password validation
       if (!checkPasswordStrength(password)) {
-        setError("Please fix the password issues below");
+        setError("Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number.");
         return;
       }
       
-      // Confirm password
       if (password !== confirmPassword) {
-        setError("Passwords do not match");
+        setError("Passwords do not match.");
+        return;
+      }
+    } else {
+      // Login validation
+      if (!isValidEmail(email)) {
+        setError("Please enter a valid email address.");
+        return;
+      }
+      
+      if (!password) {
+        setError("Please enter your password.");
         return;
       }
     }
@@ -188,7 +196,12 @@ const Login = ({ onClose, isVendor = false }) => {
     try {
       if (state === "register") {
         // Create user data object
-        const userData = { name, contactNumber, email, password };
+        const userData = { 
+          name, 
+          contactNumber: normalizeContactNumber(contactNumber), 
+          email, 
+          password 
+        };
         
         // Use the appropriate auth service based on user type
         const response = isVendor 
@@ -303,16 +316,23 @@ const Login = ({ onClose, isVendor = false }) => {
         {state === "register"  && (
           <div className="w-full">
             <p>Contact Number</p>
-            <input
-              onChange={(e) => setcontactNumber(e.target.value)}
-              value={contactNumber}
-              placeholder="Type here"
-              className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
-              type="text"
-              required
-              pattern="^\d{10}$" 
-              title="Phone number should exactly contain 10 digits."
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <span className="text-gray-500">+91</span>
+              </div>
+              <input
+                onChange={handleContactNumberChange}
+                value={contactNumber}
+                placeholder="10-digit number"
+                className={`border ${validationErrors.contactNumber ? 'border-red-500' : 'border-gray-200'} rounded w-full p-2 pl-12 mt-1 outline-indigo-500`}
+                type="tel"
+                required
+                maxLength="10"
+              />
+            </div>
+            {validationErrors.contactNumber && (
+              <p className="text-red-500 text-xs mt-1">{validationErrors.contactNumber}</p>
+            )}
           </div>
         ) }
 

@@ -154,10 +154,20 @@ const VendorDashboard = () => {
     }
 
     try {
-      await vendorMenus.deleteMenu();
+      const response = await vendorMenus.deleteMenu();
+      
+      // Check if the response indicates no menu existed to delete
+      if (response && response.noMenuExists) {
+        // This is an expected case for new vendors
+        alert("No menu exists to delete.");
+      } else {
+        // A menu was successfully deleted
+        alert("Menu deleted successfully.");
+      }
+      
+      // In either case, reset the state
       setSavedMenu(null);
       setIsEditing(false);
-      alert("Menu deleted.");
     } catch (error) {
       console.error("Error deleting menu:", error);
       alert("Failed to delete menu.");

@@ -138,10 +138,31 @@ export const vendorMenus = {
   // Delete a menu
   deleteMenu: async () => {
     try {
+      console.log('Attempting to delete menu');
       const response = await api.delete(getFullUrl('/Vendor/menu'));
+      console.log('Menu deleted successfully');
       return response.data;
     } catch (error) {
+      // Check for 404 errors first (no menu exists to delete) - this is an expected case
+      if (error.response && error.response.status === 404) {
+        console.log('No menu exists to delete (404 response)');
+        console.log('This is normal if you haven\'t created a menu yet');
+        // Return a successful response with a message
+        return {
+          success: true,
+          message: 'No menu exists to delete',
+          noMenuExists: true
+        };
+      }
+      
+      // For other errors, log detailed error information
       console.error('Error deleting menu:', error);
+      
+      if (error.response) {
+        console.log('Error response status:', error.response.status);
+        console.log('Error response data:', error.response.data);
+      }
+      
       throw error;
     }
   }
