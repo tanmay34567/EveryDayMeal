@@ -93,8 +93,22 @@ const Login = ({ onClose, isVendor = false }) => {
     
     // Format with +91 prefix and limit to 10 digits
     if (onlyDigits.length <= 10) {
-      setcontactNumber('+91' + onlyDigits);
+      // Format the number with spaces for better readability if it has enough digits
+      if (onlyDigits.length > 5) {
+        // Format as +91 XXXXX XXXXX for better readability
+        const firstPart = onlyDigits.substring(0, 5);
+        const secondPart = onlyDigits.substring(5);
+        setcontactNumber(`+91 ${firstPart} ${secondPart}`);
+      } else {
+        // For shorter numbers, just add a space after the country code
+        setcontactNumber(`+91 ${onlyDigits}`);
+      }
     }
+  };
+  
+  // Function to normalize contact number before submission (remove spaces)
+  const normalizeContactNumber = (number) => {
+    return number.replace(/\s/g, '');
   };
   
   // Validate email format
@@ -134,7 +148,8 @@ const Login = ({ onClose, isVendor = false }) => {
       }
       
       // Contact number validation
-      if (contactNumber.length !== 13) { // +91 (3 chars) + 10 digits
+      const normalizedNumber = normalizeContactNumber(contactNumber);
+      if (normalizedNumber.length !== 13 || !normalizedNumber.startsWith('+91') || !/^\+91\d{10}$/.test(normalizedNumber)) {
         setError("Please enter a valid 10-digit contact number");
         return;
       }

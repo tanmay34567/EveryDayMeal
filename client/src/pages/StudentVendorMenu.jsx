@@ -95,6 +95,13 @@ const StudentVendorMenu = () => {
     }
   }, [vendorEmail]);
 
+  const { navigate } = useAppcontext();
+
+  const handleGoBack = (e) => {
+    e.preventDefault();
+    navigate(-1); // This will go back to the previous page in history
+  };
+
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
       {/* Fixed Background Image */}
@@ -106,12 +113,12 @@ const StudentVendorMenu = () => {
     
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
         <div className="flex justify-between items-center mb-6">
-          <Link 
-            to="/student/dashboard" 
+          <button 
+            onClick={handleGoBack}
             className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
           >
             &larr; Back to Dashboard
-          </Link>
+          </button>
           <h1 className="text-3xl font-bold text-indigo-700 text-center">
             {capitalize(vendorName)} Menu
           </h1>
