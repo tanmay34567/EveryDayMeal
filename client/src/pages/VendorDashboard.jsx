@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAppcontext } from "../context/Appcontext";
 import { assets } from "../assets/assets";
 import { vendorMenus } from "../services";
+import { useNavigate } from "react-router-dom";
 
 const capitalize = (str) => {
   if (!str) return "";
@@ -24,7 +25,34 @@ const VendorDashboard = () => {
   });
 
   const { seller } = useAppcontext();
+  const navigate = useNavigate();
   const formRef = useRef(null);
+  
+  // Prevent back button navigation
+  useEffect(() => {
+    // Function to handle popstate (back/forward button) events
+    const handlePopState = (event) => {
+      // Prevent the default action
+      event.preventDefault();
+      
+      // Push the current state again to replace the history entry
+      window.history.pushState(null, document.title, window.location.pathname);
+      
+      // Optional: Show a message to the user
+      console.log("Back navigation prevented on vendor dashboard");
+    };
+    
+    // Push a new state to the history when component mounts
+    window.history.pushState(null, document.title, window.location.pathname);
+    
+    // Add event listener for popstate
+    window.addEventListener('popstate', handlePopState);
+    
+    // Clean up the event listener when component unmounts
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   // Using our vendorService instead of direct axios calls
 

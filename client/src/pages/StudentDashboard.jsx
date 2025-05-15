@@ -18,6 +18,32 @@ const StudentDashboard = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { student } = useAppcontext();
+  
+  // Prevent back button navigation
+  useEffect(() => {
+    // Function to handle popstate (back/forward button) events
+    const handlePopState = (event) => {
+      // Prevent the default action
+      event.preventDefault();
+      
+      // Push the current state again to replace the history entry
+      window.history.pushState(null, document.title, window.location.pathname);
+      
+      // Optional: Show a message to the user
+      console.log("Back navigation prevented on student dashboard");
+    };
+    
+    // Push a new state to the history when component mounts
+    window.history.pushState(null, document.title, window.location.pathname);
+    
+    // Add event listener for popstate
+    window.addEventListener('popstate', handlePopState);
+    
+    // Clean up the event listener when component unmounts
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   useEffect(() => {
     // Fetch vendors with menus from the API
