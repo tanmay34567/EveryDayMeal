@@ -94,14 +94,9 @@ export const studentMeals = {
         console.error('Error fetching available vendors:', error);
       }
       
-      // For development and testing, return mock data if API fails
-      console.log('Returning mock vendor data for testing');
-      return [
-        { name: 'Campus Cafe', email: 'campus.cafe@example.com' },
-        { name: 'Healthy Bites', email: 'healthy.bites@example.com' },
-        { name: 'Quick Meals', email: 'quick.meals@example.com' },
-        { name: 'Fresh & Tasty', email: 'fresh.tasty@example.com' }
-      ];
+      // Return an empty array to indicate no vendors are available
+      console.log('No vendors available or error fetching vendors. Returning empty array.');
+      return [];
     }
   },
 
@@ -138,38 +133,9 @@ export const studentMeals = {
         console.error('Error fetching vendor menu:', error);
       }
       
-      // For testing and development, return mock menu data if API fails
-      console.log('Returning mock menu data for vendor:', vendorEmail);
-      
-      // Create a more realistic vendor name from the email
-      const vendorName = vendorEmail.split('@')[0]
-        .split('.')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-      
-      return {
-        vendorEmail: vendorEmail,
-        vendorName: vendorName,
-        date: new Date().toISOString().split('T')[0],
-        day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()],
-        meals: {
-          breakfast: {
-            items: 'Eggs, Toast, Juice, Coffee',
-            startTime: '7:00 AM',
-            endTime: '9:00 AM'
-          },
-          lunch: {
-            items: 'Sandwich, Salad, Fruit, Soup',
-            startTime: '12:00 PM',
-            endTime: '2:00 PM'
-          },
-          dinner: {
-            items: 'Pasta, Garlic Bread, Dessert, Beverage',
-            startTime: '6:00 PM',
-            endTime: '8:00 PM'
-          }
-        }
-      };
+      // Return null to indicate no menu exists
+      console.log('No menu exists for this vendor. Returning null.');
+      return null;
     }
   },
 
