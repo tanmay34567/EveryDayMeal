@@ -9,6 +9,30 @@ const api = axios.create({
   },
 });
 
+// Add an interceptor to include the auth token in requests
+api.interceptors.request.use(config => {
+  // Check for vendor token first, then student token
+  const vendorData = localStorage.getItem('currentVendor');
+  const studentData = localStorage.getItem('currentStudent');
+  
+  let token = null;
+  
+  if (vendorData) {
+    const vendor = JSON.parse(vendorData);
+    token = vendor.token;
+  } else if (studentData) {
+    const student = JSON.parse(studentData);
+    token = student.token;
+  }
+  
+  // If token exists, add it to the Authorization header
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  
+  return config;
+});
+
 // Get the base URL from environment or default
 const getFullUrl = (endpoint) => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
