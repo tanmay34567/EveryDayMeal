@@ -82,33 +82,50 @@ const Login = ({ onClose, isVendor = false }) => {
   const handleContactNumberChange = (e) => {
     let value = e.target.value;
     
-    // Ensure the user doesn't delete +91 or input anything before it
+    // Always start with +91
     if (!value.startsWith('+91')) {
-      value = '+91' + value.replace('+91', ''); // Prepend +91 if not already present
+      // If user tries to enter a number without +91, add it
+      value = '+91' + value.replace(/\D/g, '');
+    } else {
+      // If +91 is already there, keep it and process the rest
+      const prefix = '+91';
+      const inputAfterPrefix = value.substring(prefix.length).replace(/\D/g, '');
+      value = prefix + inputAfterPrefix;
     }
     
-    // Only allow digits after +91
-    const digitsAfterCode = value.substring(3);
-    const onlyDigits = digitsAfterCode.replace(/[^0-9]/g, '');
+    // Extract only the digits after +91
+    const digitsAfterCode = value.substring(3).replace(/\D/g, '');
     
-    // Format with +91 prefix and limit to 10 digits
-    if (onlyDigits.length <= 10) {
-      // Format the number with spaces for better readability if it has enough digits
-      if (onlyDigits.length > 5) {
-        // Format as +91 XXXXX XXXXX for better readability
-        const firstPart = onlyDigits.substring(0, 5);
-        const secondPart = onlyDigits.substring(5);
-        setcontactNumber(`+91 ${firstPart} ${secondPart}`);
+    // Limit to exactly 10 digits after +91
+    const limitedDigits = digitsAfterCode.substring(0, 10);
+    
+    // Format the number for display
+    if (limitedDigits.length > 0) {
+      // Create visual groups for better readability
+      if (limitedDigits.length <= 5) {
+        // Format: +91 XXXXX
+        setcontactNumber(`+91 ${limitedDigits}`);
       } else {
-        // For shorter numbers, just add a space after the country code
-        setcontactNumber(`+91 ${onlyDigits}`);
+        // Format: +91 XXXXX XXXXX
+        const firstPart = limitedDigits.substring(0, 5);
+        const secondPart = limitedDigits.substring(5);
+        setcontactNumber(`+91 ${firstPart} ${secondPart}`);
       }
+    } else {
+      // Just the country code if no digits entered yet
+      setcontactNumber('+91');
     }
   };
   
   // Function to normalize contact number before submission (remove spaces)
   const normalizeContactNumber = (number) => {
     return number.replace(/\s/g, '');
+  };
+  
+  // Function to check if the contact number is complete (has exactly 10 digits after +91)
+  const isValidContactNumber = (number) => {
+    const normalized = normalizeContactNumber(number);
+    return normalized.startsWith('+91') && normalized.length === 13 && /^\+91\d{10}$/.test(normalized);
   };
   
   // Validate email format
@@ -148,8 +165,7 @@ const Login = ({ onClose, isVendor = false }) => {
       }
       
       // Contact number validation
-      const normalizedNumber = normalizeContactNumber(contactNumber);
-      if (normalizedNumber.length !== 13 || !normalizedNumber.startsWith('+91') || !/^\+91\d{10}$/.test(normalizedNumber)) {
+      if (!isValidContactNumber(contactNumber)) {
         setError("Please enter a valid 10-digit contact number");
         return;
       }

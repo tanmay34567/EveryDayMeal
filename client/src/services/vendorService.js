@@ -90,24 +90,23 @@ export const vendorMenus = {
       
       return null;
     } catch (error) {
-      // Log detailed error information
+      // Check for 404 errors first (no menu exists yet) - this is an expected case, not an error
+      if (error.response && error.response.status === 404) {
+        console.log('No menu exists yet for this vendor (404 response)');
+        console.log('This is normal for new vendors who haven\'t created a menu yet');
+        return createMockMenu(); // Return mock data for development and testing
+      }
+      
+      // For other errors, log detailed error information
       console.error('Error fetching menu:', error);
       
       if (error.response) {
-        console.error('Error response status:', error.response.status);
-        console.error('Error response data:', error.response.data);
+        console.log('Error response status:', error.response.status);
+        console.log('Error response data:', error.response.data);
         
         // Check specifically for 401 errors which indicate authentication issues
         if (error.response.status === 401) {
-          console.error('Unauthorized access');
-          // You could trigger a logout or redirect to login here
-        }
-        
-        // Check specifically for 404 errors which indicate no menu exists yet
-        if (error.response.status === 404) {
-          console.log('No menu exists yet for this vendor (404 response)');
-          // This is not an error, just a normal state when no menu exists
-          return null;
+          console.error('Unauthorized access - authentication token might be missing or invalid');
         }
       } else if (error.request) {
         console.error('No response received:', error.request);
