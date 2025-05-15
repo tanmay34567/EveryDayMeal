@@ -213,130 +213,150 @@ const VendorDashboard = () => {
           <span>{capitalize(seller?.name) || "Vendor"}</span> Dashboard
         </h1>
         
-        {/* Welcome message for new vendors */}
-        {!savedMenu && (
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-blue-700">
-                  Welcome to your dashboard! You haven't created any menus yet. Use the form below to create your first menu.
-                </p>
+        {/* Form for creating/editing menu */}
+        <div className="mb-8">
+          {/* Welcome message for new vendors */}
+          {!savedMenu && (
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-blue-700">
+                    Welcome to your dashboard! You haven't created any menus yet. Use the form below to create your first menu.
+                  </p>
+                </div>
               </div>
             </div>
+          )}
+
+          {/* Day & Date */}
+          <div className="mb-6">
+            <label className="block font-semibold text-lg mb-1 text-gray-700">
+              Select Day
+            </label>
+            <select
+              value={day}
+              onChange={(e) => setDay(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 shadow-sm"
+            >
+              <option value="">Day</option>
+              {[
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+              ].map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
 
-        {/* Day & Date */}
-        <div className="mb-6">
-          <label className="block font-semibold text-lg mb-1 text-gray-700">
-            Select Day
-          </label>
-          <select
-            value={day}
-            onChange={(e) => setDay(e.target.value)}
-            className="w-full p-3 rounded-lg border border-gray-300 shadow-sm"
-          >
-            <option value="">Day</option>
-            {[
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Sunday",
-            ].map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-6">
-          <label className="block font-semibold text-lg mb-1 text-gray-700">
-            Select Date
-          </label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full p-3 rounded-lg border border-gray-300"
-          />
-        </div>
-
-        {/* Meals */}
-        {Object.keys(menuData).map((meal) => (
-          <div
-            key={meal}
-            className="mb-8 bg-gray-50 border border-gray-200 p-5 rounded-xl"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-semibold capitalize text-indigo-600">
-                {meal}
-              </h2>
-              {isEditing && (
-                <button
-                  onClick={() => handleResetMeal(meal)}
-                  className="text-sm text-red-600 font-medium hover:underline"
-                >
-                  Reset {meal}
-                </button>
-              )}
-            </div>
-
-            <label className="block font-medium mb-1 text-gray-700">
-              Menu Items
+          <div className="mb-6">
+            <label className="block font-semibold text-lg mb-1 text-gray-700">
+              Select Date
             </label>
             <input
-              type="text"
-              value={menuData[meal].items}
-              onChange={(e) => handleChange(meal, "items", e.target.value)}
-              placeholder={`Enter ${meal} menu...`}
-              className="mb-4 w-full p-3 rounded-lg border border-gray-300"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300"
             />
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block font-medium mb-1 text-gray-700">
-                  Start Time
-                </label>
-                <input
-                  type="time"
-                  value={menuData[meal].startTime}
-                  onChange={(e) => handleChange(meal, "startTime", e.target.value)}
-                  className="w-full p-3 rounded-lg border border-gray-300"
-                />
+          {/* Meals */}
+          {Object.keys(menuData).map((meal) => (
+            <div
+              key={meal}
+              className="mb-8 bg-gray-50 border border-gray-200 p-5 rounded-xl"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-semibold capitalize text-indigo-600">
+                  {meal}
+                </h2>
+                {isEditing && (
+                  <button
+                    onClick={() => handleResetMeal(meal)}
+                    className="text-sm text-red-600 font-medium hover:underline"
+                  >
+                    Reset {meal}
+                  </button>
+                )}
               </div>
-              <div>
-                <label className="block font-medium mb-1 text-gray-700">
-                  End Time
-                </label>
-                <input
-                  type="time"
-                  value={menuData[meal].endTime}
-                  onChange={(e) => handleChange(meal, "endTime", e.target.value)}
-                  className="w-full p-3 rounded-lg border border-gray-300"
-                />
+
+              <label className="block font-medium mb-1 text-gray-700">
+                Menu Items
+              </label>
+              <input
+                type="text"
+                value={menuData[meal].items}
+                onChange={(e) => handleChange(meal, "items", e.target.value)}
+                placeholder={`Enter ${meal} menu...`}
+                className="mb-4 w-full p-3 rounded-lg border border-gray-300"
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block font-medium mb-1 text-gray-700">
+                    Start Time
+                  </label>
+                  <input
+                    type="time"
+                    value={menuData[meal].startTime}
+                    onChange={(e) => handleChange(meal, "startTime", e.target.value)}
+                    className="w-full p-3 rounded-lg border border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium mb-1 text-gray-700">
+                    End Time
+                  </label>
+                  <input
+                    type="time"
+                    value={menuData[meal].endTime}
+                    onChange={(e) => handleChange(meal, "endTime", e.target.value)}
+                    className="w-full p-3 rounded-lg border border-gray-300"
+                  />
+                </div>
               </div>
             </div>
+          ))}
+
+          <button
+            onClick={handleSubmit}
+            className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold py-3 rounded-xl"
+          >
+            {isEditing ? "Update Menu" : "Save Menu & Timings"}
+          </button>
+        </div>
+
+        {/* Display current menu if it exists */}
+        {!savedMenu ? (
+          <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-medium text-gray-800 mb-2">Welcome to Your Dashboard!</h3>
+              <p className="text-gray-600 mb-2">You haven't created a menu yet.</p>
+              <p className="text-gray-500 text-sm">Create your first menu to start receiving orders from students.</p>
+            </div>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-all flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Create Your First Menu
+            </button>
           </div>
-        ))}
-
-        <button
-          onClick={handleSubmit}
-          className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold py-3 rounded-xl"
-        >
-          {isEditing ? "Update Menu" : "Save Menu & Timings"}
-        </button>
-
-        {/* Saved Menu Display */}
-        {savedMenu && savedMenu.meals && (
+        ) : (
           <div className="mt-10 p-6 border border-indigo-200 bg-indigo-50 rounded-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-2xl font-bold text-indigo-800">
@@ -357,7 +377,7 @@ const VendorDashboard = () => {
                 </button>
               </div>
             </div>
-            {Object.entries(savedMenu.meals).map(([meal, data]) => (
+            {savedMenu.meals && Object.entries(savedMenu.meals).map(([meal, data]) => (
               <div key={meal} className="mb-4">
                 <h4 className="text-lg font-semibold text-gray-800 capitalize">
                   {meal}

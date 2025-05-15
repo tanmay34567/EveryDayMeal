@@ -94,7 +94,7 @@ export const vendorMenus = {
       if (error.response && error.response.status === 404) {
         console.log('No menu exists yet for this vendor (404 response)');
         console.log('This is normal for new vendors who haven\'t created a menu yet');
-        return createMockMenu(); // Return mock data for development and testing
+        return null; // Return null to indicate no menu exists
       }
       
       // For other errors, log detailed error information
@@ -114,9 +114,9 @@ export const vendorMenus = {
         console.error('Error setting up request:', error.message);
       }
       
-      // Return mock data for development and testing
-      console.log('Returning mock menu data as fallback');
-      return createMockMenu();
+      // Return null to indicate an error occurred
+      console.log('Returning null due to error');
+      return null;
     }
   },
 
