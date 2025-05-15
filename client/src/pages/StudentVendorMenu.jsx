@@ -38,32 +38,12 @@ const StudentVendorMenu = () => {
         }
       } catch (err) {
         console.error("Error fetching vendor menu:", err);
-        // Create mock data in case of error
-        const mockMenu = {
-          vendorEmail: vendorEmail,
-          vendorName: vendorEmail.split('@')[0].split('.').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-          date: new Date().toISOString().split('T')[0],
-          day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()],
-          meals: {
-            breakfast: {
-              items: 'Eggs, Toast, Fruit, Coffee',
-              startTime: '7:00 AM',
-              endTime: '9:30 AM'
-            },
-            lunch: {
-              items: 'Sandwich, Salad, Soup, Juice',
-              startTime: '12:00 PM',
-              endTime: '2:30 PM'
-            },
-            dinner: {
-              items: 'Rice, Curry, Naan, Dessert',
-              startTime: '6:00 PM',
-              endTime: '8:30 PM'
-            }
-          }
-        };
-        setMenu(mockMenu);
-        setVendorName(mockMenu.vendorName);
+        // Set menu to null and show an error message
+        setMenu(null);
+        // Extract a readable vendor name from the email for display purposes
+        const readableVendorName = vendorEmail.split('@')[0].split('.').map(capitalize).join(' ');
+        setVendorName(readableVendorName);
+        setError(`Unable to fetch menu for ${readableVendorName}. Please try again later.`);
       } finally {
         setLoading(false);
       }
