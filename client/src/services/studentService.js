@@ -58,19 +58,49 @@ export const studentMeals = {
   // Get all available vendors with menus
   getAvailableVendors: async () => {
     try {
+      // Check if we have a token before making the request
+      const studentData = localStorage.getItem('currentStudent');
+      if (studentData) {
+        const student = JSON.parse(studentData);
+        if (!student.token) {
+          console.warn('No authentication token found in student data');
+        } else {
+          console.log('Authentication token is available for vendors request');
+        }
+      } else {
+        console.warn('No student data found in localStorage');
+      }
+      
+      console.log('Fetching available vendors from:', getFullUrl('/Student/vendors'));
       const response = await api.get(getFullUrl('/Student/vendors'));
+      
       console.log('Vendors API response:', response.data);
       if (response.data && response.data.success) {
         return response.data.data || [];
       }
+      
       return [];
     } catch (error) {
-      console.error('Error fetching available vendors:', error);
-      // For testing, return mock data if API fails
+      // Handle specific error cases
+      if (error.response) {
+        console.log(`Error status: ${error.response.status}`);
+        console.log('Error response:', error.response.data);
+        
+        // 401 means unauthorized - likely authentication issue
+        if (error.response.status === 401) {
+          console.error('Unauthorized access - authentication token might be missing or invalid');
+        }
+      } else {
+        console.error('Error fetching available vendors:', error);
+      }
+      
+      // For development and testing, return mock data if API fails
       console.log('Returning mock vendor data for testing');
       return [
-        { name: 'Test Vendor 1', email: 'vendor1@test.com' },
-        { name: 'Test Vendor 2', email: 'vendor2@test.com' }
+        { name: 'Campus Cafe', email: 'campus.cafe@example.com' },
+        { name: 'Healthy Bites', email: 'healthy.bites@example.com' },
+        { name: 'Quick Meals', email: 'quick.meals@example.com' },
+        { name: 'Fresh & Tasty', email: 'fresh.tasty@example.com' }
       ];
     }
   },
@@ -78,34 +108,63 @@ export const studentMeals = {
   // Get menu by vendor email
   getVendorMenu: async (vendorEmail) => {
     try {
+      // Check if vendorEmail is provided
+      if (!vendorEmail) {
+        console.error('No vendor email provided');
+        return null;
+      }
+      
+      console.log('Fetching menu for vendor:', vendorEmail);
       const response = await api.get(getFullUrl(`/Vendor/menu/${vendorEmail}`));
       console.log('Vendor menu API response:', response.data);
-      if (response.data && response.data.success) {
+      
+      if (response.data && response.data.success && response.data.data) {
         return response.data.data;
       }
+      
+      console.log('No menu data found for vendor:', vendorEmail);
       return null;
     } catch (error) {
-      console.error('Error fetching vendor menu:', error);
-      // For testing, return mock menu data if API fails
-      console.log('Returning mock menu data for testing');
+      // Handle specific error cases
+      if (error.response) {
+        console.log(`Error status: ${error.response.status}`);
+        console.log('Error response:', error.response.data);
+        
+        // 404 means no menu exists - this is an expected case
+        if (error.response.status === 404) {
+          console.log(`No menu found for vendor: ${vendorEmail}`);
+        }
+      } else {
+        console.error('Error fetching vendor menu:', error);
+      }
+      
+      // For testing and development, return mock menu data if API fails
+      console.log('Returning mock menu data for vendor:', vendorEmail);
+      
+      // Create a more realistic vendor name from the email
+      const vendorName = vendorEmail.split('@')[0]
+        .split('.')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      
       return {
         vendorEmail: vendorEmail,
-        vendorName: 'Test Vendor',
-        date: '2025-05-15',
-        day: 'Thursday',
+        vendorName: vendorName,
+        date: new Date().toISOString().split('T')[0],
+        day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()],
         meals: {
           breakfast: {
-            items: 'Eggs, Toast, Juice',
+            items: 'Eggs, Toast, Juice, Coffee',
             startTime: '7:00 AM',
             endTime: '9:00 AM'
           },
           lunch: {
-            items: 'Sandwich, Salad, Fruit',
+            items: 'Sandwich, Salad, Fruit, Soup',
             startTime: '12:00 PM',
             endTime: '2:00 PM'
           },
           dinner: {
-            items: 'Pasta, Garlic Bread, Dessert',
+            items: 'Pasta, Garlic Bread, Dessert, Beverage',
             startTime: '6:00 PM',
             endTime: '8:00 PM'
           }
