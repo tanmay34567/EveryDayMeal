@@ -3,35 +3,57 @@ import axios from 'axios';
 // Create a simple axios instance with no baseURL
 const api = axios.create({
   baseURL: '',  // No baseURL, we'll use full URLs
-  withCredentials: true,
+  withCredentials: true,  // Still send cookies when possible
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add an interceptor to include the auth token in requests
-api.interceptors.request.use(config => {
-  // Check for vendor token first, then student token
-  const vendorData = localStorage.getItem('currentVendor');
-  const studentData = localStorage.getItem('currentStudent');
-  
-  let token = null;
-  
-  if (vendorData) {
-    const vendor = JSON.parse(vendorData);
-    token = vendor.token;
-  } else if (studentData) {
-    const student = JSON.parse(studentData);
-    token = student.token;
+// Helper function to get auth token from localStorage
+const getAuthToken = () => {
+  try {
+    // Check for vendor token first, then student token
+    const vendorData = localStorage.getItem('currentVendor');
+    const studentData = localStorage.getItem('currentStudent');
+    
+    if (vendorData) {
+      const vendor = JSON.parse(vendorData);
+      return vendor.token;
+    } 
+    
+    if (studentData) {
+      const student = JSON.parse(studentData);
+      return student.token;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error getting auth token:', error);
+    return null;
   }
-  
-  // If token exists, add it to the Authorization header
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+};
+
+// Add a request interceptor to include the auth token in requests
+api.interceptors.request.use(
+  config => {
+    // Get token from localStorage
+    const token = getAuthToken();
+    
+    // If token exists, add it to the Authorization header
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      console.log('Adding auth token to request:', config.url);
+    } else {
+      console.log('No auth token available for request:', config.url);
+    }
+    
+    return config;
+  },
+  error => {
+    console.error('Request interceptor error:', error);
+    return Promise.reject(error);
   }
-  
-  return config;
-});
+);
 
 // Get the base URL from environment or default
 const getFullUrl = (endpoint) => {

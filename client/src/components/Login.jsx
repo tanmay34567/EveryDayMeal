@@ -194,11 +194,21 @@ const Login = ({ onClose, isVendor = false }) => {
         
         // Set user state and navigate to dashboard
         if (isVendor) {
-          setseller(response.vendor || response.seller);
+          // Store the token with the vendor data
+          const vendorData = response.vendor || response.seller;
+          if (response.token) {
+            vendorData.token = response.token;
+          }
+          setseller(vendorData);
           onClose();
           navigate("/vendor/dashboard");
         } else {
-          setStudent(response.student);
+          // Store the token with the student data
+          const studentData = response.student;
+          if (response.token) {
+            studentData.token = response.token;
+          }
+          setStudent(studentData);
           onClose();
           navigate("/student/dashboard");
         }

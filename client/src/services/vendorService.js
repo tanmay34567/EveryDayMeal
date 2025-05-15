@@ -58,27 +58,62 @@ export const vendorMenus = {
   // Get vendor's menu
   getMenus: async () => {
     try {
-      console.log('Fetching menu from:', getFullUrl('/Vendor/menu'));
-      const response = await api.get(getFullUrl('/Vendor/menu'));
+      const url = getFullUrl('/Vendor/menu');
+      console.log('Fetching menu from:', url);
+      
+      // Check if we have a token before making the request
+      const vendorData = localStorage.getItem('currentVendor');
+      if (vendorData) {
+        const vendor = JSON.parse(vendorData);
+        if (!vendor.token) {
+          console.warn('No authentication token found in vendor data');
+        } else {
+          console.log('Authentication token is available for request');
+        }
+      } else {
+        console.warn('No vendor data found in localStorage');
+      }
+      
+      const response = await api.get(url);
       console.log('Menu response:', response);
+      
       // Check if the response contains data.data (the actual menu object)
       if (response.data && response.data.success && response.data.data) {
         return response.data.data;
       }
+      
       // If no menu was found but the request was successful (empty response)
       if (response.data && response.data.success) {
         console.log('No menu found for this vendor yet');
         return null;
       }
+      
       return null;
     } catch (error) {
-      // Check specifically for 404 errors which indicate no menu exists yet
-      if (error.response && error.response.status === 404) {
-        console.log('No menu exists yet for this vendor (404 response)');
-        return null;
+      // Log detailed error information
+      console.error('Error fetching menu:', error);
+      
+      if (error.response) {
+        console.error('Error response status:', error.response.status);
+        console.error('Error response data:', error.response.data);
+        
+        // Check specifically for 401 errors which indicate authentication issues
+        if (error.response.status === 401) {
+          console.error('Unauthorized access');
+          // You could trigger a logout or redirect to login here
+        }
+        
+        // Check specifically for 404 errors which indicate no menu exists yet
+        if (error.response.status === 404) {
+          console.log('No menu exists yet for this vendor (404 response)');
+          return null;
+        }
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      } else {
+        console.error('Error setting up request:', error.message);
       }
       
-      console.error('Error fetching menu:', error);
       // Return mock data for development and testing
       console.log('Returning mock menu data as fallback');
       return createMockMenu();
