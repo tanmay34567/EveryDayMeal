@@ -131,6 +131,7 @@ const Navbar = () => {
                 <div className="absolute top-14 right-0 bg-white text-gray-800 shadow-lg rounded-lg p-4 w-64">
                   <p className="font-semibold">{capitalize(user.name)}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="text-sm text-gray-500">{user.contactNumber}</p>
                   <p className="text-sm text-indigo-600 mt-1 font-medium">
                     {userType === "student" ? "Student Account" : "Vendor Account"}
                   </p>
@@ -229,6 +230,8 @@ const Navbar = () => {
                   {capitalize(user.name)} ({userType})
                 </p>
                 <p className="text-sm text-gray-500">{user.email}</p>
+                <p className="text-sm text-gray-500">{user.contactNumber}</p>
+
                 <button
                   onClick={() => {
                     logout();

@@ -1,9 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import { api } from "../services";
 
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL = import.meta.env.VITE_BACAKEND_URL;
 
 export const Appcontext = createContext();
 
@@ -73,7 +71,7 @@ export const Appcontextprovider = ({ children }) => {
     setShowVendorLogin,
     MenuOpen,
     setMenuOpen,
-    axios,
+    axios: api,
     logout: () => {
       clearStudent();
       clearSeller();

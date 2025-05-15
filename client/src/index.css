@@ -10,3 +10,25 @@
   --color-primary : #4fbf8b;
   --color-primary-dull : #44ae7c;
 }
+
+/* Custom background animation that won't cause play/pause errors */
+.bg-animation {
+  /* Use transform instead of animation to avoid play/pause errors */
+  transform-origin: center center;
+  transition: transform 15s ease-in-out;
+}
+
+/* Apply a subtle zoom effect on hover instead of continuous animation */
+.bg-animation:hover {
+  transform: scale(1.03);
+}
+
+/* Alternative static styling for background images */
+.bg-static {
+  filter: brightness(0.95);
+  transition: filter 0.5s ease;
+}
+
+.bg-static:hover {
+  filter: brightness(1);
+}

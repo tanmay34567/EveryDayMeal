@@ -64,9 +64,7 @@ const App = () => {
           <Route path="/contact" element={<Contact/>} />
         </Routes>
       </div>
-
-    
-      
+            
         <div className="mt-10">
           <Footer />
         </div>

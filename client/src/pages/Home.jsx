@@ -11,7 +11,6 @@ const Home = () => {
   return (
     <div className='mt-10'>
       {!isLoggedIn && <Mainbanner />}
-      
     </div>
   );
 };

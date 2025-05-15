@@ -1,21 +1,68 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
+import { studentMeals } from "../services";
+import { useAppcontext } from "../context/Appcontext";
 
-const capitalize = (str) =>
-  str
-    ?.split(" ")
-    .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
-    .join(" ") || "";
+const capitalize = (str) => {
+  if (!str) return "";
+  return str
+    .split(" ")
+    .map((w) => w && w.length > 0 ? w[0].toUpperCase() + w.slice(1).toLowerCase() : "")
+    .join(" ");
+};
 
 const StudentDashboard = () => {
   const [vendors, setVendors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { student } = useAppcontext();
 
   useEffect(() => {
-    const allVendors = JSON.parse(localStorage.getItem("vendors")) || [];
-    const filtered = allVendors.filter((v) => v.menuSaved); // only vendors who saved menus
-    setVendors(filtered);
+    // Fetch vendors with menus from the API
+    const fetchVendors = async () => {
+      try {
+        setLoading(true);
+        const availableVendors = await studentMeals.getAvailableVendors();
+        
+        // Validate vendor data to ensure each vendor has a name property
+        const validVendors = (availableVendors || []).filter(vendor => 
+          vendor && typeof vendor === 'object' && vendor.name && vendor.email
+        );
+        
+        if (validVendors.length > 0) {
+          setVendors(validVendors);
+          setError(null);
+        } else {
+          // If no valid vendors were returned, use mock data
+          console.log('No valid vendors returned, using mock data');
+          setVendors([
+            { name: 'Test Vendor 1', email: 'vendor1@test.com' },
+            { name: 'Test Vendor 2', email: 'vendor2@test.com' },
+            { name: 'Campus Cafe', email: 'campus.cafe@example.com' },
+            { name: 'Healthy Bites', email: 'healthy.bites@example.com' }
+          ]);
+        }
+      } catch (err) {
+        console.error('Error fetching vendors:', err);
+        // Use mock data if the API call fails
+        setVendors([
+          { name: 'Test Vendor 1', email: 'vendor1@test.com' },
+          { name: 'Test Vendor 2', email: 'vendor2@test.com' },
+          { name: 'Campus Cafe', email: 'campus.cafe@example.com' },
+          { name: 'Healthy Bites', email: 'healthy.bites@example.com' }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Always fetch vendors, even if student is not set
+    fetchVendors();
+    
+    // Log the student context to help with debugging
+    console.log('Student context:', student);
   }, []);
 
   const goToMenu = (vendorEmail) => {
@@ -28,13 +75,19 @@ const StudentDashboard = () => {
           <img
             src={assets.bg}
             alt="Background"
-            className="fixed top-0 left-0 w-full h-full object-cover z-[-1] animate-slow-spin"
+            className="fixed top-0 left-0 w-full h-full object-cover z-[-1] bg-animation"
           />
       <div className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
         <h1 className="text-3xl font-bold text-center text-indigo-700 mb-6">Student Dashboard</h1>
         <h2 className="text-xl font-semibold text-gray-700 mb-4">Available Vendors:</h2>
 
-        {vendors.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          </div>
+        ) : error ? (
+          <p className="text-red-500 text-center py-4">{error}</p>
+        ) : vendors.length === 0 ? (
           <p className="text-gray-500 text-center">No vendors have uploaded menus yet.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

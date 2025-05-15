@@ -6,19 +6,29 @@ import Menu from '../models/Menu.js';
 // Register Controller
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, contactNumber ,email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !contactNumber || !email || !password) {
       return res.status(400).json({ success: false, message: 'Missing required details' });
     }
 
-    const existingVendor = await Vendor.findOne({ email });
+    const existingVendor = await Vendor.findOne({
+      $or: [{ email }, { contactNumber }]
+    });
+    
+    if (existingVendor) {
+      return res.status(409).json({
+        success: false,
+        message: "Email or contact number already exists"
+      });
+    }
+    
     if (existingVendor) {
       return res.status(409).json({ success: false, message: 'Vendor already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newVendor = await Vendor.create({ name, email, password: hashedPassword });
+    const newVendor = await Vendor.create({ name,contactNumber, email, password: hashedPassword });
 
     const token = jwt.sign({ id: newVendor._id }, process.env.JWT_SECRET, {
       expiresIn: '7d',
@@ -33,13 +43,14 @@ export const register = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      vendor: { email: newVendor.email, name: newVendor.name },
+      vendor: { email: newVendor.email, name: newVendor.name , contactNumber: newVendor.contactNumber},
     });
   } catch (error) {
     console.error('Register Error:', error.message);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 // Login Controller
 export const login = async (req, res) => {
@@ -73,13 +84,19 @@ export const login = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      vendor: { email: vendor.email, name: vendor.name },
+      token,
+      vendor: {
+        email: vendor.email,
+        name: vendor.name,
+        contactNumber: vendor.contactNumber,
+      },
     });
   } catch (error) {
     console.error('Login Error:', error.message);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 // Auth Check
 export const isAuth = async (req, res) => {

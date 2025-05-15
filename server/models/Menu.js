@@ -1,21 +1,22 @@
-import mongoose from "mongoose";
+// models/Menu.js
+import mongoose from 'mongoose';
 
-const MealSchema = new mongoose.Schema({
+const mealSchema = new mongoose.Schema({
   items: String,
   startTime: String,
   endTime: String,
 });
 
-const MenuSchema = new mongoose.Schema({
+const menuSchema = new mongoose.Schema({
   vendorEmail: { type: String, required: true },
-  vendorName: String,
-  date: String,
-  day: String,
+  vendorName: { type: String, required: true },
+  date: { type: String, required: true },
+  day: { type: String, required: true },
   meals: {
-    breakfast: MealSchema,
-    lunch: MealSchema,
-    dinner: MealSchema,
+    breakfast: mealSchema,
+    lunch: mealSchema,
+    dinner: mealSchema,
   },
-}, { timestamps: true });
+});
 
-export default mongoose.model("Menu", MenuSchema);
+export default mongoose.model("Menu", menuSchema);

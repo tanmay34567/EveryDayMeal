@@ -8,7 +8,7 @@ const Mainbanner = () => {
       <img
         src={assets.main_banner_bg}
         alt="banner"
-        className="fixed top-0 left-0 w-full h-screen object-cover z-[-1] animate-slow-spin"
+        className="fixed top-0 left-0 w-full h-screen object-cover z-[-1] bg-animation"
       />
 
       {/* Overlay and Text */}

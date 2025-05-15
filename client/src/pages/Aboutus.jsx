@@ -9,7 +9,7 @@ const About = () => {
       <img
         src={assets.bg}
         alt="Background"
-        className="fixed top-0 left-0 w-full h-full object-cover z-[-1] animate-slow-spin"
+        className="fixed top-0 left-0 w-full h-full object-cover z-[-1] bg-animation"
       />
 
       {/* Content Container */}
