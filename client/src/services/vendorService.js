@@ -106,6 +106,7 @@ export const vendorMenus = {
         // Check specifically for 404 errors which indicate no menu exists yet
         if (error.response.status === 404) {
           console.log('No menu exists yet for this vendor (404 response)');
+          // This is not an error, just a normal state when no menu exists
           return null;
         }
       } else if (error.request) {
