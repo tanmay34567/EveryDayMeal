@@ -22,6 +22,26 @@ export const studentAuth = {
     }
   },
 
+  // Send email OTP to student
+  sendEmailOtp: async (email) => {
+    try {
+      const response = await api.post(getFullUrl('/Student/otp/send'), { email });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Verify email OTP for student login
+  verifyEmailOtp: async (email, otp) => {
+    try {
+      const response = await api.post(getFullUrl('/Student/otp/verify'), { email, otp });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   // Logout a student
   logout: async () => {
     try {

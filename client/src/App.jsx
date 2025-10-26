@@ -11,6 +11,7 @@ import About from './pages/Aboutus';
 import Contact from './pages/Contactus';
 import ProtectedRoute from './components/ProtectedRoute';
 import StudentVendorMenu from './pages/StudentVendorMenu';
+import ProfileCompletion from './components/ProfileCompletion';
 
 const App = () => {
   const {
@@ -43,6 +44,14 @@ const App = () => {
       <div className="flex-grow px-6 pt-[80px]">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route 
+            path="/student/complete-profile" 
+            element={
+              <ProtectedRoute requiredRole="student">
+                <ProfileCompletion />
+              </ProtectedRoute>
+            } 
+          />
           <Route 
             path="/student/dashboard" 
             element={

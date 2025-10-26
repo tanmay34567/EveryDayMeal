@@ -3,34 +3,36 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import Student from '../models/Student.js'; // ✅ Correct import only once
+import nodemailer from 'nodemailer';
+import Otp from '../models/Otp.js';
 
 // ✅ Register Controller
 export const register = async (req, res) => {
   try {
     const { name, contactNumber, email, password } = req.body;
 
-    if (!name || !contactNumber || !email || !password ) {
+    if (!name || !contactNumber || !email || !password) {
       return res.json({ success: false, message: 'Missing details' });
     }
 
     const existingStudent = await Student.findOne({
       $or: [{ email }, { contactNumber }]
     });
-    
+
     if (existingStudent) {
       return res.json({
         success: false,
         message: "Email or contact number already exists"
       });
     }
-    
+
 
     if (existingStudent)
       return res.json({ success: false, message: 'User already exists' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const student = await Student.create({ name, contactNumber ,email, password: hashedPassword }); // ✅ lowercase variable
+    const student = await Student.create({ name, contactNumber, email, password: hashedPassword }); // ✅ lowercase variable
 
     const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET, {
       expiresIn: '7d'
@@ -43,7 +45,7 @@ export const register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ success: true, student: { email: student.email, name: student.name, contactNumber: student.contactNumber  } });
+    return res.json({ success: true, student: { email: student.email, name: student.name, contactNumber: student.contactNumber } });
   } catch (error) {
     console.log(error.message);
     res.json({ success: false, message: error.message });
@@ -131,11 +133,11 @@ export const getAvailableVendors = async (req, res) => {
     // Find all menus and get unique vendor emails
     const menus = await Menu.find({});
     const vendorEmails = [...new Set(menus.map(menu => menu.vendorEmail))];
-    
+
     // Get vendor details for each email
     const vendors = await Vendor.find({ email: { $in: vendorEmails } })
       .select('name email contactNumber');
-    
+
     return res.status(200).json({
       success: true,
       data: vendors
@@ -143,5 +145,310 @@ export const getAvailableVendors = async (req, res) => {
   } catch (error) {
     console.error('Get Available Vendors Error:', error.message);
     return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Email OTP utilities
+const createTransporter = async () => {
+  try {
+    const mode = process.env.SMTP_MODE || 'ethereal';
+    const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+    const port = Number(process.env.SMTP_PORT || 587);
+    const user = process.env.SMTP_USER || '';
+    const pass = process.env.SMTP_PASS || '';
+
+    console.log('Creating transporter with mode:', mode);
+
+    if (mode === 'ethereal' || !host || !user || !pass) {
+      console.log('Using Ethereal test account');
+      const testAccount = await nodemailer.createTestAccount();
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass
+        },
+        tls: {
+          rejectUnauthorized: false
+        }
+      });
+      await transporter.verify();
+      console.log('Ethereal test account created');
+      return transporter;
+    }
+
+    console.log(`Creating SMTP transporter for ${user}@${host}:${port}`);
+
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465, // true for 465, false for other ports
+      auth: {
+        user,
+        pass
+      },
+      tls: {
+        rejectUnauthorized: false // Only for testing with self-signed certs
+      }
+    });
+
+    await transporter.verify();
+    console.log('SMTP connection verified successfully');
+    return transporter;
+  } catch (error) {
+    console.error('Error creating transporter:', error);
+    throw error;
+  }
+};
+
+const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+// Email validation helper function (accept all valid domains)
+const isValidEmail = (email) => {
+  // Basic RFC5322-like email validation
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+};
+
+// ✅ Send Email OTP
+export const sendStudentEmailOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log('Received OTP request for email:', email);
+
+    // Basic validation
+    if (!email) {
+      console.log('No email provided');
+      return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+
+    // Email validation (accept all domains)
+    if (!isValidEmail(email)) {
+      console.log('Invalid email format:', email);
+      return res.status(400).json({
+        success: false,
+        message: 'Please enter a valid email address.'
+      });
+    }
+
+    // Check if student exists without creating a new record
+    const student = await Student.findOne({ email });
+    const isNewUser = !student;
+    
+    console.log(`OTP requested for ${isNewUser ? 'new' : 'existing'} user:`, email);
+
+    // Generate OTP
+    const otp = generateOtp();
+    console.log('Generated OTP for', email, ':', otp);
+
+    // Hash the OTP
+    const otpHash = await bcrypt.hash(otp, 10);
+    
+    // Save OTP in the Otp collection with 5-minute expiration
+    await Otp.findOneAndUpdate(
+      { email },
+      { 
+        otp: otpHash,
+        createdAt: new Date()
+      },
+      { upsert: true, new: true }
+    );
+    
+    console.log('OTP saved for email:', email);
+
+    console.log('Creating email transporter...');
+    const transporter = await createTransporter();
+
+    const from = process.env.EMAIL_FROM || `EveryDayMeal <${process.env.SMTP_USER}>`;
+    const mailOptions = {
+      from,
+      to: email,
+      subject: 'Your EveryDayMeal OTP',
+      text: `Your OTP is ${otp}. It expires in 5 minutes.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Your EveryDayMeal Verification Code</h2>
+          <p>Hello,</p>
+          <p>Your verification code is: <strong>${otp}</strong></p>
+          <p>This code will expire in 5 minutes.</p>
+          <p>If you didn't request this code, you can safely ignore this email.</p>
+          <p>Best regards,<br>The EveryDayMeal Team</p>
+        </div>
+      `,
+    };
+
+    console.log('Sending email to:', email);
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully');
+
+    // If using Ethereal, log the preview URL
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    if (previewUrl) {
+      console.log('Ethereal Preview URL:', previewUrl);
+      return res.json({
+        success: true,
+        message: 'OTP sent to email',
+        previewUrl,
+        // For testing purposes only - remove in production
+        debug: { otp, email }
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'OTP sent to email',
+      // For testing purposes only - remove in production
+      debug: { otp, email }
+    });
+  } catch (error) {
+    console.error('Send Email OTP Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to send OTP',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+};
+
+// ✅ Update Student Profile
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, contactNumber } = req.body;
+    const studentId = req.StudentId; // Set by authStudent middleware
+
+    // Basic validation
+    if (!name || !contactNumber) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name and contact number are required'
+      });
+    }
+
+    // Update the student's profile
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      {
+        name: name.trim(),
+        contactNumber: contactNumber.trim()
+      },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!updatedStudent) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found'
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      student: updatedStudent
+    });
+  } catch (error) {
+    console.error('Profile update error:', error);
+    // Handle duplicate key error for unique contactNumber
+    // MongoServerError code 11000
+    // Example error.keyPattern: { contactNumber: 1 }
+    if (error?.code === 11000 && (error.keyPattern?.contactNumber || (error.message || '').includes('contactNumber'))) {
+      return res.status(409).json({
+        success: false,
+        field: 'contactNumber',
+        message: 'This phone number is already registered. Please use a different number.'
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update profile',
+      error: error.message
+    });
+  }
+};
+
+
+// ✅ Verify Email OTP
+export const verifyStudentEmailOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return res.status(400).json({ success: false, message: 'Email and OTP are required' });
+
+    // Find the OTP record
+    const otpRecord = await Otp.findOne({ email });
+    if (!otpRecord) {
+      return res.status(400).json({ success: false, message: 'OTP not found or expired. Please request a new one.' });
+    }
+
+    // Check if OTP is expired
+    if (otpRecord.createdAt.getTime() + 5 * 60 * 1000 < Date.now()) {
+      await Otp.deleteOne({ _id: otpRecord._id });
+      return res.status(400).json({ success: false, message: 'OTP expired. Please request a new one.' });
+    }
+
+    // Verify OTP
+    const isMatch = await bcrypt.compare(otp, otpRecord.otp);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Invalid OTP' });
+    }
+
+    // Find or create student
+    let student = await Student.findOne({ email });
+    let isNewUser = false;
+
+    if (!student) {
+      // Create new student with empty profile (use null to cooperate with unique+sparse index)
+      student = await Student.create({
+        email,
+        name: '',
+        contactNumber: null
+      });
+      isNewUser = true;
+    }
+
+    // Clean up the used OTP
+    await Otp.deleteOne({ _id: otpRecord._id });
+
+    // Generate auth token
+    const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET, {
+      expiresIn: '7d'
+    });
+
+    // Set HTTP-only cookie
+    res.cookie('Studentlogintoken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // Prepare user check response
+    const userCheck = {
+      email: student.email,
+      hasName: !!student.name && student.name.trim() !== '',
+      hasContact: !!student.contactNumber && student.contactNumber.trim() !== '',
+      isNewUser: isNewUser || (!student.name && !student.contactNumber),
+      isNewUserFlag: isNewUser
+    };
+
+    console.log('User check response:', JSON.stringify(userCheck, null, 2));
+
+    return res.json({
+      success: true,
+      token,
+      redirect: userCheck.isNewUser ? '/student/complete-profile' : '/student/dashboard',
+      student: {
+        email: student.email,
+        name: student.name,
+        contactNumber: student.contactNumber
+      },
+      userCheck
+    });
+  } catch (error) {
+    console.error('Verify Email OTP Error:', error.message);
+    return res.status(500).json({ success: false, message: 'Failed to verify OTP' });
   }
 };
