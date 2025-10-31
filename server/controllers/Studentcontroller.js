@@ -174,10 +174,12 @@ export const getAvailableVendors = async (req, res) => {
 };
 
 // Email OTP utilities
-import { Resend } from 'resend';
+import Sib from 'sib-api-v3-sdk';
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Brevo client
+const client = Sib.ApiClient.instance;
+client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+const transEmailApi = new Sib.TransactionalEmailsApi();
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -233,13 +235,16 @@ export const sendStudentEmailOtp = async (req, res) => {
     );
     
     console.log('OTP saved for email:', email);
-    console.log('Sending email via Resend to:', email);
+    console.log('Sending email via Brevo to:', email);
     
-    const { data, error } = await resend.emails.send({
-      from: 'EveryDayMeal <noreply@everydaymeal.in>',
-      to: email,
+    const sender = { email: 'tanmayhtw@gmail.com', name: 'EveryDayMeal' };
+    const receivers = [{ email }];
+    
+    await transEmailApi.sendTransacEmail({
+      sender,
+      to: receivers,
       subject: 'Your EveryDayMeal OTP',
-      html: `
+      htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>Your EveryDayMeal Verification Code</h2>
           <p>Hello,</p>
@@ -251,12 +256,7 @@ export const sendStudentEmailOtp = async (req, res) => {
       `,
     });
 
-    if (error) {
-      console.error('Resend API error:', error);
-      throw new Error('Failed to send email via Resend');
-    }
-
-    console.log('Email sent successfully via Resend');
+    console.log('Email sent successfully via Brevo');
 
     return res.json({
       success: true,
