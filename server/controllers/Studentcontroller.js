@@ -261,21 +261,21 @@ export const sendStudentEmailOtp = async (req, res) => {
 
       console.log('Email sent successfully via Resend');
 
-    return res.json({
-      success: true,
-      message: 'OTP sent to email',
-      // For testing purposes only - remove in production
-      debug: { otp, email }
-    });
-  } catch (error) {
-    console.error('Send Email OTP Error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to send OTP',
-      error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
-  }
+      return res.json({
+        success: true,
+        message: 'OTP sent to email',
+        // For testing purposes only - remove in production
+        debug: { otp, email }
+      });
+    } catch (error) {
+      console.error('Send Email OTP Error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send OTP',
+        error: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
+    }
 };
 
 // ✅ Update Student Profile
