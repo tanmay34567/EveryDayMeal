@@ -234,48 +234,46 @@ export const sendStudentEmailOtp = async (req, res) => {
     );
     
     console.log('OTP saved for email:', email);
-
     console.log('Sending email via Resend to:', email);
     
-    try {
-      const { data, error } = await resend.emails.send({
-        from: 'EveryDayMeal <onboarding@resend.dev>',
-        to: email,
-        subject: 'Your EveryDayMeal OTP',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2>Your EveryDayMeal Verification Code</h2>
-            <p>Hello,</p>
-            <p>Your verification code is: <strong>${otp}</strong></p>
-            <p>This code will expire in 5 minutes.</p>
-            <p>If you didn't request this code, you can safely ignore this email.</p>
-            <p>Best regards,<br>The EveryDayMeal Team</p>
-          </div>
-        `,
-      });
+    const { data, error } = await resend.emails.send({
+      from: 'EveryDayMeal <onboarding@resend.dev>',
+      to: email,
+      subject: 'Your EveryDayMeal OTP',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Your EveryDayMeal Verification Code</h2>
+          <p>Hello,</p>
+          <p>Your verification code is: <strong>${otp}</strong></p>
+          <p>This code will expire in 5 minutes.</p>
+          <p>If you didn't request this code, you can safely ignore this email.</p>
+          <p>Best regards,<br>The EveryDayMeal Team</p>
+        </div>
+      `,
+    });
 
-      if (error) {
-        console.error('Resend API error:', error);
-        throw new Error('Failed to send email via Resend');
-      }
-
-      console.log('Email sent successfully via Resend');
-
-      return res.json({
-        success: true,
-        message: 'OTP sent to email',
-        // For testing purposes only - remove in production
-        debug: { otp, email }
-      });
-    } catch (error) {
-      console.error('Send Email OTP Error:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to send OTP',
-        error: error.message,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      });
+    if (error) {
+      console.error('Resend API error:', error);
+      throw new Error('Failed to send email via Resend');
     }
+
+    console.log('Email sent successfully via Resend');
+
+    return res.json({
+      success: true,
+      message: 'OTP sent to email',
+      // For testing purposes only - remove in production
+      debug: { otp, email }
+    });
+  } catch (error) {
+    console.error('Send Email OTP Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to process OTP request',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
 };
 
 // ✅ Update Student Profile
