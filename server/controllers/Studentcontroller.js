@@ -175,59 +175,10 @@ export const getAvailableVendors = async (req, res) => {
 };
 
 // Email OTP utilities
-const createTransporter = async () => {
-  try {
-    const mode = process.env.SMTP_MODE || 'ethereal';
-    const host = process.env.SMTP_HOST || 'smtp.gmail.com';
-    const port = Number(process.env.SMTP_PORT || 587);
-    const user = process.env.SMTP_USER || '';
-    const pass = process.env.SMTP_PASS || '';
+import { Resend } from 'resend';
 
-    console.log('Creating transporter with mode:', mode);
-
-    if (mode === 'ethereal' || !host || !user || !pass) {
-      console.log('Using Ethereal test account');
-      const testAccount = await nodemailer.createTestAccount();
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass
-        },
-        tls: {
-          rejectUnauthorized: false
-        }
-      });
-      await transporter.verify();
-      console.log('Ethereal test account created');
-      return transporter;
-    }
-
-    console.log(`Creating SMTP transporter for ${user}@${host}:${port}`);
-
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465, // true for 465, false for other ports
-      auth: {
-        user,
-        pass
-      },
-      tls: {
-        rejectUnauthorized: false // Only for testing with self-signed certs
-      }
-    });
-
-    await transporter.verify();
-    console.log('SMTP connection verified successfully');
-    return transporter;
-  } catch (error) {
-    console.error('Error creating transporter:', error);
-    throw error;
-  }
-};
+// Initialize Resend client
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -284,43 +235,31 @@ export const sendStudentEmailOtp = async (req, res) => {
     
     console.log('OTP saved for email:', email);
 
-    console.log('Creating email transporter...');
-    const transporter = await createTransporter();
-
-    const from = process.env.EMAIL_FROM || `EveryDayMeal <${process.env.SMTP_USER}>`;
-    const mailOptions = {
-      from,
-      to: email,
-      subject: 'Your EveryDayMeal OTP',
-      text: `Your OTP is ${otp}. It expires in 5 minutes.`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Your EveryDayMeal Verification Code</h2>
-          <p>Hello,</p>
-          <p>Your verification code is: <strong>${otp}</strong></p>
-          <p>This code will expire in 5 minutes.</p>
-          <p>If you didn't request this code, you can safely ignore this email.</p>
-          <p>Best regards,<br>The EveryDayMeal Team</p>
-        </div>
-      `,
-    };
-
-    console.log('Sending email to:', email);
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully');
-
-    // If using Ethereal, log the preview URL
-    const previewUrl = nodemailer.getTestMessageUrl(info);
-    if (previewUrl) {
-      console.log('Ethereal Preview URL:', previewUrl);
-      return res.json({
-        success: true,
-        message: 'OTP sent to email',
-        previewUrl,
-        // For testing purposes only - remove in production
-        debug: { otp, email }
+    console.log('Sending email via Resend to:', email);
+    
+    try {
+      const { data, error } = await resend.emails.send({
+        from: 'EveryDayMeal <onboarding@resend.dev>',
+        to: email,
+        subject: 'Your EveryDayMeal OTP',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Your EveryDayMeal Verification Code</h2>
+            <p>Hello,</p>
+            <p>Your verification code is: <strong>${otp}</strong></p>
+            <p>This code will expire in 5 minutes.</p>
+            <p>If you didn't request this code, you can safely ignore this email.</p>
+            <p>Best regards,<br>The EveryDayMeal Team</p>
+          </div>
+        `,
       });
-    }
+
+      if (error) {
+        console.error('Resend API error:', error);
+        throw new Error('Failed to send email via Resend');
+      }
+
+      console.log('Email sent successfully via Resend');
 
     return res.json({
       success: true,
