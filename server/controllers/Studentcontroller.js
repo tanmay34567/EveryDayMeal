@@ -2,8 +2,7 @@
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import Student from '../models/Student.js'; // ✅ Correct import only once
-import nodemailer from 'nodemailer';
+import Student from '../models/Student.js';
 import Otp from '../models/Otp.js';
 
 // ✅ Register Controller
