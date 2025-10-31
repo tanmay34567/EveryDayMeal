@@ -174,7 +174,7 @@ export const getAvailableVendors = async (req, res) => {
 };
 
 // Email OTP utilities
-import transporter from '../utils/mailer.js';
+import { sendOtpEmail } from '../utils/mailer.js';
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -230,27 +230,10 @@ export const sendStudentEmailOtp = async (req, res) => {
     );
     
     console.log('OTP saved for email:', email);
-    console.log('Sending email via Brevo to:', email);
+    console.log('Sending email via Brevo API to:', email);
     
-    const mailOptions = {
-      from: process.env.EMAIL_FROM || 'EverydayMeal <everydaymeal80@gmail.com>',
-      to: email,
-      subject: 'Your EveryDayMeal OTP',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Your EveryDayMeal Verification Code</h2>
-          <p>Hello,</p>
-          <p>Your verification code is: <strong>${otp}</strong></p>
-          <p>This code will expire in 5 minutes.</p>
-          <p>If you didn't request this code, you can safely ignore this email.</p>
-          <p>Best regards,<br>The EveryDayMeal Team</p>
-        </div>
-      `,
-      text: `Your verification code is ${otp}. This code will expire in 5 minutes.`
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully via SMTP');
+    // Send email using Brevo API
+    await sendOtpEmail(email, otp);
 
     return res.json({
       success: true,
