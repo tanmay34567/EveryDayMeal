@@ -236,7 +236,7 @@ export const sendStudentEmailOtp = async (req, res) => {
     console.log('Sending email via Resend to:', email);
     
     const { data, error } = await resend.emails.send({
-      from: 'EveryDayMeal <onboarding@resend.dev>',
+      from: 'EveryDayMeal <noreply@everydaymeal.in>',
       to: email,
       subject: 'Your EveryDayMeal OTP',
       html: `
