@@ -95,9 +95,9 @@ const StudentDashboard = () => {
             alt="Background"
             className="fixed top-0 left-0 w-full h-full object-cover z-[-1] bg-animation"
           />
-      <div className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
-        <h1 className="text-3xl font-bold text-center text-indigo-700 mb-6">Student Dashboard</h1>
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Available Vendors:</h2>
+      <div className="max-w-3xl mx-auto bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center text-indigo-700 mb-4 sm:mb-6">Student Dashboard</h1>
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-3 sm:mb-4">Available Vendors:</h2>
 
         {loading ? (
           <div className="flex justify-center items-center py-8">
@@ -108,14 +108,20 @@ const StudentDashboard = () => {
         ) : vendors.length === 0 ? (
           <p className="text-gray-500 text-center">No vendors have uploaded menus yet.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {vendors.map((vendor) => (
               <button
                 key={vendor.email}
                 onClick={() => goToMenu(vendor.email)}
-                className="bg-indigo-100 text-indigo-800 font-medium py-3 px-4 rounded-lg shadow hover:bg-indigo-200 transition-all"
+                className="bg-indigo-50 text-indigo-900 text-left p-3 sm:p-4 rounded-lg shadow hover:bg-indigo-100 transition-all border border-indigo-100 w-full"
               >
-                {capitalize(vendor.name)}
+                <div className="flex items-center justify-between">
+                  <div className="text-base sm:text-lg font-semibold">{capitalize(vendor.name)}</div>
+                  <div className="text-xs sm:text-sm text-indigo-700 font-medium">
+                    {Number(vendor.averageRating || 0).toFixed(2)} / 5 • {vendor.reviewCount || 0}
+                  </div>
+                </div>
+                <div className="text-[11px] sm:text-xs text-indigo-700 mt-1 break-all">{vendor.email}</div>
               </button>
             ))}
           </div>

@@ -53,6 +53,13 @@ export const vendorAuth = {
   }
 };
 
+export const vendorReviews = {
+  get: async () => {
+    const response = await api.get(getFullUrl('/Vendor/reviews'));
+    return response.data;
+  }
+};
+
 // Vendor menu services
 export const vendorMenus = {
   // Get vendor's menu
@@ -236,4 +243,4 @@ const createMockMenu = () => {
   };
 };
 
-export default { vendorAuth, vendorMenus, vendorOrders };
+export default { vendorAuth, vendorMenus, vendorOrders, vendorReviews };

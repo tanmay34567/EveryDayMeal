@@ -126,6 +126,7 @@ export const logout = async (req, res) => {
 // Get all vendors with available menus
 import Vendor from '../models/Vendor.js';
 import Menu from '../models/Menu.js';
+import Review from '../models/Review.js';
 
 // Get all vendors that have menus
 export const getAvailableVendors = async (req, res) => {
@@ -138,9 +139,34 @@ export const getAvailableVendors = async (req, res) => {
     const vendors = await Vendor.find({ email: { $in: vendorEmails } })
       .select('name email contactNumber');
 
+    // Aggregate reviews to compute averages per vendorEmail
+    const reviewAgg = await Review.aggregate([
+      { $match: { vendorEmail: { $in: vendorEmails } } },
+      {
+        $group: {
+          _id: '$vendorEmail',
+          count: { $sum: 1 },
+          averageRating: { $avg: '$rating' }
+        }
+      }
+    ]);
+
+    const reviewMap = reviewAgg.reduce((acc, r) => {
+      acc[r._id] = { count: r.count, averageRating: Number(r.averageRating?.toFixed(2) || 0) };
+      return acc;
+    }, {});
+
+    const data = vendors.map(v => ({
+      name: v.name,
+      email: v.email,
+      contactNumber: v.contactNumber,
+      averageRating: reviewMap[v.email]?.averageRating || 0,
+      reviewCount: reviewMap[v.email]?.count || 0
+    }));
+
     return res.status(200).json({
       success: true,
-      data: vendors
+      data
     });
   } catch (error) {
     console.error('Get Available Vendors Error:', error.message);

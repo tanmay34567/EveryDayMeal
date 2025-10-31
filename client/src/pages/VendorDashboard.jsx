@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAppcontext } from "../context/Appcontext";
 import { assets } from "../assets/assets";
-import { vendorMenus } from "../services";
+import { vendorMenus, vendorReviews } from "../services";
 import { useNavigate } from "react-router-dom";
 
 const capitalize = (str) => {
@@ -27,6 +27,8 @@ const VendorDashboard = () => {
   const { seller } = useAppcontext();
   const navigate = useNavigate();
   const formRef = useRef(null);
+  const [reviewsData, setReviewsData] = useState({ averageRating: 0, count: 0, reviews: [] });
+  const [loadingReviews, setLoadingReviews] = useState(false);
   
   // Prevent back button navigation
   useEffect(() => {
@@ -80,6 +82,27 @@ const VendorDashboard = () => {
     };
 
     fetchMenu();
+  }, [seller]);
+
+  // Fetch vendor reviews
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!seller) return;
+      try {
+        setLoadingReviews(true);
+        const res = await vendorReviews.get();
+        if (res?.success && res.data) {
+          setReviewsData({
+            averageRating: res.data.averageRating || 0,
+            count: res.data.count || 0,
+            reviews: res.data.reviews || []
+          });
+        }
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+    fetchReviews();
   }, [seller]);
 
   const isDateAndDayMatching = () => {
@@ -207,9 +230,9 @@ const VendorDashboard = () => {
       />
       <div
         ref={formRef}
-        className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-8"
+        className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-4 sm:p-6 md:p-8"
       >
-        <h1 className="text-4xl font-bold text-center text-indigo-700 mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-indigo-700 mb-6 sm:mb-8">
           <span>{capitalize(seller?.name) || "Vendor"}</span> Dashboard
         </h1>
         
@@ -276,10 +299,10 @@ const VendorDashboard = () => {
           {Object.keys(menuData).map((meal) => (
             <div
               key={meal}
-              className="mb-8 bg-gray-50 border border-gray-200 p-5 rounded-xl"
+              className="mb-8 bg-gray-50 border border-gray-200 p-4 sm:p-5 rounded-xl"
             >
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-semibold capitalize text-indigo-600">
+                <h2 className="text-xl sm:text-2xl font-semibold capitalize text-indigo-600">
                   {meal}
                 </h2>
                 {isEditing && (
@@ -303,7 +326,7 @@ const VendorDashboard = () => {
                 className="mb-4 w-full p-3 rounded-lg border border-gray-300"
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label className="block font-medium mb-1 text-gray-700">
                     Start Time
@@ -356,9 +379,9 @@ const VendorDashboard = () => {
             </button>
           </div>
         ) : (
-          <div className="mt-10 p-6 border border-indigo-200 bg-indigo-50 rounded-xl">
+          <div className="mt-8 sm:mt-10 p-4 sm:p-6 border border-indigo-200 bg-indigo-50 rounded-xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-bold text-indigo-800">
+              <h3 className="text-xl sm:text-2xl font-bold text-indigo-800">
                 Menu for {savedMenu.day} ({savedMenu.date})
               </h3>
               <div className="flex gap-4">
@@ -391,6 +414,32 @@ const VendorDashboard = () => {
             ))}
           </div>
         )}
+
+        {/* Reviews Panel */}
+        <div className="mt-8 sm:mt-10 p-4 sm:p-6 border border-gray-200 bg-gray-50 rounded-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Student Reviews</h3>
+            <div className="text-xs sm:text-sm text-gray-700">Avg: <span className="font-semibold">{Number(reviewsData.averageRating || 0).toFixed(2)}</span> / 5 • {reviewsData.count} review{reviewsData.count === 1 ? '' : 's'}</div>
+          </div>
+          {loadingReviews ? (
+            <div className="text-gray-600">Loading reviews...</div>
+          ) : reviewsData.reviews.length === 0 ? (
+            <div className="text-gray-600">No reviews yet.</div>
+          ) : (
+            <div className="space-y-4 max-h-80 overflow-auto">
+              {reviewsData.reviews.map((r) => (
+                <div key={r._id} className="border border-gray-200 rounded-lg p-4 bg-white">
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium text-gray-800 break-words">{r?.student ? `${r.student.name || 'Student'} (${r.student.email || 'No Email'})` : 'Unknown Student'}</div>
+                    <div className="text-sm text-indigo-700 font-semibold">{r.rating} / 5</div>
+                  </div>
+                  {r.comment ? <div className="text-gray-700 mt-2 break-words">{r.comment}</div> : null}
+                  <div className="text-xs text-gray-400 mt-1">{new Date(r.createdAt).toLocaleString()}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

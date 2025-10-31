@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import Vendor from '../models/Vendor.js';
 import Menu from '../models/Menu.js';
+import Review from '../models/Review.js';
 
 // Register Controller
 export const register = async (req, res) => {
@@ -47,6 +48,36 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     console.error('Register Error:', error.message);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Get Vendor's own reviews and average
+export const getVendorReviews = async (req, res) => {
+  try {
+    const vendor = await Vendor.findById(req.VendorId).select('email name');
+    if (!vendor) return res.status(404).json({ success: false, message: 'Vendor not found' });
+
+    const [stats] = await Review.aggregate([
+      { $match: { vendorEmail: vendor.email } },
+      { $group: { _id: null, count: { $sum: 1 }, averageRating: { $avg: '$rating' } } }
+    ]);
+
+    const reviews = await Review.find({ vendorEmail: vendor.email })
+      .populate('student', 'name email')
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        vendor: { email: vendor.email, name: vendor.name },
+        averageRating: stats ? Number(stats.averageRating?.toFixed(2) || 0) : 0,
+        count: stats ? stats.count : 0,
+        reviews
+      }
+    });
+  } catch (error) {
+    console.error('Get Vendor Reviews Error:', error.message);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };

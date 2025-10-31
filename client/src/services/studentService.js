@@ -200,4 +200,23 @@ export const studentMeals = {
   }
 };
 
-export default { studentAuth, studentMeals };
+// Student reviews services
+export const studentReviews = {
+  // List reviews and average for a vendor
+  getByVendor: async (vendorEmail, { page = 1, limit = 10 } = {}) => {
+    const response = await api.get(getFullUrl(`/Student/reviews/${vendorEmail}?page=${page}&limit=${limit}`));
+    return response.data;
+  },
+  // Create or update own review for a vendor
+  upsert: async (vendorEmail, { rating, comment, vendorName }) => {
+    const response = await api.post(getFullUrl(`/Student/reviews/${vendorEmail}`), { rating, comment, vendorName });
+    return response.data;
+  },
+  // Delete own review for a vendor
+  remove: async (vendorEmail) => {
+    const response = await api.delete(getFullUrl(`/Student/reviews/${vendorEmail}`));
+    return response.data;
+  }
+};
+
+export default { studentAuth, studentMeals, studentReviews };

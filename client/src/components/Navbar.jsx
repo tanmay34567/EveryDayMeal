@@ -149,7 +149,7 @@ const Navbar = () => {
               </button>
 
               {showProfileDropdown && (
-                <div className="absolute top-14 right-0 bg-white text-gray-800 shadow-lg rounded-lg p-4 w-64">
+                <div className="absolute top-14 right-0 bg-white text-gray-800 shadow-lg rounded-lg p-4 w-[90vw] max-w-xs sm:w-64">
                   <p className="font-semibold">{capitalize(user.name)}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
                   <p className="text-sm text-gray-500">{user.contactNumber}</p>
@@ -182,7 +182,7 @@ const Navbar = () => {
 
         {/* Mobile Menu Content */}
         {MenuOpen && (
-          <div className="absolute top-[70px] left-0 w-full bg-white shadow-lg p-6 md:hidden">
+          <div className="absolute top-[70px] left-0 w-full bg-white shadow-lg p-6 md:hidden max-h-[70vh] overflow-auto">
             {/* Mobile Navigation Links */}
             <div className="flex flex-col space-y-4 mb-6">
               <NavLink
