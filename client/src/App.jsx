@@ -30,31 +30,42 @@ const App = () => {
   
   // Check for existing session on initial load
   useEffect(() => {
-    const checkAuth = () => {
+    let isMounted = true;
+    
+    const checkAuth = async () => {
       try {
         // Check for student session
         const studentData = localStorage.getItem('currentStudent');
+        const vendorData = localStorage.getItem('currentVendor');
+        
         if (studentData) {
           const student = JSON.parse(studentData);
-          if (student && student.token) {
-            setStudent(student);
-            // If on home page, redirect to student dashboard
-            if (location.pathname === '/' || location.pathname === '') {
-              navigate('/student/dashboard');
+          if (student?.token) {
+            // Only update state if the component is still mounted
+            if (isMounted) {
+              setStudent(student);
+              // Only redirect if we're on the home page
+              if (location.pathname === '/' || location.pathname === '') {
+                navigate('/student/dashboard', { replace: true });
+              }
             }
             return;
           }
         }
         
-        // Check for vendor session (if needed)
-        const vendorData = localStorage.getItem('currentVendor');
+        // Check for vendor session
         if (vendorData) {
           const vendor = JSON.parse(vendorData);
-          if (vendor && vendor.token) {
-            setSeller(vendor);
-            if (location.pathname === '/' || location.pathname === '') {
-              navigate('/vendor/dashboard');
+          if (vendor?.token) {
+            // Only update state if the component is still mounted
+            if (isMounted) {
+              setSeller(vendor);
+              // Only redirect if we're on the home page
+              if (location.pathname === '/' || location.pathname === '') {
+                navigate('/vendor/dashboard', { replace: true });
+              }
             }
+            return;
           }
         }
       } catch (error) {
@@ -66,7 +77,12 @@ const App = () => {
     };
     
     checkAuth();
-  }, [navigate, location.pathname, setStudent, setSeller]);
+    
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate, location.pathname]);
 
   return (
     <div className="min-h-screen flex flex-col">
