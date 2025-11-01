@@ -1,24 +1,32 @@
 import api, { getFullUrl } from './api';
 
-// Initialize auth token from localStorage if available
-const initializeAuthToken = () => {
+// Helper function to get and set auth token
+const updateAuthToken = () => {
   try {
     const studentData = localStorage.getItem('currentStudent');
     if (studentData) {
-      const { token } = JSON.parse(studentData);
-      if (token) {
+      const parsed = JSON.parse(studentData);
+      if (parsed && parsed.token) {
+        const token = parsed.token;
+        console.log('Setting auth token from localStorage:', token ? 'Token found' : 'No token');
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        return true;
+        return token;
+      } else {
+        console.warn('No token found in student data');
       }
+    } else {
+      console.warn('No student data found in localStorage');
     }
   } catch (error) {
-    console.error('Error initializing auth token:', error);
+    console.error('Error updating auth token:', error);
   }
-  return false;
+  // Clear any existing auth header if no valid token
+  delete api.defaults.headers.common['Authorization'];
+  return null;
 };
 
 // Initialize auth token when the service is loaded
-initializeAuthToken();
+updateAuthToken();
 
 // Student authentication services
 export const studentAuth = {
@@ -66,12 +74,17 @@ export const studentAuth = {
         // Store the student data with token in localStorage
         if (token && student) {
           const studentData = { ...student, token };
-          console.log('Storing student data in localStorage:', { email: studentData.email, hasToken: !!token });
+          console.log('Storing student data in localStorage:', { 
+            email: studentData.email, 
+            hasToken: !!token,
+            token: token ? 'Token present' : 'No token'
+          });
+          
+          // Store in localStorage
           localStorage.setItem('currentStudent', JSON.stringify(studentData));
           
           // Update the axios default headers
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          console.log('Set Authorization header for future requests');
+          updateAuthToken();
           
           // Return the complete student data with token
           return { ...response.data, student: studentData };
@@ -127,31 +140,32 @@ export const studentMeals = {
   // Get all available vendors with menus
   getAvailableVendors: async () => {
     try {
-      // Ensure we have the latest token from localStorage
-      const studentData = localStorage.getItem('currentStudent');
-      let token = null;
+      // Ensure we have the latest token
+      const token = updateAuthToken();
       
-      if (studentData) {
-        try {
-          const student = JSON.parse(studentData);
-          token = student?.token;
-          
-          if (!token) {
-            console.warn('No authentication token found in student data');
-          } else {
-            console.log('Using stored token for vendors request');
-            // Ensure axios has the latest token
-            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      if (!token) {
+        console.warn('No authentication token available for vendors request');
+        // Try to get token directly from localStorage as a fallback
+        const studentData = localStorage.getItem('currentStudent');
+        if (studentData) {
+          try {
+            const student = JSON.parse(studentData);
+            if (student?.token) {
+              console.log('Found token in localStorage, updating auth header');
+              api.defaults.headers.common['Authorization'] = `Bearer ${student.token}`;
+            }
+          } catch (e) {
+            console.error('Error parsing student data:', e);
           }
-        } catch (e) {
-          console.error('Error parsing student data from localStorage:', e);
         }
-      } else {
-        console.warn('No student data found in localStorage');
       }
       
       // Log the current Authorization header for debugging
-      console.log('Current Authorization header:', api.defaults.headers.common['Authorization'] ? 'Present' : 'Missing');
+      console.log('Current Authorization header:', 
+        api.defaults.headers.common['Authorization'] ? 'Present' : 'Missing',
+        api.defaults.headers.common['Authorization'] ? 
+          `(${api.defaults.headers.common['Authorization'].substring(0, 20)}...)` : ''
+      );
       
       console.log('Fetching available vendors from:', getFullUrl('/Student/vendors'));
       const response = await api.get(getFullUrl('/Student/vendors'));
