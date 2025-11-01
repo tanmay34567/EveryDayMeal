@@ -128,8 +128,39 @@ export const studentAuth = {
   updateProfile: async (profileData) => {
     try {
       const response = await api.put(getFullUrl('/Student/profile'), profileData);
+      
+      // If the update was successful and we have student data in the response
+      if (response.data && response.data.success && response.data.student) {
+        // Get the current student data from localStorage
+        const currentStudent = JSON.parse(localStorage.getItem('currentStudent') || '{}');
+        
+        // Merge the updated profile data with the existing student data
+        const updatedStudent = {
+          ...currentStudent,
+          ...response.data.student,
+          // Preserve the existing token if the server didn't return a new one
+          token: response.data.token || currentStudent.token
+        };
+        
+        // Update localStorage with the merged data
+        localStorage.setItem('currentStudent', JSON.stringify(updatedStudent));
+        
+        // Update the axios default headers with the latest token
+        updateAuthToken();
+        
+        // Return the updated student data
+        return {
+          ...response.data,
+          student: updatedStudent
+        };
+      }
+      
       return response.data;
     } catch (error) {
+      console.error('Error updating profile:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+      }
       throw error;
     }
   }
