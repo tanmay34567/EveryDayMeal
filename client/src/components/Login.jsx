@@ -297,69 +297,85 @@ const Login = ({ onClose, isVendor = false }) => {
           return;
         }
 
-        const resp = await studentAuth.verifyEmailOtp(email, otp);
-        
-        // Handle new users (direct them to signup)
-        if (resp.message && resp.message.includes('New user detected')) {
-          onClose();
-          toast.error('Please sign up first');
-          // Here you would typically navigate to the signup page
-          // For now, we'll just show an error
-          setError('Please sign up first');
-          return;
-        }
-        
-        if (resp.success) {
-          resetLoginAttempts();
-          const studentData = resp.student || {};
-          if (resp.token) studentData.token = resp.token;
-          setStudent(studentData);
-          onClose();
-          
-          // Log the entire response for debugging
+        try {
+          const resp = await studentAuth.verifyEmailOtp(email, otp);
           console.log('OTP Verification Response:', resp);
           
-          // Use the userCheck response to determine the next step
-          if (resp.userCheck) {
-            console.log('User check:', resp.userCheck);
+          // Handle new users (direct them to signup)
+          if (resp.message && resp.message.includes('New user detected')) {
+            onClose();
+            toast.error('Please sign up first');
+            setError('Please sign up first');
+            return;
+          }
+          
+          if (resp.success) {
+            resetLoginAttempts();
+            const studentData = resp.student || {};
             
-            // If it's a new user or missing name/contact, go to profile completion
-            if (resp.userCheck.isNewUser || !resp.userCheck.hasName || !resp.userCheck.hasContact) {
-              console.log('Redirecting to profile completion');
-              navigate("/student/complete-profile");
-              toast.success('Please complete your profile');
+            // Make sure we have the token and student data
+            if (!resp.token && studentData.token) {
+              resp.token = studentData.token;
+            }
+            
+            console.log('Setting student data:', { ...studentData, token: resp.token });
+            
+            // Update the student context with the token
+            setStudent({
+              ...studentData,
+              token: resp.token || studentData.token
+            });
+            
+            onClose();
+            
+            // Use the userCheck response to determine the next step
+            if (resp.userCheck) {
+              console.log('User check:', resp.userCheck);
+              
+              // If it's a new user or missing name/contact, go to profile completion
+              if (resp.userCheck.isNewUser || !resp.userCheck.hasName || !resp.userCheck.hasContact) {
+                console.log('Redirecting to profile completion');
+                navigate("/student/complete-profile");
+                toast.success('Please complete your profile');
+              } else {
+                // Existing user with complete profile, go to dashboard
+                console.log('Redirecting to dashboard');
+                navigate("/student/dashboard");
+                toast.success('Welcome back!');
+              }
             } else {
-              // Existing user with complete profile, go to dashboard
-              console.log('Redirecting to dashboard');
-              navigate("/student/dashboard");
-              toast.success('Welcome back!');
+              // Fallback to old behavior if userCheck is not available
+              console.warn('userCheck not available in response, using fallback check');
+              const isProfileComplete = studentData.name && studentData.contactNumber && 
+                                     studentData.name.trim() !== '' && 
+                                     studentData.contactNumber.trim() !== '';
+              
+              if (isProfileComplete) {
+                navigate("/student/dashboard");
+                toast.success('Welcome back!');
+              } else {
+                navigate("/student/complete-profile");
+                toast.success('Please complete your profile');
+              }
             }
           } else {
-            // Fallback to old behavior if userCheck is not available
-            console.warn('userCheck not available in response, using fallback check');
-            const isProfileComplete = studentData.name && studentData.contactNumber && 
-                                   studentData.name.trim() !== '' && 
-                                   studentData.contactNumber.trim() !== '';
+            // Handle failed login attempts
+            const newAttempts = loginAttempts + 1;
+            setLoginAttempts(newAttempts);
             
-            if (isProfileComplete) {
-              navigate("/student/dashboard");
-              toast.success('Welcome back!');
+            if (newAttempts >= 5) {
+              const lockoutTime = Date.now() + (15 * 60 * 1000);
+              localStorage.setItem('loginLockout', lockoutTime.toString());
+              setLockoutUntil(new Date(lockoutTime));
+              setError("Too many failed attempts. Account locked for 15 minutes.");
             } else {
-              navigate("/student/complete-profile");
-              toast.success('Please complete your profile');
+              setError(resp.message || `Login failed. ${5 - newAttempts} attempts remaining.`);
             }
           }
-        } else {
-          const newAttempts = loginAttempts + 1;
-          setLoginAttempts(newAttempts);
-          if (newAttempts >= 5) {
-            const lockoutTime = Date.now() + (15 * 60 * 1000);
-            localStorage.setItem('loginLockout', lockoutTime.toString());
-            setLockoutUntil(new Date(lockoutTime));
-            setError("Too many failed attempts. Account locked for 15 minutes.");
-          } else {
-            setError(resp.message || `Login failed. ${5 - newAttempts} attempts remaining.`);
-          }
+        } catch (error) {
+          console.error('OTP verification error:', error);
+          setError(error.response?.data?.message || 'An error occurred during OTP verification');
+          setLoading(false);
         }
         return;
       }

@@ -36,8 +36,27 @@ export const studentAuth = {
   verifyEmailOtp: async (email, otp) => {
     try {
       const response = await api.post(getFullUrl('/Student/otp/verify'), { email, otp });
+      
+      // If verification is successful, ensure we have the token
+      if (response.data && response.data.success && response.data.data) {
+        const { token, student } = response.data.data;
+        
+        // Store the student data with token in localStorage
+        if (token && student) {
+          const studentData = { ...student, token };
+          localStorage.setItem('currentStudent', JSON.stringify(studentData));
+          
+          // Update the axios default headers
+          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          
+          // Return the complete student data with token
+          return { ...response.data, student: studentData };
+        }
+      }
+      
       return response.data;
     } catch (error) {
+      console.error('Error verifying OTP:', error);
       throw error;
     }
   },
