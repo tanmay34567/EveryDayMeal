@@ -1,5 +1,5 @@
-import React from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -14,15 +14,59 @@ import StudentVendorMenu from './pages/StudentVendorMenu';
 import ProfileCompletion from './components/ProfileCompletion';
 
 const App = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   const {
     ShowStudentLogin,
     setShowStudentLogin,
     ShowVendorLogin,
     setShowVendorLogin,
+    setStudent,
+    setSeller
   } = useAppcontext();
-
-  const location = useLocation();
+  
   const isSellerPath = location.pathname.includes("seller") || location.pathname.includes("vendor");
+  
+  // Check for existing session on initial load
+  useEffect(() => {
+    const checkAuth = () => {
+      try {
+        // Check for student session
+        const studentData = localStorage.getItem('currentStudent');
+        if (studentData) {
+          const student = JSON.parse(studentData);
+          if (student && student.token) {
+            setStudent(student);
+            // If on home page, redirect to student dashboard
+            if (location.pathname === '/' || location.pathname === '') {
+              navigate('/student/dashboard');
+            }
+            return;
+          }
+        }
+        
+        // Check for vendor session (if needed)
+        const vendorData = localStorage.getItem('currentVendor');
+        if (vendorData) {
+          const vendor = JSON.parse(vendorData);
+          if (vendor && vendor.token) {
+            setSeller(vendor);
+            if (location.pathname === '/' || location.pathname === '') {
+              navigate('/vendor/dashboard');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        // Clear invalid data
+        localStorage.removeItem('currentStudent');
+        localStorage.removeItem('currentVendor');
+      }
+    };
+    
+    checkAuth();
+  }, [navigate, location.pathname, setStudent, setSeller]);
 
   return (
     <div className="min-h-screen flex flex-col">
