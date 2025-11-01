@@ -1,5 +1,25 @@
 import api, { getFullUrl } from './api';
 
+// Initialize auth token from localStorage if available
+const initializeAuthToken = () => {
+  try {
+    const studentData = localStorage.getItem('currentStudent');
+    if (studentData) {
+      const { token } = JSON.parse(studentData);
+      if (token) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        return true;
+      }
+    }
+  } catch (error) {
+    console.error('Error initializing auth token:', error);
+  }
+  return false;
+};
+
+// Initialize auth token when the service is loaded
+initializeAuthToken();
+
 // Student authentication services
 export const studentAuth = {
   // Register a new student
@@ -35,7 +55,9 @@ export const studentAuth = {
   // Verify email OTP for student login
   verifyEmailOtp: async (email, otp) => {
     try {
+      console.log('Verifying OTP for email:', email);
       const response = await api.post(getFullUrl('/Student/otp/verify'), { email, otp });
+      console.log('OTP verification response:', response.data);
       
       // If verification is successful, ensure we have the token
       if (response.data && response.data.success && response.data.data) {
@@ -44,19 +66,27 @@ export const studentAuth = {
         // Store the student data with token in localStorage
         if (token && student) {
           const studentData = { ...student, token };
+          console.log('Storing student data in localStorage:', { email: studentData.email, hasToken: !!token });
           localStorage.setItem('currentStudent', JSON.stringify(studentData));
           
           // Update the axios default headers
           api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          console.log('Set Authorization header for future requests');
           
           // Return the complete student data with token
           return { ...response.data, student: studentData };
+        } else {
+          console.warn('Token or student data missing in OTP verification response');
         }
       }
       
       return response.data;
     } catch (error) {
       console.error('Error verifying OTP:', error);
+      if (error.response) {
+        console.error('Error response data:', error.response.data);
+        console.error('Error status:', error.response.status);
+      }
       throw error;
     }
   },
@@ -97,18 +127,31 @@ export const studentMeals = {
   // Get all available vendors with menus
   getAvailableVendors: async () => {
     try {
-      // Check if we have a token before making the request
+      // Ensure we have the latest token from localStorage
       const studentData = localStorage.getItem('currentStudent');
+      let token = null;
+      
       if (studentData) {
-        const student = JSON.parse(studentData);
-        if (!student.token) {
-          console.warn('No authentication token found in student data');
-        } else {
-          console.log('Authentication token is available for vendors request');
+        try {
+          const student = JSON.parse(studentData);
+          token = student?.token;
+          
+          if (!token) {
+            console.warn('No authentication token found in student data');
+          } else {
+            console.log('Using stored token for vendors request');
+            // Ensure axios has the latest token
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          }
+        } catch (e) {
+          console.error('Error parsing student data from localStorage:', e);
         }
       } else {
         console.warn('No student data found in localStorage');
       }
+      
+      // Log the current Authorization header for debugging
+      console.log('Current Authorization header:', api.defaults.headers.common['Authorization'] ? 'Present' : 'Missing');
       
       console.log('Fetching available vendors from:', getFullUrl('/Student/vendors'));
       const response = await api.get(getFullUrl('/Student/vendors'));
