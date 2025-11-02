@@ -23,17 +23,18 @@ console.log('  - GET /api/Vendor/reviews (vendor auth)');
 // Public routes
 VendorRouter.post('/otp/send', sendOtp);
 VendorRouter.post('/otp/verify', verifyOtp);
-VendorRouter.get('/menu/:email', authStudent, getMenuByEmail);
 
-
-// Authenticated routes
+// Authenticated routes (protected by authVendor)
 VendorRouter.get('/is-auth', authVendor, isAuth);
 VendorRouter.get('/logout', authVendor, logout);
 
-// Menu operations (protected)
+// Menu operations (protected) - MUST come before /menu/:email to avoid route conflicts
 VendorRouter.post('/menu', authVendor, saveMenu);    // Create or update
-VendorRouter.get('/menu', authVendor, getMenu);      // Get logged-in vendor's menu
+VendorRouter.get('/menu', authVendor, getMenu);      // Get logged-in vendor's menu (specific route first!)
 VendorRouter.delete('/menu', authVendor, deleteMenu); // Delete menu of logged-in vendor
+
+// Public menu route with email parameter (for students) - must come after /menu
+VendorRouter.get('/menu/:email', authStudent, getMenuByEmail);
 
 // Vendor reviews (protected)
 VendorRouter.get('/reviews', authVendor, getVendorReviews);

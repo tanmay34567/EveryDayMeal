@@ -55,8 +55,15 @@ export const register = async (req, res) => {
 // Get Vendor's own reviews and average
 export const getVendorReviews = async (req, res) => {
   try {
+    console.log('⭐ Get Vendor Reviews called - VendorId:', req.VendorId);
+    
     const vendor = await Vendor.findById(req.VendorId).select('email name');
-    if (!vendor) return res.status(404).json({ success: false, message: 'Vendor not found' });
+    if (!vendor) {
+      console.log('❌ Vendor not found with ID:', req.VendorId);
+      return res.status(404).json({ success: false, message: 'Vendor not found' });
+    }
+
+    console.log('✅ Vendor found for reviews:', vendor.email);
 
     const [stats] = await Review.aggregate([
       { $match: { vendorEmail: vendor.email } },
@@ -66,6 +73,8 @@ export const getVendorReviews = async (req, res) => {
     const reviews = await Review.find({ vendorEmail: vendor.email })
       .populate('student', 'name email')
       .sort({ createdAt: -1 });
+
+    console.log('📊 Reviews found:', reviews.length);
 
     return res.status(200).json({
       success: true,
@@ -77,7 +86,8 @@ export const getVendorReviews = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Get Vendor Reviews Error:', error.message);
+    console.error('❌ Get Vendor Reviews Error:', error.message);
+    console.error('Error stack:', error.stack);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -160,27 +170,52 @@ export const logout = async (req, res) => {
 // Save or Update Menu
 export const saveMenu = async (req, res) => {
   try {
-    const { vendorEmail, vendorName, date, day, meals } = req.body;
+    console.log('💾 Save Menu called - VendorId:', req.VendorId);
+    console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
+    
+    const vendor = await Vendor.findById(req.VendorId);
+    if (!vendor) {
+      console.log('❌ Vendor not found with ID:', req.VendorId);
+      return res.status(404).json({ success: false, message: 'Vendor not found' });
+    }
+
+    // Use vendor email from authenticated user, not from request body for security
+    const vendorEmail = vendor.email;
+    const { vendorName, date, day, meals } = req.body;
+
+    console.log('🔍 Looking for existing menu for:', vendorEmail, 'date:', date);
 
     let menu = await Menu.findOne({ vendorEmail, date });
 
     if (menu) {
+      console.log('📝 Updating existing menu');
       menu.day = day;
       menu.meals = meals;
+      menu.vendorName = vendorName || vendor.name;
       await menu.save();
 
       setMenuCookie(res);
+      console.log('✅ Menu updated successfully');
       return res.status(200).json({ success: true, message: 'Menu updated', data: menu });
     }
 
-    menu = new Menu({ vendorEmail, vendorName, date, day, meals });
+    console.log('➕ Creating new menu');
+    menu = new Menu({ 
+      vendorEmail: vendorEmail, // Use authenticated vendor's email
+      vendorName: vendorName || vendor.name, 
+      date, 
+      day, 
+      meals 
+    });
     await menu.save();
 
+    console.log('✅ Menu saved successfully for:', vendorEmail);
     setMenuCookie(res);
     return res.status(201).json({ success: true, message: 'Menu saved', data: menu });
 
   } catch (error) {
-    console.error('Save Menu Error:', error.message);
+    console.error('❌ Save Menu Error:', error.message);
+    console.error('Error stack:', error.stack);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -203,16 +238,25 @@ const setMenuCookie = (res) => {
 // Get Vendor Menu
 export const getMenu = async (req, res) => {
   try {
+    console.log('🍽️ Get Menu called - VendorId:', req.VendorId);
+    
     const vendor = await Vendor.findById(req.VendorId);
     if (!vendor) {
+      console.log('❌ Vendor not found with ID:', req.VendorId);
       return res.status(404).json({ success: false, message: 'Vendor not found' });
     }
 
-    // Find the most recent menu for this vendor (or any menu if they only have one)
-    const menu = await Menu.findOne({ vendorEmail: vendor.email }).sort({ createdAt: -1 });
+    console.log('✅ Vendor found:', vendor.email);
+
+    // Find the most recent menu for this vendor (use find with sort, then limit)
+    const menus = await Menu.find({ vendorEmail: vendor.email }).sort({ createdAt: -1 }).limit(1);
+    const menu = menus.length > 0 ? menus[0] : null;
+    
+    console.log('📋 Menu query result:', menu ? 'Menu found' : 'No menu found');
     
     if (!menu) {
       // Return success but with no data - this is expected for new vendors
+      console.log('ℹ️ No menu exists for vendor:', vendor.email);
       return res.status(200).json({ 
         success: true, 
         message: 'No menu found',
@@ -220,9 +264,11 @@ export const getMenu = async (req, res) => {
       });
     }
 
+    console.log('✅ Returning menu data for vendor:', vendor.email);
     return res.status(200).json({ success: true, data: menu });
   } catch (error) {
-    console.error('Get Menu Error:', error.message);
+    console.error('❌ Get Menu Error:', error.message);
+    console.error('Error stack:', error.stack);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
