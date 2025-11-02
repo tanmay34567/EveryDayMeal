@@ -23,8 +23,12 @@ const validateInput = (body, req) => {
     if (gstinOrImages === 'gstin' && (!gstinNumber || !regex.gstin.test(gstinNumber))) {
         errors.push("Enter a valid 15-character GSTIN number.");
     }
-    if (gstinOrImages === 'images' && (!req.files || req.files.length === 0)) {
-        errors.push('Please upload at least one restaurant image.');
+    if (gstinOrImages === 'images') {
+        if (!req.files || req.files.length === 0) {
+            errors.push('Please upload at least 3 restaurant images.');
+        } else if (req.files.length < 3) {
+            errors.push(`Please upload at least 3 restaurant images. Currently uploaded: ${req.files.length}.`);
+        }
     }
 
     return errors;
@@ -65,8 +69,12 @@ export const apply = async (req, res) => {
           // Continue with other files even if one fails
         }
       }
-      if (imageUrls.length === 0 && req.files.length > 0) {
-          return res.status(500).json({ success: false, message: 'Failed to upload images. Please try again.' });
+      // Validate that at least 3 images were successfully uploaded
+      if (imageUrls.length < 3) {
+          return res.status(400).json({ 
+              success: false, 
+              message: `At least 3 images are required. Only ${imageUrls.length} image(s) were successfully uploaded.` 
+          });
       }
     }
 

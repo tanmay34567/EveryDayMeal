@@ -58,8 +58,12 @@ const VendorApplication = () => {
     if (formData.gstinOrImages === "gstin") {
       if (!regex.gstin.test(formData.gstinNumber))
         newErrors.gstin = "Enter a valid 15-character GSTIN number.";
-    } else if (formData.restaurantImages.length === 0) {
-      newErrors.gstin = "Please upload at least one restaurant image.";
+    } else {
+      if (formData.restaurantImages.length === 0) {
+        newErrors.restaurantImages = "Please upload at least 3 restaurant images.";
+      } else if (formData.restaurantImages.length < 3) {
+        newErrors.restaurantImages = `Please upload at least 3 restaurant images. Currently uploaded: ${formData.restaurantImages.length}.`;
+      }
     }
 
     setErrors(newErrors);
@@ -73,24 +77,36 @@ const VendorApplication = () => {
     setErrors({ ...errors, [name]: "" }); // Clear field error on change
   };
 
-  // Handle file uploads (max 3)
+  // Handle file uploads (minimum 3, maximum 3)
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    if (formData.restaurantImages.length + files.length > 3) {
+    const totalFiles = formData.restaurantImages.length + files.length;
+    
+    if (totalFiles > 3) {
       toast.error("You can upload a maximum of 3 images.");
       return;
     }
-    setFormData({
-      ...formData,
-      restaurantImages: [...formData.restaurantImages, ...files],
-    });
+    
+    if (files.length > 0) {
+      setFormData({
+        ...formData,
+        restaurantImages: [...formData.restaurantImages, ...files].slice(0, 3), // Ensure max 3
+      });
+      // Clear the error when files are added
+      setErrors({ ...errors, restaurantImages: "" });
+    }
   };
 
   const handleRemoveImage = (index) => {
+    const updatedImages = formData.restaurantImages.filter((_, i) => i !== index);
     setFormData({
       ...formData,
-      restaurantImages: formData.restaurantImages.filter((_, i) => i !== index),
+      restaurantImages: updatedImages,
     });
+    // Clear error if images meet requirement after removal
+    if (updatedImages.length >= 3 && errors.restaurantImages) {
+      setErrors({ ...errors, restaurantImages: "" });
+    }
   };
 
   // Handle form submission
@@ -321,8 +337,13 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   multiple
                   accept="image/*"
                   onChange={handleFileChange}
-                  className="p-2 border rounded w-full"
+                  className={`p-2 border rounded w-full ${
+                    errors.restaurantImages ? "border-red-500" : "border-gray-300"
+                  }`}
                 />
+                <p className="text-sm text-gray-600 mt-2">
+                  Please upload exactly 3 restaurant images ({formData.restaurantImages.length}/3 uploaded)
+                </p>
                 <div className="mt-3 flex flex-wrap gap-3">
                   {formData.restaurantImages.map((file, index) => (
                     <div key={index} className="relative">
@@ -341,6 +362,9 @@ toast.error(error.response?.data?.message || "An error occurred.");
                     </div>
                   ))}
                 </div>
+                {errors.restaurantImages && (
+                  <p className="text-red-500 text-xs mt-2">{errors.restaurantImages}</p>
+                )}
               </div>
             )}
             {errors.gstin && <p className="text-red-500 text-xs mt-2">{errors.gstin}</p>}
