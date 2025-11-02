@@ -7,6 +7,7 @@ import StudentRouter from './routes/StudentRoute.js';
 import VendorRouter from './routes/VendorRoute.js';
 import router from './routes/contactRoutes.js';
 import scheduleMenuDeletion from './cron/deleteMenus.js';
+import VendorApplicationRouter from './routes/VendorApplicationRoute.js';
 
 // At the beginning of the file
 console.log("Server is starting...");
@@ -21,7 +22,8 @@ const allowedOrigins = ['http://localhost:5173','https://every-day-meal.vercel.a
 
 
 // Middleware
-app.use(express.json()); 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser()); 
 app.use(cors({
   origin: allowedOrigins,
@@ -40,6 +42,7 @@ app.get('/', (req, res) => {
 app.use('/api/Student', StudentRouter)
 app.use('/api/Vendor', VendorRouter)
 app.use('/api', router);
+app.use('/api/vendor', VendorApplicationRouter);
 
 scheduleMenuDeletion();
 

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create a simple axios instance with no baseURL
 const api = axios.create({
-  baseURL: '',  // No baseURL, we'll use full URLs
+  baseURL: import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000',
   withCredentials: true,  // Still send cookies when possible
   headers: {
     'Content-Type': 'application/json',

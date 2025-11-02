@@ -3,7 +3,8 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
-import Login from './components/Login';
+import StudentLogin from './components/StudentLogin';
+import VendorLogin from './components/VendorLogin';
 import VendorDashboard from './pages/VendorDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import { useAppcontext } from './context/Appcontext';
@@ -12,6 +13,7 @@ import Contact from './pages/Contactus';
 import ProtectedRoute from './components/ProtectedRoute';
 import StudentVendorMenu from './pages/StudentVendorMenu';
 import ProfileCompletion from './components/ProfileCompletion';
+import VendorApplication from './pages/VendorApplication';
 
 const App = () => {
   const navigate = useNavigate();
@@ -26,7 +28,7 @@ const App = () => {
     setSeller
   } = useAppcontext();
   
-  const isSellerPath = location.pathname.includes("seller") || location.pathname.includes("vendor");
+  const isVendorApplicationPage = location.pathname === '/vendor/apply';
   
   // Check for existing session on initial load
   useEffect(() => {
@@ -87,21 +89,23 @@ const App = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar always shown now */}
-      <Navbar
-        setShowStudentLogin={setShowStudentLogin}
-        setShowVendorLogin={setShowVendorLogin}
-      />
+      {!isVendorApplicationPage && (
+        <Navbar
+          setShowStudentLogin={setShowStudentLogin}
+          setShowVendorLogin={setShowVendorLogin}
+        />
+      )}
 
       {/* Login Modals */}
       {ShowStudentLogin && (
-        <Login onClose={() => setShowStudentLogin(false)} />
+        <StudentLogin onClose={() => setShowStudentLogin(false)} />
       )}
       {ShowVendorLogin && (
-        <Login onClose={() => setShowVendorLogin(false)} isVendor />
+        <VendorLogin onClose={() => setShowVendorLogin(false)} />
       )}
 
       {/* Main Page Content */}
-      <div className="flex-grow px-6 pt-[80px]">
+      <div className={`flex-grow ${!isVendorApplicationPage ? 'px-6 pt-[80px]' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route 
@@ -131,12 +135,15 @@ const App = () => {
           <Route path="/student/menu/:vendorEmail" element={<StudentVendorMenu />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact/>} />
+          <Route path="/vendor/apply" element={<VendorApplication />} />
         </Routes>
       </div>
             
+        {!isVendorApplicationPage && (
         <div className="mt-10">
           <Footer />
         </div>
+      )}
       
     </div>
   );

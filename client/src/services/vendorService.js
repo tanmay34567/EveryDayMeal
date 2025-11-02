@@ -2,20 +2,18 @@ import api, { getFullUrl } from './api';
 
 // Vendor authentication services
 export const vendorAuth = {
-  // Register a new vendor
-  register: async (userData) => {
+  sendOtp: async (data) => {
     try {
-      const response = await api.post(getFullUrl('/Vendor/register'), userData);
+      const response = await api.post(getFullUrl('/Vendor/otp/send'), data);
       return response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  // Login a vendor
-  login: async (credentials) => {
+  verifyOtp: async (data) => {
     try {
-      const response = await api.post(getFullUrl('/Vendor/login'), credentials);
+      const response = await api.post(getFullUrl('/Vendor/otp/verify'), data);
       return response.data;
     } catch (error) {
       throw error;

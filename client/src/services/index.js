@@ -1,6 +1,7 @@
 import api from './api';
 import { studentAuth, studentMeals, studentReviews } from './studentService';
 import { vendorAuth, vendorMenus, vendorOrders, vendorReviews } from './vendorService';
+import { vendorApplicationService } from './vendorApplicationService';
 import contactService from './contactService';
 
 export {
@@ -12,5 +13,6 @@ export {
   vendorMenus,
   vendorOrders,
   vendorReviews,
-  contactService
+  contactService,
+  vendorApplicationService
 };

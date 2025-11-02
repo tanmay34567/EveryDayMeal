@@ -1,15 +1,16 @@
 import express from 'express';
 
 
-import { deleteMenu, getMenu, getMenuByEmail, isAuth, login, logout, register, saveMenu, getVendorReviews } from '../controllers/Vendorcontroller.js';
+import { deleteMenu, getMenu, getMenuByEmail, isAuth, logout, saveMenu, getVendorReviews } from '../controllers/Vendorcontroller.js';
+import { sendOtp, verifyOtp } from '../controllers/VendorOtpController.js';
 import authStudent from '../middlewares/authStudent.js';
 import authVendor from '../middlewares/authVendor.js';
 
 const VendorRouter = express.Router();
 
 // Public routes
-VendorRouter.post('/register', register);
-VendorRouter.post('/login', login);
+VendorRouter.post('/otp/send', sendOtp);
+VendorRouter.post('/otp/verify', verifyOtp);
 VendorRouter.get('/menu/:email', authStudent, getMenuByEmail);
 
 
