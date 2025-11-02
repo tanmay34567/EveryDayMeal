@@ -21,7 +21,10 @@ export const sendOtp = async (req, res) => {
     const otpHash = await bcrypt.hash(otp, 10);
     await Otp.findOneAndUpdate({ email }, { otp: otpHash }, { upsert: true, new: true });
 
-    console.log('Sending OTP email to vendor:', email);
+    // Log OTP for development/debugging purposes
+    console.log('📧 Sending OTP email to vendor:', email);
+    console.log('🔐 Generated OTP:', otp);
+    
     await sendOtpEmail(email, otp);
     console.log('✅ Vendor OTP email sent successfully');
 
@@ -36,15 +39,22 @@ export const verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
 
   try {
+    console.log('🔍 Verifying OTP for vendor:', email);
+    console.log('🔑 Received OTP:', otp);
+    
     const otpDoc = await Otp.findOne({ email });
     if (!otpDoc) {
+      console.log('❌ OTP not found in database for:', email);
       return res.status(400).json({ success: false, message: 'OTP not found or expired. Please request a new one.' });
     }
 
     const isMatch = await bcrypt.compare(otp, otpDoc.otp);
     if (!isMatch) {
+      console.log('❌ Invalid OTP provided for:', email);
       return res.status(400).json({ success: false, message: 'Invalid OTP.' });
     }
+    
+    console.log('✅ OTP verified successfully for:', email);
 
     const vendor = await Vendor.findOne({ email });
     if (!vendor) {
