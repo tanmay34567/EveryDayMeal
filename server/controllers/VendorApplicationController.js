@@ -25,9 +25,9 @@ const validateInput = (body, req) => {
     }
     if (gstinOrImages === 'images') {
         if (!req.files || req.files.length === 0) {
-            errors.push('Please upload at least 3 restaurant images.');
+            errors.push('Please add at least 3 restaurant images.');
         } else if (req.files.length < 3) {
-            errors.push(`Please upload at least 3 restaurant images. Currently uploaded: ${req.files.length}.`);
+            errors.push(`Please add at least 3 restaurant images. Currently uploaded: ${req.files.length}.`);
         }
     }
 
@@ -73,7 +73,7 @@ export const apply = async (req, res) => {
       if (imageUrls.length < 3) {
           return res.status(400).json({ 
               success: false, 
-              message: `At least 3 images are required. Only ${imageUrls.length} image(s) were successfully uploaded.` 
+              message: `Please add at least 3 restaurant images. Only ${imageUrls.length} image(s) were successfully uploaded.` 
           });
       }
     }

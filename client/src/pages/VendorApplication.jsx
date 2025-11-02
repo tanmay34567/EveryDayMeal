@@ -60,9 +60,9 @@ const VendorApplication = () => {
         newErrors.gstin = "Enter a valid 15-character GSTIN number.";
     } else {
       if (formData.restaurantImages.length === 0) {
-        newErrors.restaurantImages = "Please upload at least 3 restaurant images.";
+        newErrors.restaurantImages = "Please add at least 3 restaurant images.";
       } else if (formData.restaurantImages.length < 3) {
-        newErrors.restaurantImages = `Please upload at least 3 restaurant images. Currently uploaded: ${formData.restaurantImages.length}.`;
+        newErrors.restaurantImages = `Please add at least 3 restaurant images. Currently uploaded: ${formData.restaurantImages.length}.`;
       }
     }
 
@@ -88,12 +88,15 @@ const VendorApplication = () => {
     }
     
     if (files.length > 0) {
+      const newImages = [...formData.restaurantImages, ...files].slice(0, 3); // Ensure max 3
       setFormData({
         ...formData,
-        restaurantImages: [...formData.restaurantImages, ...files].slice(0, 3), // Ensure max 3
+        restaurantImages: newImages,
       });
-      // Clear the error when files are added
-      setErrors({ ...errors, restaurantImages: "" });
+      // Clear the error when at least 3 images are added
+      if (newImages.length >= 3) {
+        setErrors({ ...errors, restaurantImages: "" });
+      }
     }
   };
 
@@ -342,7 +345,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   }`}
                 />
                 <p className="text-sm text-gray-600 mt-2">
-                  Please upload exactly 3 restaurant images ({formData.restaurantImages.length}/3 uploaded)
+                  Please upload at least 3 restaurant images ({formData.restaurantImages.length}/3 uploaded)
                 </p>
                 <div className="mt-3 flex flex-wrap gap-3">
                   {formData.restaurantImages.map((file, index) => (
