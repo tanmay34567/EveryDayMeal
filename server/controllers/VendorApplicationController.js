@@ -49,13 +49,24 @@ export const apply = async (req, res) => {
     let imageUrls = [];
     if (gstinOrImages === 'images' && req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const result = await uploadOnCloudinary(file.path);
-        if (result) {
-          imageUrls.push(result.secure_url);
+        try {
+          if (!file.path) {
+            console.error('File path is missing for file:', file.originalname);
+            continue;
+          }
+          const result = await uploadOnCloudinary(file.path);
+          if (result && result.secure_url) {
+            imageUrls.push(result.secure_url);
+          } else {
+            console.error('Failed to upload file to Cloudinary:', file.originalname);
+          }
+        } catch (error) {
+          console.error('Error processing file upload:', error);
+          // Continue with other files even if one fails
         }
       }
       if (imageUrls.length === 0 && req.files.length > 0) {
-          return res.status(500).json({ success: false, message: 'Failed to upload images.' });
+          return res.status(500).json({ success: false, message: 'Failed to upload images. Please try again.' });
       }
     }
 
