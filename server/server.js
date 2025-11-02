@@ -32,7 +32,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 })); 
 
-
+// Log all incoming requests for debugging (before routes)
+app.use((req, res, next) => {
+  console.log(`📍 ${req.method} ${req.path} | Origin: ${req.headers.origin || 'unknown'}`);
+  next();
+});
 
 // Basic route
 app.get('/', (req, res) => {
@@ -46,9 +50,20 @@ app.use('/api/vendor', VendorApplicationRouter);
 
 // 404 handler for undefined routes
 app.use((req, res) => {
+  console.log(`❌ Route not found: ${req.method} ${req.path}`);
   res.status(404).json({ 
     success: false, 
-    message: `Route not found: ${req.method} ${req.path}` 
+    message: `Route not found: ${req.method} ${req.path}`,
+    availableRoutes: {
+      vendor: [
+        'GET /api/Vendor/menu',
+        'POST /api/Vendor/menu',
+        'GET /api/Vendor/reviews',
+        'GET /api/Vendor/is-auth',
+        'POST /api/Vendor/otp/send',
+        'POST /api/Vendor/otp/verify'
+      ]
+    }
   });
 });
 

@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 
 const authVendor = (req, res, next) => {
+  console.log(`🔐 Auth check for: ${req.method} ${req.path}`);
+  
   // Try getting token from cookie first
   let token = req.cookies?.Vendorlogintoken;
 
@@ -14,14 +16,17 @@ const authVendor = (req, res, next) => {
 
   // If no token found
   if (!token) {
+    console.log('❌ No token found in request');
     return res.status(401).json({ success: false, message: 'Not Authorized, token missing' });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.VendorId = decoded.id; // Attach decoded vendor ID to request
+    console.log('✅ Token verified successfully for vendor:', decoded.id);
     next();
   } catch (error) {
+    console.log('❌ Token verification failed:', error.message);
     return res.status(401).json({ success: false, message: 'Invalid or expired token' });
   }
 };
