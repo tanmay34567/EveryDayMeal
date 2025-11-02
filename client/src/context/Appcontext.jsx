@@ -63,6 +63,10 @@ export const Appcontextprovider = ({ children }) => {
       if (vendor && Student) clearStudent();
       setseller(vendor);
     },
+    setSeller: (vendor) => {
+      if (vendor && Student) clearStudent();
+      setseller(vendor);
+    },
     isseller,
     setisseller,
     ShowStudentLogin,
