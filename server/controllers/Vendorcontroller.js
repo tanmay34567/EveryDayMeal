@@ -4,6 +4,15 @@ import Vendor from '../models/Vendor.js';
 import Menu from '../models/Menu.js';
 import Review from '../models/Review.js';
 
+// Helper function to decode JWT token
+const decodeToken = (token) => {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    return null;
+  }
+};
+
 // Register Controller
 export const register = async (req, res) => {
   try {
@@ -57,10 +66,38 @@ export const getVendorReviews = async (req, res) => {
   try {
     console.log('⭐ Get Vendor Reviews called - VendorId:', req.VendorId);
     
-    const vendor = await Vendor.findById(req.VendorId).select('email name');
+    let vendor = await Vendor.findById(req.VendorId).select('email name');
+    
+    // If vendor not found by ID, try to find by email from token
     if (!vendor) {
-      console.log('❌ Vendor not found with ID:', req.VendorId);
-      return res.status(404).json({ success: false, message: 'Vendor not found' });
+      console.log('⚠️ Vendor not found by ID, trying email fallback...');
+      try {
+        const token = req.headers.authorization?.split(' ')[1] || req.cookies?.Vendorlogintoken;
+        if (token) {
+          const decoded = decodeToken(token);
+          if (decoded && decoded.email) {
+            vendor = await Vendor.findOne({ email: decoded.email }).select('email name');
+            if (vendor) {
+              console.log('✅ Vendor found by email from token:', vendor.email);
+            }
+          }
+        }
+      } catch (tokenError) {
+        console.log('⚠️ Could not decode token for email fallback');
+      }
+      
+      if (!vendor) {
+        console.log('❌ Vendor not found with ID:', req.VendorId);
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Vendor not found. Your session may have expired.',
+          data: {
+            averageRating: 0,
+            count: 0,
+            reviews: []
+          }
+        });
+      }
     }
 
     console.log('✅ Vendor found for reviews:', vendor.email);
@@ -239,14 +276,52 @@ const setMenuCookie = (res) => {
 export const getMenu = async (req, res) => {
   try {
     console.log('🍽️ Get Menu called - VendorId:', req.VendorId);
+    console.log('🔍 VendorId type:', typeof req.VendorId);
+    console.log('🔍 VendorId value:', req.VendorId);
     
-    const vendor = await Vendor.findById(req.VendorId);
+    let vendor = await Vendor.findById(req.VendorId);
+    
+    // If vendor not found by ID, try to get email from token and find by email
     if (!vendor) {
-      console.log('❌ Vendor not found with ID:', req.VendorId);
-      return res.status(404).json({ success: false, message: 'Vendor not found' });
+      console.log('⚠️ Vendor not found by ID, checking token for email...');
+      try {
+        const token = req.headers.authorization?.split(' ')[1] || req.cookies?.Vendorlogintoken;
+        if (token) {
+          const decoded = decodeToken(token);
+          if (decoded) {
+            console.log('📧 Decoded token:', JSON.stringify(decoded, null, 2));
+            // Try to find vendor by email if available in token
+            if (decoded.email) {
+              vendor = await Vendor.findOne({ email: decoded.email });
+              if (vendor) {
+                console.log('✅ Vendor found by email from token:', vendor.email);
+              }
+            }
+          }
+        }
+      } catch (tokenError) {
+        console.log('⚠️ Could not decode token for email fallback');
+      }
+      
+      // If still not found, list some vendors to debug
+      if (!vendor) {
+        const vendorCount = await Vendor.countDocuments();
+        console.log('📊 Total vendors in database:', vendorCount);
+        const sampleVendors = await Vendor.find().limit(3).select('_id email name');
+        console.log('📋 Sample vendors:', JSON.stringify(sampleVendors, null, 2));
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Vendor not found. Your session may have expired or account was removed.',
+          vendorId: req.VendorId,
+          debug: {
+            vendorCount,
+            sampleVendors
+          }
+        });
+      }
     }
 
-    console.log('✅ Vendor found:', vendor.email);
+    console.log('✅ Vendor found:', vendor.email, 'ID:', vendor._id);
 
     // Find the most recent menu for this vendor (use find with sort, then limit)
     const menus = await Menu.find({ vendorEmail: vendor.email }).sort({ createdAt: -1 }).limit(1);

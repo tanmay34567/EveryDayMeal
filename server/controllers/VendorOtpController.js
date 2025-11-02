@@ -63,10 +63,18 @@ export const verifyOtp = async (req, res) => {
 
     await Otp.deleteOne({ email });
 
-    const token = jwt.sign({ id: vendor._id, role: 'vendor' }, process.env.JWT_SECRET, {
+    console.log('✅ Creating JWT token for vendor:', vendor.email, 'ID:', vendor._id);
+    
+    const token = jwt.sign({ 
+      id: vendor._id, 
+      email: vendor.email,  // Include email in token for fallback lookup
+      role: 'vendor' 
+    }, process.env.JWT_SECRET, {
       expiresIn: '7d',
     });
 
+    console.log('✅ Token created successfully. Vendor ID in token:', vendor._id);
+    
     res.status(200).json({ success: true, message: 'Login successful.', token, vendor });
   } catch (error) {
     console.error('Error verifying OTP:', error);
