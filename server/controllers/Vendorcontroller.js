@@ -204,10 +204,21 @@ const setMenuCookie = (res) => {
 export const getMenu = async (req, res) => {
   try {
     const vendor = await Vendor.findById(req.VendorId);
-    if (!vendor) return res.status(404).json({ success: false, message: 'Vendor not found' });
+    if (!vendor) {
+      return res.status(404).json({ success: false, message: 'Vendor not found' });
+    }
 
-    const menu = await Menu.findOne({ vendorEmail: vendor.email });
-    if (!menu) return res.status(404).json({ success: false, message: 'No menu found' });
+    // Find the most recent menu for this vendor (or any menu if they only have one)
+    const menu = await Menu.findOne({ vendorEmail: vendor.email }).sort({ createdAt: -1 });
+    
+    if (!menu) {
+      // Return success but with no data - this is expected for new vendors
+      return res.status(200).json({ 
+        success: true, 
+        message: 'No menu found',
+        data: null 
+      });
+    }
 
     return res.status(200).json({ success: true, data: menu });
   } catch (error) {

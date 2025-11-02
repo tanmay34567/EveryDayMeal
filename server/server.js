@@ -44,6 +44,14 @@ app.use('/api/Vendor', VendorRouter)
 app.use('/api', router);
 app.use('/api/vendor', VendorApplicationRouter);
 
+// 404 handler for undefined routes
+app.use((req, res) => {
+  res.status(404).json({ 
+    success: false, 
+    message: `Route not found: ${req.method} ${req.path}` 
+  });
+});
+
 scheduleMenuDeletion();
 
 // Start server

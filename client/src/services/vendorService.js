@@ -53,8 +53,25 @@ export const vendorAuth = {
 
 export const vendorReviews = {
   get: async () => {
-    const response = await api.get(getFullUrl('/Vendor/reviews'));
-    return response.data;
+    try {
+      const response = await api.get(getFullUrl('/Vendor/reviews'));
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching vendor reviews:', error);
+      // Return a default structure if reviews fail to load (404 or other errors)
+      if (error.response && error.response.status === 404) {
+        return {
+          success: true,
+          data: {
+            averageRating: 0,
+            count: 0,
+            reviews: []
+          }
+        };
+      }
+      // Re-throw if it's not a 404
+      throw error;
+    }
   }
 };
 
@@ -83,19 +100,19 @@ export const vendorMenus = {
       console.log('Menu response:', response);
       
       // Check if the response contains data.data (the actual menu object)
-      if (response.data && response.data.success && response.data.data) {
-        return response.data.data;
-      }
-      
-      // If no menu was found but the request was successful (empty response)
       if (response.data && response.data.success) {
-        console.log('No menu found for this vendor yet');
-        return null;
+        if (response.data.data) {
+          return response.data.data;
+        } else {
+          // No menu found but request was successful
+          console.log('No menu found for this vendor yet');
+          return null;
+        }
       }
       
       return null;
     } catch (error) {
-      // Check for 404 errors first (no menu exists yet) - this is an expected case, not an error
+      // Handle 404 errors (route not found or menu not found)
       if (error.response && error.response.status === 404) {
         console.log('No menu exists yet for this vendor (404 response)');
         console.log('This is normal for new vendors who haven\'t created a menu yet');

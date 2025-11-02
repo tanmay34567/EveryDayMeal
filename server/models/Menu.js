@@ -17,6 +17,8 @@ const menuSchema = new mongoose.Schema({
     lunch: mealSchema,
     dinner: mealSchema,
   },
+}, {
+  timestamps: true, // This adds createdAt and updatedAt fields
 });
 
 export default mongoose.model("Menu", menuSchema);
