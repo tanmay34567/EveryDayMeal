@@ -351,13 +351,46 @@ export const getMenu = async (req, res) => {
 // Delete Menu
 export const deleteMenu = async (req, res) => {
   try {
-    const vendor = await Vendor.findById(req.VendorId).select('email');
-    if (!vendor) return res.status(404).json({ success: false, message: 'Vendor not found' });
+    console.log('🗑️ Delete Menu called - VendorId:', req.VendorId);
+    
+    let vendor = await Vendor.findById(req.VendorId).select('email');
+    
+    // If vendor not found by ID, try to find by email from token
+    if (!vendor) {
+      console.log('⚠️ Vendor not found by ID, trying email fallback...');
+      try {
+        const token = req.headers.authorization?.split(' ')[1] || req.cookies?.Vendorlogintoken;
+        if (token) {
+          const decoded = decodeToken(token);
+          if (decoded && decoded.email) {
+            vendor = await Vendor.findOne({ email: decoded.email }).select('email');
+            if (vendor) {
+              console.log('✅ Vendor found by email from token:', vendor.email);
+            }
+          }
+        }
+      } catch (tokenError) {
+        console.log('⚠️ Could not decode token for email fallback');
+      }
+      
+      if (!vendor) {
+        console.log('❌ Vendor not found with ID:', req.VendorId);
+        return res.status(404).json({ success: false, message: 'Vendor not found' });
+      }
+    }
 
+    console.log('🔍 Looking for menu to delete for vendor:', vendor.email);
     const result = await Menu.deleteOne({ vendorEmail: vendor.email });
 
+    console.log('📊 Delete result:', result.deletedCount, 'menu(s) deleted');
+
     if (result.deletedCount === 0) {
-      return res.status(404).json({ success: false, message: 'No menu found to delete' });
+      console.log('ℹ️ No menu found to delete for vendor:', vendor.email);
+      return res.status(200).json({ 
+        success: true, 
+        message: 'No menu found to delete',
+        deletedCount: 0
+      });
     }
 
     res.clearCookie('menuToken', {
@@ -366,9 +399,11 @@ export const deleteMenu = async (req, res) => {
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
     });
 
+    console.log('✅ Menu deleted successfully for vendor:', vendor.email);
     return res.status(200).json({ success: true, message: 'Menu deleted successfully' });
   } catch (error) {
-    console.error('Delete Menu Error:', error.message);
+    console.error('❌ Delete Menu Error:', error.message);
+    console.error('Error stack:', error.stack);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };

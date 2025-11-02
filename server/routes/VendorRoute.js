@@ -29,11 +29,15 @@ VendorRouter.get('/is-auth', authVendor, isAuth);
 VendorRouter.get('/logout', authVendor, logout);
 
 // Menu operations (protected) - MUST come before /menu/:email to avoid route conflicts
-VendorRouter.post('/menu', authVendor, saveMenu);    // Create or update
-VendorRouter.get('/menu', authVendor, getMenu);      // Get logged-in vendor's menu (specific route first!)
-VendorRouter.delete('/menu', authVendor, deleteMenu); // Delete menu of logged-in vendor
+// Order matters: All specific routes (no params) must come before parameterized routes
+VendorRouter.delete('/menu', (req, res, next) => {
+  console.log('🛣️ DELETE /menu route matched');
+  next();
+}, authVendor, deleteMenu); // Delete menu - specific route
+VendorRouter.post('/menu', authVendor, saveMenu);    // Create or update - specific route
+VendorRouter.get('/menu', authVendor, getMenu);      // Get logged-in vendor's menu - specific route
 
-// Public menu route with email parameter (for students) - must come after /menu
+// Public menu route with email parameter (for students) - must come after all /menu routes
 VendorRouter.get('/menu/:email', authStudent, getMenuByEmail);
 
 // Vendor reviews (protected)
