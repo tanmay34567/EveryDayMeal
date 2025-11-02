@@ -55,8 +55,20 @@ const VendorLogin = ({ onClose }) => {
     try {
       const response = await vendorAuth.verifyOtp({ email, otp });
       if (response.success) {
-        const vendorData = response.vendor || {};
-        if (response.token) vendorData.token = response.token;
+        // Ensure vendor data has all required fields including token
+        const vendorData = {
+          ...(response.vendor || {}),
+          email: response.vendor?.email || email,
+          token: response.token || response.vendor?.token
+        };
+        
+        // Validate token exists before storing
+        if (!vendorData.token) {
+          setError('Authentication token missing. Please try again.');
+          return;
+        }
+        
+        // Store vendor data with token
         setseller(vendorData);
         toast.success('Login successful!');
         onClose();

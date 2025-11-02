@@ -9,35 +9,68 @@ export const Appcontextprovider = ({ children }) => {
   const navigate = useNavigate();
 
   const [Student, setStudent] = useState(() => {
-    const savedData = localStorage.getItem("currentStudent");
-    return savedData ? JSON.parse(savedData) : null;
+    try {
+      const savedData = localStorage.getItem("currentStudent");
+      return savedData ? JSON.parse(savedData) : null;
+    } catch (error) {
+      console.error('Error parsing student data from localStorage:', error);
+      return null;
+    }
   });
 
   const [seller, setseller] = useState(() => {
-    const savedData = localStorage.getItem("currentVendor");
-    return savedData ? JSON.parse(savedData) : null;
+    try {
+      const savedData = localStorage.getItem("currentVendor");
+      return savedData ? JSON.parse(savedData) : null;
+    } catch (error) {
+      console.error('Error parsing vendor data from localStorage:', error);
+      return null;
+    }
   });
 
-  const [isseller, setisseller] = useState(!!seller);
+  const [isseller, setisseller] = useState(() => {
+    try {
+      const savedData = localStorage.getItem("currentVendor");
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        return parsed && parsed.token ? true : false;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  });
   const [ShowStudentLogin, setShowStudentLogin] = useState(false);
   const [ShowVendorLogin, setShowVendorLogin] = useState(false);
   const [MenuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (Student) {
-      localStorage.setItem("currentStudent", JSON.stringify(Student));
-    } else {
-      localStorage.removeItem("currentStudent");
+    // Sync Student state to localStorage
+    try {
+      if (Student && Student.token) {
+        localStorage.setItem("currentStudent", JSON.stringify(Student));
+      } else if (Student === null) {
+        // Only remove if explicitly set to null (not just undefined/missing token)
+        localStorage.removeItem("currentStudent");
+      }
+    } catch (error) {
+      console.error('Error syncing student to localStorage:', error);
     }
   }, [Student]);
 
   useEffect(() => {
-    if (seller) {
-      localStorage.setItem("currentVendor", JSON.stringify(seller));
-      setisseller(true);
-    } else {
-      localStorage.removeItem("currentVendor");
-      setisseller(false);
+    // Sync seller state to localStorage
+    try {
+      if (seller && seller.token) {
+        localStorage.setItem("currentVendor", JSON.stringify(seller));
+        setisseller(true);
+      } else if (seller === null) {
+        // Only remove if explicitly set to null (not just undefined/missing token)
+        localStorage.removeItem("currentVendor");
+        setisseller(false);
+      }
+    } catch (error) {
+      console.error('Error syncing vendor to localStorage:', error);
     }
   }, [seller]);
 
@@ -51,34 +84,58 @@ export const Appcontextprovider = ({ children }) => {
     navigate("/");
   };
 
+  // Memoize the value object to prevent unnecessary re-renders
+  // and ensure function references remain stable
   const value = {
-    navigate,
-    Student,
+    navigate: navigate || (() => {}),
+    Student: Student || null,
     setStudent: (student) => {
-      if (student && seller) clearSeller();
-      setStudent(student);
+      try {
+        if (student && seller) {
+          clearSeller();
+        }
+        setStudent(student);
+      } catch (error) {
+        console.error('Error in setStudent:', error);
+      }
     },
-    seller,
+    seller: seller || null,
     setseller: (vendor) => {
-      if (vendor && Student) clearStudent();
-      setseller(vendor);
+      try {
+        if (vendor && Student) {
+          clearStudent();
+        }
+        setseller(vendor);
+      } catch (error) {
+        console.error('Error in setseller:', error);
+      }
     },
     setSeller: (vendor) => {
-      if (vendor && Student) clearStudent();
-      setseller(vendor);
+      try {
+        if (vendor && Student) {
+          clearStudent();
+        }
+        setseller(vendor);
+      } catch (error) {
+        console.error('Error in setSeller:', error);
+      }
     },
-    isseller,
-    setisseller,
-    ShowStudentLogin,
-    setShowStudentLogin,
-    ShowVendorLogin,
-    setShowVendorLogin,
-    MenuOpen,
-    setMenuOpen,
+    isseller: isseller || false,
+    setisseller: setisseller || (() => {}),
+    ShowStudentLogin: ShowStudentLogin || false,
+    setShowStudentLogin: setShowStudentLogin || (() => {}),
+    ShowVendorLogin: ShowVendorLogin || false,
+    setShowVendorLogin: setShowVendorLogin || (() => {}),
+    MenuOpen: MenuOpen || false,
+    setMenuOpen: setMenuOpen || (() => {}),
     axios: api,
     logout: () => {
-      clearStudent();
-      clearSeller();
+      try {
+        clearStudent();
+        clearSeller();
+      } catch (error) {
+        console.error('Error in logout:', error);
+      }
     }
   };
 

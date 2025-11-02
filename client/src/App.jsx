@@ -24,67 +24,23 @@ const App = () => {
     setShowStudentLogin,
     ShowVendorLogin,
     setShowVendorLogin,
-    setStudent,
-    setSeller
+    Student,
+    seller
   } = useAppcontext();
   
   const isVendorApplicationPage = location.pathname === '/vendor/apply';
   
-  // Check for existing session on initial load
+  // Handle redirects based on auth state on initial load
   useEffect(() => {
-    let isMounted = true;
-    
-    const checkAuth = async () => {
-      try {
-        // Check for student session
-        const studentData = localStorage.getItem('currentStudent');
-        const vendorData = localStorage.getItem('currentVendor');
-        
-        if (studentData) {
-          const student = JSON.parse(studentData);
-          if (student?.token) {
-            // Only update state if the component is still mounted
-            if (isMounted) {
-              setStudent(student);
-              // Only redirect if we're on the home page
-              if (location.pathname === '/' || location.pathname === '') {
-                navigate('/student/dashboard', { replace: true });
-              }
-            }
-            return;
-          }
-        }
-        
-        // Check for vendor session
-        if (vendorData) {
-          const vendor = JSON.parse(vendorData);
-          if (vendor?.token) {
-            // Only update state if the component is still mounted
-            if (isMounted) {
-              setSeller(vendor);
-              // Only redirect if we're on the home page
-              if (location.pathname === '/' || location.pathname === '') {
-                navigate('/vendor/dashboard', { replace: true });
-              }
-            }
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('Error checking auth status:', error);
-        // Clear invalid data
-        localStorage.removeItem('currentStudent');
-        localStorage.removeItem('currentVendor');
+    // Only redirect if we're on the home page and have authenticated user
+    if (location.pathname === '/' || location.pathname === '') {
+      if (Student?.token) {
+        navigate('/student/dashboard', { replace: true });
+      } else if (seller?.token) {
+        navigate('/vendor/dashboard', { replace: true });
       }
-    };
-    
-    checkAuth();
-    
-    // Cleanup function to prevent state updates after unmount
-    return () => {
-      isMounted = false;
-    };
-  }, [navigate, location.pathname]);
+    }
+  }, [Student, seller, location.pathname, navigate]);
 
   return (
     <div className="min-h-screen flex flex-col">

@@ -6,9 +6,10 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   const { Student, seller } = useAppcontext();
   
   // Check if user is authenticated based on the required role
+  // Also verify token exists to ensure valid session
   const isAuthenticated = 
-    (requiredRole === 'student' && Student) || 
-    (requiredRole === 'vendor' && seller);
+    (requiredRole === 'student' && Student && Student.token) || 
+    (requiredRole === 'vendor' && seller && seller.token);
   
   if (!isAuthenticated) {
     // Redirect to home if not authenticated with the required role

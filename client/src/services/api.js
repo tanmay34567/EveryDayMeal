@@ -12,18 +12,39 @@ const api = axios.create({
 // Helper function to get auth token from localStorage
 const getAuthToken = () => {
   try {
+    // Check if localStorage is available (handles SSR and restricted environments)
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return null;
+    }
+
     // Check for vendor token first, then student token
     const vendorData = localStorage.getItem('currentVendor');
     const studentData = localStorage.getItem('currentStudent');
     
     if (vendorData) {
-      const vendor = JSON.parse(vendorData);
-      return vendor.token;
+      try {
+        const vendor = JSON.parse(vendorData);
+        if (vendor && vendor.token && typeof vendor.token === 'string') {
+          return vendor.token;
+        }
+      } catch (parseError) {
+        console.error('Error parsing vendor data:', parseError);
+        // Clear corrupted data
+        localStorage.removeItem('currentVendor');
+      }
     } 
     
     if (studentData) {
-      const student = JSON.parse(studentData);
-      return student.token;
+      try {
+        const student = JSON.parse(studentData);
+        if (student && student.token && typeof student.token === 'string') {
+          return student.token;
+        }
+      } catch (parseError) {
+        console.error('Error parsing student data:', parseError);
+        // Clear corrupted data
+        localStorage.removeItem('currentStudent');
+      }
     }
     
     return null;
@@ -35,21 +56,30 @@ const getAuthToken = () => {
 
 // Add a request interceptor to include the auth token in requests
 api.interceptors.request.use(
-  config => {
-    // Get token from localStorage
-    const token = getAuthToken();
-    
-    // If token exists, add it to the Authorization header
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-      console.log('Adding auth token to request:', config.url);
-    } else {
-      console.log('No auth token available for request:', config.url);
+  (config) => {
+    try {
+      // Get token from localStorage
+      const token = getAuthToken();
+      
+      // If token exists, add it to the Authorization header
+      if (token && typeof token === 'string' && token.trim().length > 0) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
+        if (import.meta.env.DEV) {
+          console.log('Adding auth token to request:', config.url);
+        }
+      } else {
+        if (import.meta.env.DEV) {
+          console.log('No auth token available for request:', config.url);
+        }
+      }
+    } catch (error) {
+      console.error('Error in request interceptor:', error);
     }
     
     return config;
   },
-  error => {
+  (error) => {
     console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
