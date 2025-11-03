@@ -1,11 +1,11 @@
-import api, { getFullUrl } from './api';
+import api from './api';
 
 // Contact services
 const contactService = {
   // Send a contact form message
   sendMessage: async (contactData) => {
     try {
-      const response = await api.post(getFullUrl('/contact'), contactData);
+      const response = await api.post('/api/contact', contactData);
       return response.data;
     } catch (error) {
       throw error;
@@ -15,7 +15,7 @@ const contactService = {
   // Get all contact messages (admin only)
   getMessages: async () => {
     try {
-      const response = await api.get(getFullUrl('/contact'));
+      const response = await api.get('/api/contact');
       return response.data;
     } catch (error) {
       throw error;

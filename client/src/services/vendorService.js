@@ -1,10 +1,10 @@
-import api, { getFullUrl } from './api';
+import api from './api';
 
 // Vendor authentication services
 export const vendorAuth = {
   sendOtp: async (data) => {
     try {
-      const response = await api.post(getFullUrl('/Vendor/otp/send'), data);
+      const response = await api.post('/api/Vendor/otp/send', data);
       return response.data;
     } catch (error) {
       throw error;
@@ -13,7 +13,7 @@ export const vendorAuth = {
 
   verifyOtp: async (data) => {
     try {
-      const response = await api.post(getFullUrl('/Vendor/otp/verify'), data);
+      const response = await api.post('/api/Vendor/otp/verify', data);
       return response.data;
     } catch (error) {
       throw error;
@@ -23,7 +23,7 @@ export const vendorAuth = {
   // Logout a vendor
   logout: async () => {
     try {
-      const response = await api.post(getFullUrl('/Vendor/logout'));
+      const response = await api.post('/api/Vendor/logout');
       return response.data;
     } catch (error) {
       throw error;
@@ -33,7 +33,7 @@ export const vendorAuth = {
   // Get current vendor profile
   getProfile: async () => {
     try {
-      const response = await api.get(getFullUrl('/Vendor/profile'));
+      const response = await api.get('/api/Vendor/profile');
       return response.data;
     } catch (error) {
       throw error;
@@ -43,7 +43,7 @@ export const vendorAuth = {
   // Update vendor profile
   updateProfile: async (profileData) => {
     try {
-      const response = await api.put(getFullUrl('/Vendor/profile'), profileData);
+      const response = await api.put('/api/Vendor/profile', profileData);
       return response.data;
     } catch (error) {
       throw error;
@@ -54,7 +54,7 @@ export const vendorAuth = {
 export const vendorReviews = {
   get: async () => {
     try {
-      const response = await api.get(getFullUrl('/Vendor/reviews'));
+      const response = await api.get('/api/Vendor/reviews');
       return response.data;
     } catch (error) {
       console.error('Error fetching vendor reviews:', error);
@@ -80,7 +80,7 @@ export const vendorMenus = {
   // Get vendor's menu
   getMenus: async () => {
     try {
-      const url = getFullUrl('/Vendor/menu');
+      const url = '/api/Vendor/menu';
       console.log('Fetching menu from:', url);
       
       // Check if we have a token before making the request
@@ -145,7 +145,7 @@ export const vendorMenus = {
   // Create or update a menu
   createMenu: async (menuData) => {
     try {
-      const response = await api.post(getFullUrl('/Vendor/menu'), menuData);
+      const response = await api.post('/api/Vendor/menu', menuData);
       // Check if the response contains data.data (the actual menu object)
       if (response.data && response.data.success && response.data.data) {
         return response.data.data;
@@ -161,7 +161,7 @@ export const vendorMenus = {
   deleteMenu: async () => {
     try {
       console.log('Attempting to delete menu');
-      const response = await api.delete(getFullUrl('/Vendor/menu'));
+      const response = await api.delete('/api/Vendor/menu');
       console.log('Menu deleted successfully');
       return response.data;
     } catch (error) {
@@ -195,7 +195,7 @@ export const vendorOrders = {
   // Get all orders for the vendor
   getOrders: async () => {
     try {
-      const response = await api.get(getFullUrl('/Vendor/orders'));
+      const response = await api.get('/api/Vendor/orders');
       return response.data;
     } catch (error) {
       throw error;

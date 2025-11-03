@@ -1,4 +1,4 @@
-import api, { getFullUrl } from './api';
+import api from './api';
 
 // Helper function to get and set auth token
 const updateAuthToken = () => {
@@ -33,7 +33,7 @@ export const studentAuth = {
   // Register a new student
   register: async (userData) => {
     try {
-      const response = await api.post(getFullUrl('/Student/register'), userData);
+      const response = await api.post('/api/Student/register', userData);
       return response.data;
     } catch (error) {
       throw error;
@@ -43,7 +43,7 @@ export const studentAuth = {
   // Login a student
   login: async (credentials) => {
     try {
-      const response = await api.post(getFullUrl('/Student/login'), credentials);
+      const response = await api.post('/api/Student/login', credentials);
       return response.data;
     } catch (error) {
       throw error;
@@ -53,7 +53,7 @@ export const studentAuth = {
   // Send email OTP to student
   sendEmailOtp: async (email) => {
     try {
-      const response = await api.post(getFullUrl('/Student/otp/send'), { email });
+      const response = await api.post('/api/Student/otp/send', { email });
       return response.data;
     } catch (error) {
       throw error;
@@ -64,7 +64,7 @@ export const studentAuth = {
   verifyEmailOtp: async (email, otp) => {
     try {
       console.log('Verifying OTP for email:', email);
-      const response = await api.post(getFullUrl('/Student/otp/verify'), { email, otp });
+      const response = await api.post('/api/Student/otp/verify', { email, otp });
       console.log('OTP verification response:', response.data);
       
       // If verification is successful, ensure we have the token
@@ -107,7 +107,7 @@ export const studentAuth = {
   // Logout a student
   logout: async () => {
     try {
-      const response = await api.post(getFullUrl('/Student/logout'));
+      const response = await api.post('/api/Student/logout');
       return response.data;
     } catch (error) {
       throw error;
@@ -117,7 +117,7 @@ export const studentAuth = {
   // Get current student profile
   getProfile: async () => {
     try {
-      const response = await api.get(getFullUrl('/Student/profile'));
+      const response = await api.get('/api/Student/profile');
       return response.data;
     } catch (error) {
       throw error;
@@ -127,7 +127,7 @@ export const studentAuth = {
   // Update student profile
   updateProfile: async (profileData) => {
     try {
-      const response = await api.put(getFullUrl('/Student/profile'), profileData);
+      const response = await api.put('/api/Student/profile', profileData);
       
       // If the update was successful and we have student data in the response
       if (response.data && response.data.success && response.data.student) {
@@ -198,8 +198,8 @@ export const studentMeals = {
           `(${api.defaults.headers.common['Authorization'].substring(0, 20)}...)` : ''
       );
       
-      console.log('Fetching available vendors from:', getFullUrl('/Student/vendors'));
-      const response = await api.get(getFullUrl('/Student/vendors'));
+      console.log('Fetching available vendors from:', '/api/Student/vendors');
+      const response = await api.get('/api/Student/vendors');
       
       console.log('Vendors API response:', response.data);
       if (response.data && response.data.success) {
@@ -237,7 +237,7 @@ export const studentMeals = {
       }
       
       console.log('Fetching menu for vendor:', vendorEmail);
-      const response = await api.get(getFullUrl(`/Vendor/menu/${vendorEmail}`));
+      const response = await api.get(`/api/Vendor/menu/${vendorEmail}`);
       console.log('Vendor menu API response:', response.data);
       
       if (response.data && response.data.success && response.data.data) {
@@ -269,7 +269,7 @@ export const studentMeals = {
   // Get available menus
   getMenus: async () => {
     try {
-      const response = await api.get(getFullUrl('/Student/menus'));
+      const response = await api.get('/api/Student/menus');
       return response.data;
     } catch (error) {
       throw error;
@@ -279,7 +279,7 @@ export const studentMeals = {
   // Place an order
   placeOrder: async (orderData) => {
     try {
-      const response = await api.post(getFullUrl('/Student/order'), orderData);
+      const response = await api.post('/api/Student/order', orderData);
       return response.data;
     } catch (error) {
       throw error;
@@ -289,7 +289,7 @@ export const studentMeals = {
   // Get student's order history
   getOrderHistory: async () => {
     try {
-      const response = await api.get(getFullUrl('/Student/orders'));
+      const response = await api.get('/api/Student/orders');
       return response.data;
     } catch (error) {
       throw error;
@@ -311,17 +311,17 @@ export const studentMeals = {
 export const studentReviews = {
   // List reviews and average for a vendor
   getByVendor: async (vendorEmail, { page = 1, limit = 10 } = {}) => {
-    const response = await api.get(getFullUrl(`/Student/reviews/${vendorEmail}?page=${page}&limit=${limit}`));
+    const response = await api.get(`/api/Student/reviews/${vendorEmail}?page=${page}&limit=${limit}`);
     return response.data;
   },
   // Create or update own review for a vendor
   upsert: async (vendorEmail, { rating, comment, vendorName }) => {
-    const response = await api.post(getFullUrl(`/Student/reviews/${vendorEmail}`), { rating, comment, vendorName });
+    const response = await api.post(`/api/Student/reviews/${vendorEmail}`, { rating, comment, vendorName });
     return response.data;
   },
   // Delete own review for a vendor
   remove: async (vendorEmail) => {
-    const response = await api.delete(getFullUrl(`/Student/reviews/${vendorEmail}`));
+    const response = await api.delete(`/api/Student/reviews/${vendorEmail}`);
     return response.data;
   }
 };
