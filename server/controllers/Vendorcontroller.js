@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import Vendor from '../models/Vendor.js';
 import Menu from '../models/Menu.js';
 import Review from '../models/Review.js';
@@ -9,6 +10,46 @@ const decodeToken = (token) => {
   try {
     return jwt.verify(token, process.env.JWT_SECRET);
   } catch (error) {
+    return null;
+  }
+};
+
+// Helper function to find vendor by ID with fallback to email
+const findVendorById = async (vendorId, token = null, selectFields = null) => {
+  try {
+    // Try to find by ID first, ensuring it's a valid ObjectId
+    let vendor = null;
+    
+    // Check if vendorId is a valid ObjectId string
+    if (mongoose.Types.ObjectId.isValid(vendorId)) {
+      const query = Vendor.findById(vendorId);
+      if (selectFields) {
+        vendor = await query.select(selectFields);
+      } else {
+        vendor = await query;
+      }
+    }
+    
+    // If vendor not found by ID, try email fallback
+    if (!vendor && token) {
+      console.log('⚠️ Vendor not found by ID, trying email fallback...');
+      const decoded = decodeToken(token);
+      if (decoded && decoded.email) {
+        const query = Vendor.findOne({ email: decoded.email });
+        if (selectFields) {
+          vendor = await query.select(selectFields);
+        } else {
+          vendor = await query;
+        }
+        if (vendor) {
+          console.log('✅ Vendor found by email from token:', vendor.email);
+        }
+      }
+    }
+    
+    return vendor;
+  } catch (error) {
+    console.error('Error finding vendor:', error);
     return null;
   }
 };
@@ -179,8 +220,30 @@ export const login = async (req, res) => {
 // Auth Check
 export const isAuth = async (req, res) => {
   try {
-    const vendor = await Vendor.findById(req.VendorId).select('-password');
-    if (!vendor) return res.status(404).json({ success: false, message: 'Vendor not found' });
+    let vendor = await Vendor.findById(req.VendorId).select('-password');
+    
+    // If vendor not found by ID, try to find by email from token
+    if (!vendor) {
+      console.log('⚠️ Vendor not found by ID in isAuth, trying email fallback...');
+      try {
+        const token = req.headers.authorization?.split(' ')[1] || req.cookies?.Vendorlogintoken;
+        if (token) {
+          const decoded = decodeToken(token);
+          if (decoded && decoded.email) {
+            vendor = await Vendor.findOne({ email: decoded.email }).select('-password');
+            if (vendor) {
+              console.log('✅ Vendor found by email from token in isAuth:', vendor.email);
+            }
+          }
+        }
+      } catch (tokenError) {
+        console.log('⚠️ Could not decode token for email fallback in isAuth');
+      }
+      
+      if (!vendor) {
+        return res.status(404).json({ success: false, message: 'Vendor not found' });
+      }
+    }
 
     return res.status(200).json({ success: true, vendor });
   } catch (error) {
@@ -210,10 +273,34 @@ export const saveMenu = async (req, res) => {
     console.log('💾 Save Menu called - VendorId:', req.VendorId);
     console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
     
-    const vendor = await Vendor.findById(req.VendorId);
+    let vendor = await Vendor.findById(req.VendorId);
+    
+    // If vendor not found by ID, try to get email from token and find by email
     if (!vendor) {
-      console.log('❌ Vendor not found with ID:', req.VendorId);
-      return res.status(404).json({ success: false, message: 'Vendor not found' });
+      console.log('⚠️ Vendor not found by ID, checking token for email...');
+      try {
+        const token = req.headers.authorization?.split(' ')[1] || req.cookies?.Vendorlogintoken;
+        if (token) {
+          const decoded = decodeToken(token);
+          if (decoded) {
+            console.log('📧 Decoded token:', JSON.stringify(decoded, null, 2));
+            // Try to find vendor by email if available in token
+            if (decoded.email) {
+              vendor = await Vendor.findOne({ email: decoded.email });
+              if (vendor) {
+                console.log('✅ Vendor found by email from token:', vendor.email);
+              }
+            }
+          }
+        }
+      } catch (tokenError) {
+        console.log('⚠️ Could not decode token for email fallback');
+      }
+      
+      if (!vendor) {
+        console.log('❌ Vendor not found with ID:', req.VendorId);
+        return res.status(404).json({ success: false, message: 'Vendor not found' });
+      }
     }
 
     // Use vendor email from authenticated user, not from request body for security
