@@ -7,6 +7,7 @@ import StudentLogin from './components/StudentLogin';
 import VendorLogin from './components/VendorLogin';
 import VendorDashboard from './pages/VendorDashboard';
 import StudentDashboard from './pages/StudentDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import { useAppcontext } from './context/Appcontext';
 import About from './pages/Aboutus';
 import Contact from './pages/Contactus';
@@ -37,7 +38,12 @@ const App = () => {
       if (Student?.token) {
         navigate('/student/dashboard', { replace: true });
       } else if (seller?.token) {
-        navigate('/vendor/dashboard', { replace: true });
+        // Check if admin
+        if (seller.isAdmin) {
+          navigate('/admin/dashboard', { replace: true });
+        } else {
+          navigate('/vendor/dashboard', { replace: true });
+        }
       }
     }
   }, [Student, seller, location.pathname, navigate]);
@@ -92,6 +98,7 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact/>} />
           <Route path="/vendor/apply" element={<VendorApplication />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </div>
             

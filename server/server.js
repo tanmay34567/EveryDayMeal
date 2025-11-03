@@ -8,6 +8,7 @@ import VendorRouter from './routes/VendorRoute.js';
 import router from './routes/contactRoutes.js';
 import scheduleMenuDeletion from './cron/deleteMenus.js';
 import VendorApplicationRouter from './routes/VendorApplicationRoute.js';
+import AdminRouter from './routes/AdminRoute.js';
 
 // At the beginning of the file
 console.log("Server is starting...");
@@ -47,6 +48,7 @@ app.use('/api/Student', StudentRouter)
 app.use('/api/Vendor', VendorRouter)
 app.use('/api', router);
 app.use('/api/vendor', VendorApplicationRouter);
+app.use('/api/admin', AdminRouter);
 
 // 404 handler for undefined routes
 app.use((req, res) => {

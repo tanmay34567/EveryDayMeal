@@ -55,11 +55,35 @@ const VendorLogin = ({ onClose }) => {
     try {
       const response = await vendorAuth.verifyOtp({ email, otp });
       if (response.success) {
-        // Ensure vendor data has all required fields including token
+        // Check if this is admin login
+        if (response.isAdmin) {
+          const adminData = {
+            ...(response.user || {}),
+            email: response.user?.email || email,
+            token: response.token,
+            isAdmin: true
+          };
+          
+          // Validate token exists before storing
+          if (!adminData.token) {
+            setError('Authentication token missing. Please try again.');
+            return;
+          }
+          
+          // Store admin data
+          setseller(adminData);
+          toast.success('Admin login successful!');
+          onClose();
+          navigate('/admin/dashboard');
+          return;
+        }
+
+        // Regular vendor login
         const vendorData = {
           ...(response.vendor || {}),
           email: response.vendor?.email || email,
-          token: response.token || response.vendor?.token
+          token: response.token || response.vendor?.token,
+          isAdmin: false
         };
         
         // Validate token exists before storing
