@@ -5,6 +5,29 @@ import Vendor from '../models/Vendor.js';
 import Menu from '../models/Menu.js';
 import Review from '../models/Review.js';
 
+// Get Vendor Profile
+export const getProfile = async (req, res) => {
+  try {
+    // The vendor is already attached to the request by the authVendor middleware
+    const vendor = req.vendor;
+    
+    if (!vendor) {
+      return res.status(404).json({ success: false, message: 'Vendor not found' });
+    }
+
+    // Return the vendor profile data (excluding sensitive information)
+    const { password, __v, ...vendorData } = vendor._doc;
+    
+    return res.status(200).json({
+      success: true,
+      data: vendorData
+    });
+  } catch (error) {
+    console.error('Error fetching vendor profile:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 // Helper function to decode JWT token
 const decodeToken = (token) => {
   try {
@@ -500,7 +523,8 @@ export const getMenuByEmail = async (req, res) => {
   try {
     const vendorEmail = req.params.email;
 
-    const vendor = await Vendor.findOne({ email: vendorEmail });
+    const vendor = await Vendor.findOne({ email: vendorEmail })
+      .select('name email contactNumber messName address city pincode');
     if (!vendor) {
       return res.status(404).json({ success: false, message: 'Vendor not found' });
     }
@@ -510,7 +534,21 @@ export const getMenuByEmail = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Menu not found for this vendor' });
     }
 
-    return res.status(200).json({ success: true, data: menu });
+    // Include vendor information with the menu
+    const response = {
+      ...menu.toObject(),
+      vendorInfo: {
+        name: vendor.name,
+        email: vendor.email,
+        contactNumber: vendor.contactNumber,
+        messName: vendor.messName,
+        address: vendor.address,
+        city: vendor.city,
+        pincode: vendor.pincode
+      }
+    };
+
+    return res.status(200).json({ success: true, data: response });
   } catch (error) {
     console.error('Get Menu By Email Error:', error.message);
     return res.status(500).json({ success: false, message: 'Server error' });

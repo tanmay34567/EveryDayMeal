@@ -233,7 +233,7 @@ const VendorDashboard = () => {
         className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-4 sm:p-6 md:p-8"
       >
         <h1 className="text-3xl sm:text-4xl font-bold text-center text-indigo-700 mb-6 sm:mb-8">
-          <span>{capitalize(seller?.name) || "Vendor"}</span> Dashboard
+          <span>{capitalize(seller?.messName) || capitalize(seller?.name) || "Vendor"}</span> Dashboard
         </h1>
         
         {/* Form for creating/editing menu */}
@@ -414,6 +414,7 @@ const VendorDashboard = () => {
             ))}
           </div>
         )}
+
 
         {/* Reviews Panel */}
         <div className="mt-8 sm:mt-10 p-4 sm:p-6 border border-gray-200 bg-gray-50 rounded-xl">

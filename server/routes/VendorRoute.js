@@ -1,7 +1,7 @@
 import express from 'express';
 
 
-import { deleteMenu, getMenu, getMenuByEmail, isAuth, logout, saveMenu, getVendorReviews } from '../controllers/Vendorcontroller.js';
+import { deleteMenu, getMenu, getMenuByEmail, isAuth, logout, saveMenu, getVendorReviews, getProfile } from '../controllers/Vendorcontroller.js';
 import { sendOtp, verifyOtp } from '../controllers/VendorOtpController.js';
 import authStudent from '../middlewares/authStudent.js';
 import authVendor from '../middlewares/authVendor.js';
@@ -19,6 +19,7 @@ console.log('  - POST /api/Vendor/menu (vendor auth)');
 console.log('  - GET /api/Vendor/menu (vendor auth)');
 console.log('  - DELETE /api/Vendor/menu (vendor auth)');
 console.log('  - GET /api/Vendor/reviews (vendor auth)');
+console.log('  - GET /api/Vendor/profile (vendor auth)');
 
 // Public routes
 VendorRouter.post('/otp/send', sendOtp);
@@ -42,6 +43,9 @@ VendorRouter.get('/menu/:email', authStudent, getMenuByEmail);
 
 // Vendor reviews (protected)
 VendorRouter.get('/reviews', authVendor, getVendorReviews);
+
+// Vendor profile (protected)
+VendorRouter.get('/profile', authVendor, getProfile);
 
 
 export default VendorRouter;

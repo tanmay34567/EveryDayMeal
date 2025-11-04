@@ -116,12 +116,13 @@ const StudentDashboard = () => {
                 className="bg-indigo-50 text-indigo-900 text-left p-3 sm:p-4 rounded-lg shadow hover:bg-indigo-100 transition-all border border-indigo-100 w-full"
               >
                 <div className="flex items-center justify-between">
-                  <div className="text-base sm:text-lg font-semibold">{capitalize(vendor.name)}</div>
+                  <div className="text-base sm:text-lg font-semibold">
+                    {capitalize(vendor.messName) || capitalize(vendor.name)}
+                  </div>
                   <div className="text-xs sm:text-sm text-indigo-700 font-medium">
                     {Number(vendor.averageRating || 0).toFixed(2)} / 5 • {vendor.reviewCount || 0}
                   </div>
                 </div>
-                <div className="text-[11px] sm:text-xs text-indigo-700 mt-1 break-all">{vendor.email}</div>
               </button>
             ))}
           </div>

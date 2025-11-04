@@ -149,16 +149,46 @@ const Navbar = () => {
               </button>
 
               {showProfileDropdown && (
-                <div className="absolute top-14 right-0 bg-white text-gray-800 shadow-lg rounded-lg p-4 w-[90vw] max-w-xs sm:w-64">
-                  <p className="font-semibold">{capitalize(user.name)}</p>
+                <div className="absolute top-14 right-0 bg-white text-gray-800 shadow-lg rounded-lg p-4 w-[90vw] max-w-xs sm:w-80 max-h-[80vh] overflow-y-auto">
+                  <p className="font-semibold text-lg">{capitalize(user.name)}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
-                  <p className="text-sm text-gray-500">{user.contactNumber}</p>
+                  <p className="text-sm text-gray-500">
+                    {user.contactNumber ? `+91 ${user.contactNumber}` : 'No contact'}
+                  </p>
                   <p className="text-sm text-indigo-600 mt-1 font-medium">
                     {userType === "student" ? "Student Account" : "Vendor Account"}
                   </p>
+                  
+                  {/* Vendor Profile Section - Only show for vendors */}
+                  {seller && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <h3 className="font-semibold text-sm mb-2">Vendor Profile</h3>
+                      <div className="space-y-1 text-xs text-gray-600">
+                        {seller.messName && (
+                          <p><span className="font-medium">Mess Name:</span> {seller.messName}</p>
+                        )}
+                        {seller.address && (
+                          <p><span className="font-medium">Address:</span> {seller.address}</p>
+                        )}
+                        {seller.city && (
+                          <p><span className="font-medium">City:</span> {seller.city}</p>
+                        )}
+                        {seller.pincode && (
+                          <p><span className="font-medium">Pincode:</span> {seller.pincode}</p>
+                        )}
+                        {seller.gstinOrImages && (
+                          <p><span className="font-medium">GSTIN/Images:</span> {seller.gstinOrImages}</p>
+                        )}
+                        {seller.gstinNumber && (
+                          <p><span className="font-medium">GSTIN Number:</span> {seller.gstinNumber}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
                   <button
                     onClick={handleLogout}
-                    className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white py-1 rounded-full text-sm transition"
+                    className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-full text-sm transition"
                   >
                     Logout
                   </button>

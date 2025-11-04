@@ -136,7 +136,7 @@ export const getAvailableVendors = async (req, res) => {
 
     // Get vendor details for each email
     const vendors = await Vendor.find({ email: { $in: vendorEmails } })
-      .select('name email contactNumber');
+      .select('name email contactNumber messName address city pincode');
 
     // Aggregate reviews to compute averages per vendorEmail
     const reviewAgg = await Review.aggregate([
@@ -159,6 +159,10 @@ export const getAvailableVendors = async (req, res) => {
       name: v.name,
       email: v.email,
       contactNumber: v.contactNumber,
+      messName: v.messName,
+      address: v.address,
+      city: v.city,
+      pincode: v.pincode,
       averageRating: reviewMap[v.email]?.averageRating || 0,
       reviewCount: reviewMap[v.email]?.count || 0
     }));

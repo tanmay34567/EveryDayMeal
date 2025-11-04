@@ -14,6 +14,7 @@ const StudentVendorMenu = () => {
   const { vendorEmail } = useParams();
   const [menu, setMenu] = useState(null);
   const [vendorName, setVendorName] = useState("");
+  const [vendorInfo, setVendorInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { navigate, Student } = useAppcontext();
@@ -36,7 +37,10 @@ const StudentVendorMenu = () => {
         
         if (menuData) {
           setMenu(menuData);
-          setVendorName(menuData.vendorName || "");
+          // Use messName if available, otherwise fall back to vendorName
+          const displayName = menuData.vendorInfo?.messName || menuData.vendorName || "";
+          setVendorName(displayName);
+          setVendorInfo(menuData.vendorInfo || null);
         } else {
           // If no menu data is returned, set menu to null and show a message
           console.log("No menu found for this vendor");
@@ -184,6 +188,29 @@ const StudentVendorMenu = () => {
           </h1>
           <div className="w-24 hidden sm:block"></div> {/* Empty div for balance on larger screens */}
         </div>
+
+        {/* Vendor Information */}
+        {vendorInfo && (
+          <div className="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-100">
+            <div className="space-y-1 text-sm">
+              <p className="text-gray-700">
+                <span className="font-medium">Email:</span> {vendorInfo.email}
+              </p>
+              {vendorInfo.contactNumber && (
+                <p className="text-gray-700">
+                  <span className="font-medium">Contact:</span> +91 {vendorInfo.contactNumber}
+                </p>
+              )}
+              {vendorInfo.address && (
+                <p className="text-gray-700">
+                  <span className="font-medium">Address:</span> {vendorInfo.address}
+                  {vendorInfo.city && `, ${vendorInfo.city}`}
+                  {vendorInfo.pincode && ` - ${vendorInfo.pincode}`}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {loading ? (
           <div className="flex justify-center items-center py-12">
