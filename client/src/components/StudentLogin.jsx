@@ -160,7 +160,7 @@ const StudentLogin = ({ onClose }) => {
             onChange={handleEmailChange}
             value={email}
             placeholder="Type here"
-            className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500"
+            className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500 text-black"
             type="email"
             required
           />
@@ -173,7 +173,7 @@ const StudentLogin = ({ onClose }) => {
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
               value={otp}
               placeholder="6-digit OTP"
-              className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500"
+              className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500 text-black"
               type="tel"
               maxLength="6"
               required

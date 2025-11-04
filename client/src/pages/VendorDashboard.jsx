@@ -263,7 +263,7 @@ const VendorDashboard = () => {
               <select
                 value={day}
                 onChange={(e) => setDay(e.target.value)}
-                className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm shadow-sm focus:ring-2 focus:ring-green-500"
+                className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-black text-sm shadow-sm focus:ring-2 focus:ring-green-500"
               >
                 <option value="" className="bg-white">Day</option>
                 {[
@@ -289,7 +289,7 @@ const VendorDashboard = () => {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm shadow-sm focus:ring-2 focus:ring-green-500"
+                className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-black text-sm shadow-sm focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -323,7 +323,7 @@ const VendorDashboard = () => {
                 value={menuData[meal].items}
                 onChange={(e) => handleChange(meal, "items", e.target.value)}
                 placeholder={`Enter ${meal} menu...`}
-                className="mb-2 w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm placeholder-gray-500 focus:ring-2 focus:ring-green-500"
+                className="mb-2 w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-black text-sm placeholder-gray-500 focus:ring-2 focus:ring-green-500"
               />
 
               <div className="grid grid-cols-2 gap-2">
@@ -335,7 +335,7 @@ const VendorDashboard = () => {
                     type="time"
                     value={menuData[meal].startTime}
                     onChange={(e) => handleChange(meal, "startTime", e.target.value)}
-                    className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-2 focus:ring-green-500"
+                    className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-black text-sm focus:ring-2 focus:ring-green-500"
                   />
                 </div>
                 <div>
@@ -346,7 +346,7 @@ const VendorDashboard = () => {
                     type="time"
                     value={menuData[meal].endTime}
                     onChange={(e) => handleChange(meal, "endTime", e.target.value)}
-                    className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-2 focus:ring-green-500"
+                    className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-black text-sm focus:ring-2 focus:ring-green-500"
                   />
                 </div>
               </div>

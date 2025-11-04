@@ -134,13 +134,13 @@ const VendorLogin = ({ onClose }) => {
         
         <div className="w-full">
           <p>Email</p>
-          <input onChange={(e) => setEmail(e.target.value)} value={email} placeholder="Enter your registered email" className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500" type="email" required disabled={isOtpSent} />
+          <input onChange={(e) => setEmail(e.target.value)} value={email} placeholder="Enter your registered email" className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500 text-black" type="email" required disabled={isOtpSent} />
         </div>
 
         {isOtpSent && (
           <div className="w-full">
             <p>Enter OTP</p>
-            <input onChange={(e) => setOtp(e.target.value)} value={otp} placeholder="6-digit OTP" className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500" type="text" maxLength="6" required />
+            <input onChange={(e) => setOtp(e.target.value)} value={otp} placeholder="6-digit OTP" className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500 text-black" type="text" maxLength="6" required />
             <div className="flex justify-end mt-2 text-xs">
               <button type="button" disabled={resendTimer > 0 || loading} onClick={handleSendOtp} className={`${resendTimer > 0 ? 'text-gray-400' : 'text-green-600'} hover:opacity-90`}>
                 {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}

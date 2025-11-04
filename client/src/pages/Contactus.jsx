@@ -134,7 +134,7 @@ const Contact = () => {
                     type="text"
                     value={userData.name}
                     onChange={(e) => setUserData({ ...userData, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                     placeholder="Your name"
                   />
                   {errors.name && <span className="text-red-400 text-xs">{errors.name}</span>}
@@ -147,7 +147,7 @@ const Contact = () => {
                     type="email"
                     value={userData.email}
                     onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                     placeholder="example@gmail.com"
                   />
                   {errors.email && <span className="text-red-400 text-xs">{errors.email}</span>}
@@ -160,7 +160,7 @@ const Contact = () => {
                     type="text"
                     value={userData.phone}
                     onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                     placeholder="+91XXXXXXXXXX"
                   />
                   {errors.phone && <span className="text-red-400 text-xs">{errors.phone}</span>}
@@ -173,7 +173,7 @@ const Contact = () => {
                     type="text"
                     value={userData.subject}
                     onChange={(e) => setUserData({ ...userData, subject: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                     placeholder="Subject"
                   />
                   {errors.subject && <span className="text-red-400 text-xs">{errors.subject}</span>}
@@ -202,7 +202,7 @@ const Contact = () => {
                       setUserData({ ...userData, message: e.target.value });
                       setCharacterCount(e.target.value.length);
                     }}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                     placeholder="Type your message..."
                   />
                   {errors.message && (

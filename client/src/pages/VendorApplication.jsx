@@ -200,7 +200,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Full Name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                  className={`p-3 rounded-lg bg-gray-50 border text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
                     errors.name ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -216,7 +216,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   value={formData.contactNumber}
                   onChange={handleChange}
                   maxLength="10"
-                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                  className={`p-3 rounded-lg bg-gray-50 border text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
                     errors.contactNumber ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -233,7 +233,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                  className={`p-3 rounded-lg bg-gray-50 border text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
                     errors.email ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -248,7 +248,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Mess/Restaurant Name"
                   value={formData.messName}
                   onChange={handleChange}
-                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                  className={`p-3 rounded-lg bg-gray-50 border text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
                     errors.messName ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -265,7 +265,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Full Address"
                   value={formData.address}
                   onChange={handleChange}
-                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                  className={`p-3 rounded-lg bg-gray-50 border text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
                     errors.address ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -282,7 +282,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="City"
                   value={formData.city}
                   onChange={handleChange}
-                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                  className={`p-3 rounded-lg bg-gray-50 border text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
                     errors.city ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -298,7 +298,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   value={formData.pincode}
                   onChange={handleChange}
                   maxLength="6"
-                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                  className={`p-3 rounded-lg bg-gray-50 border text-black placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
                     errors.pincode ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -355,7 +355,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   multiple
                   accept="image/*"
                   onChange={handleFileChange}
-                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 focus:ring-2 focus:ring-green-500 w-full ${
+                  className={`p-3 rounded-lg bg-gray-50 border text-black focus:ring-2 focus:ring-green-500 w-full ${
                     errors.restaurantImages ? "border-red-500" : "border-gray-300"
                   }`}
                 />
