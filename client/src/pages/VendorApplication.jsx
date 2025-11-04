@@ -216,12 +216,12 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   value={formData.contactNumber}
                   onChange={handleChange}
                   maxLength="10"
-                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
-                    errors.contactNumber ? "border-red-500" : "border-purple-300/30"
+                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                    errors.contactNumber ? "border-red-500" : "border-gray-300"
                   }`}
                 />
                 {errors.contactNumber && (
-                  <p className="text-red-500 text-xs mt-1">{errors.contactNumber}</p>
+                  <p className="text-red-600 text-xs mt-1">{errors.contactNumber}</p>
                 )}
               </div>
 
@@ -233,11 +233,11 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
-                    errors.email ? "border-red-500" : "border-purple-300/30"
+                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                    errors.email ? "border-red-500" : "border-gray-300"
                   }`}
                 />
-                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                {errors.email && <p className="text-red-600 text-xs mt-1">{errors.email}</p>}
               </div>
 
               {/* Mess Name */}
@@ -248,12 +248,12 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Mess/Restaurant Name"
                   value={formData.messName}
                   onChange={handleChange}
-                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
-                    errors.messName ? "border-red-500" : "border-purple-300/30"
+                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                    errors.messName ? "border-red-500" : "border-gray-300"
                   }`}
                 />
                 {errors.messName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.messName}</p>
+                  <p className="text-red-600 text-xs mt-1">{errors.messName}</p>
                 )}
               </div>
 
@@ -265,12 +265,12 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Full Address"
                   value={formData.address}
                   onChange={handleChange}
-                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
-                    errors.address ? "border-red-500" : "border-purple-300/30"
+                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                    errors.address ? "border-red-500" : "border-gray-300"
                   }`}
                 />
                 {errors.address && (
-                  <p className="text-red-500 text-xs mt-1">{errors.address}</p>
+                  <p className="text-red-600 text-xs mt-1">{errors.address}</p>
                 )}
               </div>
 
@@ -282,11 +282,11 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="City"
                   value={formData.city}
                   onChange={handleChange}
-                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
-                    errors.city ? "border-red-500" : "border-purple-300/30"
+                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                    errors.city ? "border-red-500" : "border-gray-300"
                   }`}
                 />
-                {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
+                {errors.city && <p className="text-red-600 text-xs mt-1">{errors.city}</p>}
               </div>
 
               {/* Pincode */}
@@ -298,12 +298,12 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   value={formData.pincode}
                   onChange={handleChange}
                   maxLength="6"
-                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
-                    errors.pincode ? "border-red-500" : "border-purple-300/30"
+                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
+                    errors.pincode ? "border-red-500" : "border-gray-300"
                   }`}
                 />
                 {errors.pincode && (
-                  <p className="text-red-500 text-xs mt-1">{errors.pincode}</p>
+                  <p className="text-red-600 text-xs mt-1">{errors.pincode}</p>
                 )}
               </div>
             </div>
@@ -381,11 +381,11 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   ))}
                 </div>
                 {errors.restaurantImages && (
-                  <p className="text-red-500 text-xs mt-2">{errors.restaurantImages}</p>
+                  <p className="text-red-600 text-xs mt-2">{errors.restaurantImages}</p>
                 )}
               </div>
             )}
-            {errors.gstin && <p className="text-red-500 text-xs mt-2">{errors.gstin}</p>}
+            {errors.gstin && <p className="text-red-600 text-xs mt-2">{errors.gstin}</p>}
           </div>
 
           {/* Submit */}
