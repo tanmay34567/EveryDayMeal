@@ -1,351 +1,213 @@
 # 🍽️ EveryDayMeal
 
-A modern web application connecting students with local mess vendors, enabling easy menu browsing, ordering, and review management.
+> A modern web platform connecting students with local mess vendors for seamless menu browsing and ordering.
 
-## 📋 Table of Contents
+[![React](https://img.shields.io/badge/React-18.0-blue.svg)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-16+-green.svg)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-6.0-brightgreen.svg)](https://www.mongodb.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Environment Variables](#environment-variables)
-- [Running the Application](#running-the-application)
-- [API Documentation](#api-documentation)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
+## 🌟 Overview
 
-## 🎯 Overview
+EveryDayMeal is a full-stack web application designed to bridge the gap between students and mess vendors. Students can easily browse available vendors, view daily menus with timings, and leave reviews. Vendors can manage their menus, track feedback, and grow their business.
 
-EveryDayMeal is a full-stack web application that bridges the gap between students and mess vendors. Students can browse available vendors, view daily menus, and leave reviews, while vendors can manage their menus and track customer feedback.
+**Live Demo:** [Coming Soon]
 
-## ✨ Features
+## ✨ Key Features
 
-### For Students
-- 🔐 **Email OTP Authentication** - Secure login using email verification
-- 📱 **Browse Vendors** - View all available mess vendors with ratings
-- 🍕 **View Menus** - Check daily menus with meal timings (Breakfast, Lunch, Dinner)
-- ⭐ **Rate & Review** - Leave ratings and comments for vendors
-- 📍 **Vendor Information** - Access vendor contact details and addresses
-- 👤 **Profile Management** - Update personal information
+### 👨‍🎓 For Students
+- **Secure Authentication** - Email-based OTP login system
+- **Browse Vendors** - View all available mess vendors with ratings and reviews
+- **Daily Menus** - Check breakfast, lunch, and dinner menus with timings
+- **Rate & Review** - Share feedback and help other students make informed choices
+- **Vendor Details** - Access contact information and addresses
 
-### For Vendors
-- 🔐 **Email OTP Authentication** - Secure vendor login
-- 📝 **Menu Management** - Create, update, and delete daily menus
-- 📅 **Schedule Menus** - Set specific dates and days for menus
-- ⏰ **Meal Timings** - Define start and end times for each meal
-- 📊 **Review Dashboard** - View customer ratings and feedback
-- 🏪 **Business Profile** - Display mess name, address, and contact information
-
-### Admin Features
-- ✅ **Vendor Application Review** - Approve or reject vendor applications
-- 📋 **Application Management** - View pending, approved, and rejected applications
+### 🏪 For Vendors
+- **Menu Management** - Create, update, and schedule daily menus
+- **Meal Timings** - Set specific start and end times for each meal
+- **Customer Feedback** - View ratings and reviews from students
+- **Business Profile** - Showcase mess name, location, and contact details
+- **Dashboard Analytics** - Track customer engagement and ratings
 
 ## 🛠️ Tech Stack
 
-### Frontend
-- **React 18** - UI library
-- **React Router DOM** - Client-side routing
-- **Axios** - HTTP client
-- **Tailwind CSS** - Utility-first CSS framework
-- **Vite** - Build tool and dev server
+**Frontend:**
+- React 18 with Vite
+- React Router DOM
+- Axios
+- Tailwind CSS
 
-### Backend
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **MongoDB** - NoSQL database
-- **Mongoose** - MongoDB ODM
-- **JWT** - Authentication tokens
-- **bcryptjs** - Password hashing
-- **Nodemailer** - Email service (OTP delivery)
-- **Cloudinary** - Image storage (for vendor documents)
+**Backend:**
+- Node.js & Express.js
+- MongoDB with Mongoose
+- JWT Authentication
+- Nodemailer (OTP delivery)
+- Cloudinary (Image storage)
 
-## 📁 Project Structure
-
-```
-EveryDayMeal/
-├── client/                 # Frontend React application
-│   ├── src/
-│   │   ├── assets/        # Images, icons, and static files
-│   │   ├── components/    # Reusable React components
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── StudentLogin.jsx
-│   │   │   └── VendorLogin.jsx
-│   │   ├── context/       # React Context API
-│   │   │   └── Appcontext.jsx
-│   │   ├── pages/         # Page components
-│   │   │   ├── StudentDashboard.jsx
-│   │   │   ├── StudentVendorMenu.jsx
-│   │   │   ├── VendorDashboard.jsx
-│   │   │   ├── VendorApplication.jsx
-│   │   │   └── AdminDashboard.jsx
-│   │   ├── services/      # API service functions
-│   │   │   ├── api.js
-│   │   │   ├── studentService.js
-│   │   │   ├── vendorService.js
-│   │   │   └── adminService.js
-│   │   ├── App.jsx        # Main app component
-│   │   └── main.jsx       # Entry point
-│   ├── package.json
-│   └── vite.config.js
-│
-├── server/                # Backend Node.js application
-│   ├── controllers/       # Request handlers
-│   │   ├── Studentcontroller.js
-│   │   ├── Vendorcontroller.js
-│   │   ├── AdminController.js
-│   │   └── VendorApplicationController.js
-│   ├── models/           # MongoDB schemas
-│   │   ├── Student.js
-│   │   ├── Vendor.js
-│   │   ├── Menu.js
-│   │   ├── Review.js
-│   │   ├── Otp.js
-│   │   └── VendorApplication.js
-│   ├── routes/           # API routes
-│   │   ├── StudentRoute.js
-│   │   ├── VendorRoute.js
-│   │   ├── AdminRoute.js
-│   │   └── VendorApplicationRoute.js
-│   ├── middlewares/      # Custom middleware
-│   │   ├── authStudent.js
-│   │   ├── authVendor.js
-│   │   └── authAdmin.js
-│   ├── utils/            # Utility functions
-│   │   └── mailer.js
-│   ├── server.js         # Server entry point
-│   └── package.json
-│
-└── README.md
-```
-
-## 🚀 Installation
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v16 or higher)
-- MongoDB (local or Atlas)
+- Node.js (v16+)
+- MongoDB
 - npm or yarn
 
-### Clone the Repository
+### Installation
+
+1. **Clone the repository**
 ```bash
 git clone https://github.com/yourusername/EveryDayMeal.git
 cd EveryDayMeal
 ```
 
-### Install Dependencies
-
-#### Backend
+2. **Install backend dependencies**
 ```bash
 cd server
 npm install
 ```
 
-#### Frontend
+3. **Install frontend dependencies**
 ```bash
-cd client
+cd ../client
 npm install
 ```
 
-## 🔐 Environment Variables
+4. **Set up environment variables**
 
-### Backend (.env)
-Create a `.env` file in the `server` directory:
-
+Create `.env` in the `server` directory:
 ```env
-# Server Configuration
 PORT=4000
-NODE_ENV=development
-
-# Database
-MONGODB_URI=mongodb://localhost:27017/everydaymeal
-# OR for MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/everydaymeal
-
-# JWT Secret
-JWT_SECRET=your_super_secret_jwt_key_here
-
-# Email Configuration (for OTP)
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
 BREVO_API_KEY=your_brevo_api_key
 SENDER_EMAIL=noreply@everydaymeal.com
-SENDER_NAME=EveryDayMeal
-
-# Cloudinary (for image uploads)
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
-
-# Admin Credentials
-ADMIN_EMAIL=admin@everydaymeal.com
-ADMIN_PASSWORD=your_admin_password
-
-# CORS
 CLIENT_URL=http://localhost:5173
 ```
 
-### Frontend (.env)
-Create a `.env` file in the `client` directory:
-
+Create `.env` in the `client` directory:
 ```env
 VITE_API_URL=http://localhost:4000
 ```
 
-## 🏃 Running the Application
+5. **Run the application**
 
-### Development Mode
-
-#### Start Backend Server
+Backend:
 ```bash
 cd server
 npm start
 ```
-Server will run on `http://localhost:4000`
 
-#### Start Frontend Development Server
+Frontend:
 ```bash
 cd client
 npm run dev
 ```
-Frontend will run on `http://localhost:5173`
 
-### Production Build
+Visit `http://localhost:5173` to see the app in action! 🎉
 
-#### Build Frontend
-```bash
-cd client
-npm run build
+## 📁 Project Structure
+
+```
+EveryDayMeal/
+├── client/                 # React frontend
+│   ├── src/
+│   │   ├── components/    # Reusable components
+│   │   ├── pages/         # Page components
+│   │   ├── services/      # API services
+│   │   └── context/       # React Context
+│   └── package.json
+│
+├── server/                # Node.js backend
+│   ├── controllers/       # Route controllers
+│   ├── models/           # MongoDB models
+│   ├── routes/           # API routes
+│   ├── middlewares/      # Custom middleware
+│   └── package.json
+│
+└── README.md
 ```
 
-#### Start Production Server
-```bash
-cd server
-NODE_ENV=production npm start
-```
+## 🔌 API Endpoints
 
-## 📡 API Documentation
+### Student Routes
+- `POST /api/Student/otp/send` - Send OTP
+- `POST /api/Student/otp/verify` - Verify OTP & Login
+- `GET /api/Student/vendors` - Get all vendors
+- `GET /api/Vendor/menu/:email` - Get vendor menu
+- `POST /api/Student/reviews/:vendorEmail` - Add/Update review
 
-### Student Endpoints
-
-#### Authentication
-- `POST /api/Student/otp/send` - Send OTP to email
-- `POST /api/Student/otp/verify` - Verify OTP and login
-- `GET /api/Student/is-auth` - Check authentication status
-- `GET /api/Student/logout` - Logout student
-
-#### Vendors & Menus
-- `GET /api/Student/vendors` - Get all vendors with menus
-- `GET /api/Vendor/menu/:email` - Get vendor menu by email
-
-#### Reviews
-- `GET /api/Student/reviews/:vendorEmail` - Get reviews for a vendor
-- `POST /api/Student/reviews/:vendorEmail` - Create/update review
-- `DELETE /api/Student/reviews/:vendorEmail` - Delete own review
-
-#### Profile
-- `PUT /api/Student/profile` - Update student profile
-
-### Vendor Endpoints
-
-#### Authentication
-- `POST /api/Vendor/otp/send` - Send OTP to email
-- `POST /api/Vendor/otp/verify` - Verify OTP and login
-- `GET /api/Vendor/is-auth` - Check authentication status
-- `GET /api/Vendor/logout` - Logout vendor
-
-#### Menu Management
-- `POST /api/Vendor/menu` - Create or update menu
+### Vendor Routes
+- `POST /api/Vendor/otp/send` - Send OTP
+- `POST /api/Vendor/otp/verify` - Verify OTP & Login
+- `POST /api/Vendor/menu` - Create/Update menu
 - `GET /api/Vendor/menu` - Get own menu
-- `DELETE /api/Vendor/menu` - Delete own menu
+- `DELETE /api/Vendor/menu` - Delete menu
+- `GET /api/Vendor/reviews` - Get reviews
 
-#### Reviews
-- `GET /api/Vendor/reviews` - Get own reviews and ratings
+## 🎨 Screenshots
 
-#### Profile
-- `GET /api/Vendor/profile` - Get vendor profile
+### Student Dashboard
+![Student Dashboard](screenshots/student-dashboard.png)
 
-### Vendor Application Endpoints
-- `POST /api/vendor-application/apply` - Submit vendor application
-- `GET /api/vendor-application/applications` - Get all applications (Admin)
-- `PUT /api/vendor-application/applications/:id/approve` - Approve application (Admin)
-- `PUT /api/vendor-application/applications/:id/reject` - Reject application (Admin)
+### Vendor Menu Management
+![Vendor Dashboard](screenshots/vendor-dashboard.png)
 
-### Admin Endpoints
-- `POST /api/admin/login` - Admin login
-- `GET /api/admin/is-auth` - Check admin authentication
+### Menu View
+![Menu View](screenshots/menu-view.png)
 
 ## 🌐 Deployment
 
 ### Frontend (Vercel)
-1. Push code to GitHub
-2. Connect repository to Vercel
-3. Set environment variables:
-   - `VITE_API_URL=https://your-backend-url.com`
-4. Deploy
+```bash
+cd client
+npm run build
+# Deploy to Vercel
+```
 
-### Backend (Render)
-1. Push code to GitHub
-2. Create new Web Service on Render
-3. Set environment variables (all from `.env`)
-4. Set build command: `npm install`
-5. Set start command: `npm start`
-6. Deploy
+### Backend (Render/Railway)
+```bash
+cd server
+# Deploy to Render or Railway
+```
 
 ### Database (MongoDB Atlas)
-1. Create cluster on MongoDB Atlas
-2. Get connection string
-3. Update `MONGODB_URI` in backend environment variables
-
-## 🔑 Key Features Implementation
-
-### OTP Authentication
-- Email-based OTP system using Brevo API
-- 6-digit OTP with 5-minute expiration
-- Automatic account creation on first login
-
-### Menu Management
-- Day and date validation
-- Meal-wise menu (Breakfast, Lunch, Dinner)
-- Time slot management for each meal
-- Edit and delete functionality
-
-### Review System
-- 5-star rating system
-- Comment support
-- One review per student per vendor
-- Average rating calculation
-- Review count tracking
-
-### Navigation Guards
-- Prevents accidental back navigation on dashboards
-- Maintains user session state
-- Smooth page transitions
+- Create a cluster on MongoDB Atlas
+- Get connection string and update `MONGODB_URI`
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
 ## 📝 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👥 Authors
+## 👨‍💻 Author
 
-- **Tanmay Wagh** - Initial work
+**Tanmay Wagh**
+- GitHub: [@tanmay34567](https://github.com/tanmay34567)
+- Email: tanmayhtw@gmail.com
 
 ## 🙏 Acknowledgments
 
-- React and Express.js communities
-- MongoDB documentation
-- Tailwind CSS team
-- All contributors and testers
+- Thanks to all contributors who helped with this project
+- Inspired by the need to simplify student-vendor interactions
+- Built with ❤️ for the student community
 
 ## 📞 Support
 
-For support, email tanmayhtw@gmail.com or open an issue in the repository.
+If you have any questions or need help, please open an issue or contact me at tanmayhtw@gmail.com
 
 ---
 
-Made with ❤️ by Tanmay Wagh
+⭐ Star this repo if you find it helpful!
+
+**Made with ❤️ by Tanmay Wagh**
