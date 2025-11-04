@@ -343,11 +343,15 @@ export const verifyStudentEmailOtp = async (req, res) => {
     let isNewUser = false;
 
     if (!student) {
-      // Create new student with empty profile (use null to cooperate with unique+sparse index)
+      // Generate a temporary unique contact number for new users
+      // This will be updated when they complete their profile
+      const tempContactNumber = `TEMP-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      
+      // Create new student with temporary contact number
       student = await Student.create({
         email,
-        name: '',
-        contactNumber: null
+        name: 'New User', // Default name
+        contactNumber: tempContactNumber // Temporary unique value
       });
       isNewUser = true;
     }
