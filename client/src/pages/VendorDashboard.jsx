@@ -223,99 +223,99 @@ const VendorDashboard = () => {
 
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
-      <img
-        src={assets.bg}
-        alt="Background"
-        className="fixed top-0 left-0 w-full h-full object-cover z-[-1] bg-animation"
-      />
+      {/* Background with Image */}
+      <div className="fixed inset-0 z-[-1]">
+        <img
+          src={assets.bg}
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
       <div
         ref={formRef}
-        className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-4 sm:p-6 md:p-8"
+        className="max-w-7xl mx-auto px-4 py-4"
       >
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-indigo-700 mb-6 sm:mb-8">
-          <span>{capitalize(seller?.messName) || capitalize(seller?.name) || "Vendor"}</span> Dashboard
+        <h1 className="text-2xl md:text-3xl font-extrabold text-center mb-4 text-gray-900">
+          🏪 <span className="text-green-600">{capitalize(seller?.messName) || capitalize(seller?.name) || "Vendor"}</span> Dashboard
         </h1>
         
         {/* Form for creating/editing menu */}
-        <div className="mb-8">
+        <div className="mb-4">
           {/* Welcome message for new vendors */}
           {!savedMenu && (
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-blue-700">
-                    Welcome to your dashboard! You haven't created any menus yet.
-                  </p>
-                </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3 hover:border-blue-300 transition-all duration-300">
+              <div className="flex items-center gap-3">
+                <div className="text-3xl animate-pulse">ℹ️</div>
+                <p className="text-xs text-blue-700">
+                  Welcome to your dashboard! You haven't created any menus yet.
+                </p>
               </div>
             </div>
           )}
 
           {/* Day & Date */}
-          <div className="mb-6">
-            <label className="block font-semibold text-lg mb-1 text-gray-700">
-              Select Day
-            </label>
-            <select
-              value={day}
-              onChange={(e) => setDay(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-300 shadow-sm"
-            >
-              <option value="">Day</option>
-              {[
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday",
-              ].map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mb-6">
-            <label className="block font-semibold text-lg mb-1 text-gray-700">
-              Select Date
-            </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-300"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+            <div>
+              <label className="block font-semibold text-sm mb-1 text-gray-900">
+                📅 Select Day
+              </label>
+              <select
+                value={day}
+                onChange={(e) => setDay(e.target.value)}
+                className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm shadow-sm focus:ring-2 focus:ring-green-500"
+              >
+                <option value="" className="bg-white">Day</option>
+                {[
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday",
+                ].map((d) => (
+                  <option key={d} value={d} className="bg-white">
+                    {d}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block font-semibold text-sm mb-1 text-gray-900">
+                📆 Select Date
+              </label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm shadow-sm focus:ring-2 focus:ring-green-500"
+              />
+            </div>
           </div>
 
           {/* Meals */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           {Object.keys(menuData).map((meal) => (
             <div
               key={meal}
-              className="mb-8 bg-gray-50 border border-gray-200 p-4 sm:p-5 rounded-xl"
+              className="bg-white border-2 border-gray-200 p-4 rounded-xl shadow-md hover:shadow-green-500/30 hover:border-green-400 transition-all duration-300"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl sm:text-2xl font-semibold capitalize text-indigo-600">
-                  {meal}
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xl font-bold capitalize text-gray-900">
+                  🍴 {meal}
                 </h2>
                 {isEditing && (
                   <button
                     onClick={() => handleResetMeal(meal)}
-                    className="text-sm text-red-600 font-medium hover:underline"
+                    className="text-xs text-red-600 font-medium hover:text-red-700 transition-colors"
                   >
                     Reset {meal}
                   </button>
                 )}
               </div>
 
-              <label className="block font-medium mb-1 text-gray-700">
+              <label className="block font-semibold mb-1 text-gray-900 text-sm">
                 Menu Items
               </label>
               <input
@@ -323,119 +323,124 @@ const VendorDashboard = () => {
                 value={menuData[meal].items}
                 onChange={(e) => handleChange(meal, "items", e.target.value)}
                 placeholder={`Enter ${meal} menu...`}
-                className="mb-4 w-full p-3 rounded-lg border border-gray-300"
+                className="mb-2 w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm placeholder-gray-500 focus:ring-2 focus:ring-green-500"
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium mb-1 text-gray-700">
-                    Start Time
+                  <label className="block font-semibold mb-1 text-gray-900 text-xs">
+                    ⏰ Start Time
                   </label>
                   <input
                     type="time"
                     value={menuData[meal].startTime}
                     onChange={(e) => handleChange(meal, "startTime", e.target.value)}
-                    className="w-full p-3 rounded-lg border border-gray-300"
+                    className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-2 focus:ring-green-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium mb-1 text-gray-700">
-                    End Time
+                  <label className="block font-semibold mb-1 text-gray-900 text-xs">
+                    ⏱️ End Time
                   </label>
                   <input
                     type="time"
                     value={menuData[meal].endTime}
                     onChange={(e) => handleChange(meal, "endTime", e.target.value)}
-                    className="w-full p-3 rounded-lg border border-gray-300"
+                    className="w-full p-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-2 focus:ring-green-500"
                   />
                 </div>
               </div>
             </div>
           ))}
+          </div>
 
           <button
             onClick={handleSubmit}
-            className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold py-3 rounded-xl"
+            className="w-full bg-green-500 hover:bg-green-600 hover:scale-[1.02] text-white text-base font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg"
           >
-            {isEditing ? "Update Menu" : "Save Menu & Timings"}
+            {isEditing ? "✅ Update Menu" : "💾 Save Menu & Timings"}
           </button>
         </div>
 
         {/* Display current menu if it exists */}
         {!savedMenu ? (
-          <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border border-gray-200">
-            <div className="text-center mb-6">
-              <h3 className="text-xl font-medium text-gray-800 mb-2">Welcome to Your Dashboard!</h3>
-              <p className="text-gray-600 mb-2">You haven't created a menu yet.</p>
+          <div className="flex flex-col items-center justify-center p-6 bg-green-50 border border-green-200 rounded-xl hover:border-green-300 transition-all duration-300">
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">🍽️</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-1">Welcome!</h3>
+              <p className="text-gray-600 text-sm mb-2">Create your first menu</p>
             </div>
             <button
               onClick={() => setIsEditing(true)}
-              className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-all flex items-center"
+              className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg hover:scale-105 transition-all duration-300 shadow-md font-semibold flex items-center gap-2 text-sm"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
+              <span className="text-xl">+</span>
               Create Your First Menu
             </button>
           </div>
         ) : (
-          <div className="mt-8 sm:mt-10 p-4 sm:p-6 border border-indigo-200 bg-indigo-50 rounded-xl">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl sm:text-2xl font-bold text-indigo-800">
-                Menu for {savedMenu.day} ({savedMenu.date})
+          <div className="mt-4 p-4 bg-white border border-gray-200 rounded-xl shadow-md">
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-3 gap-2">
+              <h3 className="text-lg font-bold text-gray-900">
+                📅 Menu for {savedMenu.day} ({savedMenu.date})
               </h3>
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <button
                   onClick={handleEdit}
-                  className="text-blue-600 font-semibold text-sm hover:underline"
+                  className="px-3 py-1 text-sm bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-all"
                 >
-                  Edit Menu
+                  ✏️ Edit
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="text-red-600 font-semibold text-sm hover:underline"
+                  className="px-3 py-1 text-sm bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-all"
                 >
-                  Delete Menu
+                  🗑️ Delete
                 </button>
               </div>
             </div>
-            {savedMenu.meals && Object.entries(savedMenu.meals).map(([meal, data]) => (
-              <div key={meal} className="mb-4">
-                <h4 className="text-lg font-semibold text-gray-800 capitalize">
-                  {meal}
-                </h4>
-                <p>
-                  <strong>Items:</strong> {data.items}
-                </p>
-                <p>
-                  <strong>Time:</strong> {data.startTime} - {data.endTime}
-                </p>
-              </div>
-            ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {savedMenu.meals && Object.entries(savedMenu.meals).map(([meal, data]) => (
+                <div key={meal} className="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-white hover:border-green-300 hover:shadow-md transition-all duration-300">
+                  <h4 className="text-base font-bold text-gray-900 capitalize mb-1">
+                    🍴 {meal}
+                  </h4>
+                  <p className="text-gray-700 text-xs mb-1">
+                    <span className="font-semibold text-green-600">Items:</span> {data.items}
+                  </p>
+                  <p className="text-gray-700 text-xs">
+                    <span className="font-semibold text-green-600">Time:</span> {data.startTime} - {data.endTime}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
 
         {/* Reviews Panel */}
-        <div className="mt-8 sm:mt-10 p-4 sm:p-6 border border-gray-200 bg-gray-50 rounded-xl">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Student Reviews</h3>
-            <div className="text-xs sm:text-sm text-gray-700">Avg: <span className="font-semibold">{Number(reviewsData.averageRating || 0).toFixed(2)}</span> / 5 • {reviewsData.count} review{reviewsData.count === 1 ? '' : 's'}</div>
+        <div className="mt-4 p-4 bg-white border border-gray-200 rounded-xl shadow-md">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-3 gap-2">
+            <h3 className="text-lg font-bold text-gray-900">⭐ Reviews</h3>
+            <div className="text-xs bg-green-50 px-3 py-1 rounded-full border border-green-200 shadow-sm">
+              <span className="text-yellow-600 font-bold text-sm">{Number(reviewsData.averageRating || 0).toFixed(2)}</span>
+              <span className="text-gray-700"> / 5 ({reviewsData.count})</span>
+            </div>
           </div>
           {loadingReviews ? (
-            <div className="text-gray-600">Loading reviews...</div>
+            <div className="text-center text-gray-600 py-3 text-sm">Loading reviews...</div>
           ) : reviewsData.reviews.length === 0 ? (
-            <div className="text-gray-600">No reviews yet.</div>
+            <div className="text-center text-gray-600 italic py-3 text-sm">No reviews yet. 📝</div>
           ) : (
-            <div className="space-y-4 max-h-80 overflow-auto">
+            <div className="space-y-2 max-h-48 overflow-auto pr-2">
               {reviewsData.reviews.map((r) => (
-                <div key={r._id} className="border border-gray-200 rounded-lg p-4 bg-white">
-                  <div className="flex items-center justify-between">
-                    <div className="font-medium text-gray-800 break-words">{r?.student ? `${r.student.name || 'Student'} (${r.student.email || 'No Email'})` : 'Unknown Student'}</div>
-                    <div className="text-sm text-indigo-700 font-semibold">{r.rating} / 5</div>
+                <div key={r._id} className="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-white hover:border-green-300 transition-all duration-300">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                    <div className="font-semibold text-gray-900 break-words text-sm">{r?.student ? `${r.student.name || 'Student'}` : 'Unknown Student'}</div>
+                    <span className="text-xs text-yellow-600 font-bold">⭐ {r.rating}/5</span>
                   </div>
-                  {r.comment ? <div className="text-gray-700 mt-2 break-words">{r.comment}</div> : null}
-                  <div className="text-xs text-gray-400 mt-1">{new Date(r.createdAt).toLocaleString()}</div>
+                  {r.comment ? <div className="text-gray-700 mt-1 break-words italic text-xs">"{r.comment}"</div> : null}
+                  <div className="text-xs text-gray-400 mt-1">{new Date(r.createdAt).toLocaleDateString()}</div>
                 </div>
               ))}
             </div>

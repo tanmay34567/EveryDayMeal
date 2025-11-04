@@ -130,19 +130,19 @@ const VendorLogin = ({ onClose }) => {
         className="relative flex flex-col gap-4 p-8 py-12 w-80 sm:w-[352px] rounded-lg shadow-xl border border-gray-200 bg-white text-sm text-gray-600"
       >
         <button type="button" onClick={onClose} className="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-xl">&times;</button>
-        <p className="text-2xl font-medium text-center w-full"><span className="text-indigo-500">Vendor</span> Login</p>
+        <p className="text-2xl font-medium text-center w-full"><span className="text-green-600">Vendor</span> Login</p>
         
         <div className="w-full">
           <p>Email</p>
-          <input onChange={(e) => setEmail(e.target.value)} value={email} placeholder="Enter your registered email" className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500" type="email" required disabled={isOtpSent} />
+          <input onChange={(e) => setEmail(e.target.value)} value={email} placeholder="Enter your registered email" className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500" type="email" required disabled={isOtpSent} />
         </div>
 
         {isOtpSent && (
           <div className="w-full">
             <p>Enter OTP</p>
-            <input onChange={(e) => setOtp(e.target.value)} value={otp} placeholder="6-digit OTP" className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500" type="text" maxLength="6" required />
+            <input onChange={(e) => setOtp(e.target.value)} value={otp} placeholder="6-digit OTP" className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500" type="text" maxLength="6" required />
             <div className="flex justify-end mt-2 text-xs">
-              <button type="button" disabled={resendTimer > 0 || loading} onClick={handleSendOtp} className={`${resendTimer > 0 ? 'text-gray-400' : 'text-indigo-600'} hover:opacity-90`}>
+              <button type="button" disabled={resendTimer > 0 || loading} onClick={handleSendOtp} className={`${resendTimer > 0 ? 'text-gray-400' : 'text-green-600'} hover:opacity-90`}>
                 {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
               </button>
             </div>
@@ -151,13 +151,13 @@ const VendorLogin = ({ onClose }) => {
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
-        <button type="submit" disabled={loading} className={`${loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-600'} transition-all text-white w-full py-2 rounded-md`}>
+        <button type="submit" disabled={loading} className={`${loading ? 'bg-green-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'} transition-all text-white w-full py-2 rounded-md`}>
           {loading ? 'Processing...' : (isOtpSent ? 'Verify OTP' : 'Send OTP')}
         </button>
 
         <p className="text-center">
           Not a registered vendor?{" "}
-          <span onClick={handleApplyNow} className="text-indigo-500 cursor-pointer hover:underline">
+          <span onClick={handleApplyNow} className="text-green-600 cursor-pointer hover:underline">
             Apply Now
           </span>
         </p>
