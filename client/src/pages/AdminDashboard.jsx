@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import adminService from '../services/adminService';
+import { assets } from '../assets/assets';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -117,27 +118,37 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+      <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div className="fixed inset-0 z-[-1]">
+          <img src={assets.bg} alt="Background" className="w-full h-full object-cover" />
+        </div>
+        <div className="text-center bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500 mx-auto"></div>
+          <p className="mt-4 text-gray-700 font-semibold">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="relative w-full min-h-screen overflow-hidden">
+      {/* Background with Image */}
+      <div className="fixed inset-0 z-[-1]">
+        <img src={assets.bg} alt="Background" className="w-full h-full object-cover" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-12">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-2">Manage vendor applications</p>
+        <div className="mb-10 text-center animate-fade-up">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900">
+            🛡️ Admin <span className="text-green-600">Dashboard</span>
+          </h1>
+          <p className="text-gray-700 mt-4 text-lg font-medium">Manage vendor applications efficiently</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Pending</p>
@@ -151,7 +162,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Approved</p>
@@ -165,7 +176,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Rejected</p>
@@ -179,14 +190,14 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Vendors</p>
-                <p className="text-3xl font-bold text-blue-600">{stats.totalVendors}</p>
+                <p className="text-3xl font-bold text-green-600">{stats.totalVendors}</p>
               </div>
-              <div className="bg-blue-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-green-100 p-3 rounded-full">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
@@ -195,16 +206,16 @@ const AdminDashboard = () => {
         </div>
 
         {/* Filter Tabs */}
-        <div className="bg-white rounded-lg shadow mb-6">
-          <div className="flex border-b">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg mb-8 overflow-hidden border border-gray-200">
+          <div className="flex border-b border-gray-200">
             {['pending', 'approved', 'rejected', 'all'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => handleFilterChange(tab)}
-                className={`px-6 py-3 font-medium capitalize ${
+                className={`px-6 py-3 font-medium capitalize transition-all ${
                   filter === tab
-                    ? 'border-b-2 border-orange-500 text-orange-600'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'border-b-2 border-green-500 text-green-600 bg-green-50'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
                 {tab} ({tab === 'all' ? applications.length : applications.filter(a => a.status === tab).length})
@@ -214,7 +225,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Applications Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden border border-gray-200">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -236,7 +247,7 @@ const AdminDashboard = () => {
                   </tr>
                 ) : (
                   filteredApplications.map((app) => (
-                    <tr key={app._id} className="hover:bg-gray-50">
+                    <tr key={app._id} className="hover:bg-green-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                           <div className="text-sm font-medium text-gray-900">{app.name}</div>
@@ -258,7 +269,7 @@ const AdminDashboard = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                         <button
                           onClick={() => viewDetails(app)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-green-600 hover:text-green-900 font-semibold"
                         >
                           View
                         </button>
@@ -290,8 +301,8 @@ const AdminDashboard = () => {
 
       {/* Modal */}
       {showModal && selectedApp && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold text-gray-900">
@@ -364,15 +375,15 @@ const AdminDashboard = () => {
               {/* Action Forms */}
               {modalType === 'approve' && (
                 <div className="space-y-4">
-                  <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                  <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-4 rounded-r-lg">
                     <div className="flex">
                       <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm text-blue-700">
+                        <p className="text-sm text-green-700">
                           <strong>OTP-Based Login:</strong> The approved vendor will login using their email with OTP verification. No password is required.
                         </p>
                       </div>
@@ -382,13 +393,13 @@ const AdminDashboard = () => {
                     <button
                       onClick={handleApprove}
                       disabled={processing}
-                      className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+                      className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-all font-semibold"
                     >
                       {processing ? 'Processing...' : 'Approve & Send Email'}
                     </button>
                     <button
                       onClick={closeModal}
-                      className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
+                      className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-all font-semibold"
                     >
                       Cancel
                     </button>
@@ -414,13 +425,13 @@ const AdminDashboard = () => {
                     <button
                       onClick={handleReject}
                       disabled={processing || !reason.trim()}
-                      className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 disabled:bg-gray-400"
+                      className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 disabled:bg-gray-400 transition-all font-semibold"
                     >
                       {processing ? 'Processing...' : 'Reject & Delete'}
                     </button>
                     <button
                       onClick={closeModal}
-                      className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
+                      className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-all font-semibold"
                     >
                       Cancel
                     </button>
@@ -431,7 +442,7 @@ const AdminDashboard = () => {
               {modalType === 'view' && (
                 <button
                   onClick={closeModal}
-                  className="w-full bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
+                  className="w-full bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-all font-semibold"
                 >
                   Close
                 </button>
