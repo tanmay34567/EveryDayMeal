@@ -17,7 +17,23 @@ const StudentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { student } = useAppcontext();
+  const { Student } = useAppcontext();
+  
+  // Check if profile is complete, redirect to profile completion if not
+  useEffect(() => {
+    if (Student) {
+      const needsProfileCompletion = 
+        !Student.name || 
+        Student.name === 'New User' || 
+        !Student.contactNumber || 
+        Student.contactNumber.startsWith('TEMP-');
+      
+      if (needsProfileCompletion) {
+        console.log('Profile incomplete, redirecting to profile completion');
+        navigate('/student/complete-profile', { replace: true });
+      }
+    }
+  }, [Student, navigate]);
   
   // Prevent back button navigation
   useEffect(() => {
@@ -76,11 +92,11 @@ const StudentDashboard = () => {
       }
     };
 
-    // Always fetch vendors, even if student is not set
+    // Always fetch vendors, even if Student is not set
     fetchVendors();
     
-    // Log the student context to help with debugging
-    console.log('Student context:', student);
+    // Log the Student context to help with debugging
+    console.log('Student context:', Student);
   }, []);
 
   const goToMenu = (vendorEmail) => {

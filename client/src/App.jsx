@@ -36,7 +36,18 @@ const App = () => {
     // Only redirect if we're on the home page and have authenticated user
     if (location.pathname === '/' || location.pathname === '') {
       if (Student?.token) {
-        navigate('/student/dashboard', { replace: true });
+        // Check if student needs to complete profile
+        const needsProfileCompletion = 
+          !Student.name || 
+          Student.name === 'New User' || 
+          !Student.contactNumber || 
+          Student.contactNumber.startsWith('TEMP-');
+        
+        if (needsProfileCompletion) {
+          navigate('/student/complete-profile', { replace: true });
+        } else {
+          navigate('/student/dashboard', { replace: true });
+        }
       } else if (seller?.token) {
         // Check if admin
         if (seller.isAdmin) {

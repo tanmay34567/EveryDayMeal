@@ -11,8 +11,8 @@ const StudentSchema = new mongoose.Schema({
     trim: true,
     validate: {
       validator: function(v) {
-        // Basic phone number validation (adjust regex as needed)
-        return /^\d{10}$/.test(v);
+        // Allow temporary contact numbers (starting with TEMP-) or valid 10-digit phone numbers
+        return /^TEMP-/.test(v) || /^\d{10}$/.test(v);
       },
       message: props => `${props.value} is not a valid 10-digit phone number!`
     }

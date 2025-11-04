@@ -82,6 +82,8 @@ const StudentLogin = ({ onClose }) => {
       }
 
       const resp = await studentAuth.verifyEmailOtp(email, otp);
+      console.log('OTP Verification Response:', resp);
+      
       if (resp.success) {
         resetLoginAttempts();
         const studentData = resp.student || {};
@@ -93,23 +95,19 @@ const StudentLogin = ({ onClose }) => {
           token: resp.token || studentData.token
         });
         onClose();
-        if (resp.userCheck) {
-          if (resp.userCheck.isNewUser || !resp.userCheck.hasName || !resp.userCheck.hasContact) {
-            navigate("/student/complete-profile");
-            toast.success('Please complete your profile');
-          } else {
-            navigate("/student/dashboard");
-            toast.success('Welcome back!');
-          }
+        
+        // Check if user needs to complete profile based on userCheck.isNewUser
+        console.log('UserCheck:', resp.userCheck);
+        console.log('isNewUser:', resp.userCheck?.isNewUser);
+        
+        if (resp.userCheck && resp.userCheck.isNewUser === true) {
+          console.log('Redirecting to profile completion');
+          navigate("/student/complete-profile");
+          toast.success('Please complete your profile');
         } else {
-          const isProfileComplete = studentData.name && studentData.contactNumber && studentData.name.trim() !== '' && studentData.contactNumber.trim() !== '';
-          if (isProfileComplete) {
-            navigate("/student/dashboard");
-            toast.success('Welcome back!');
-          } else {
-            navigate("/student/complete-profile");
-            toast.success('Please complete your profile');
-          }
+          console.log('Redirecting to dashboard');
+          navigate("/student/dashboard");
+          toast.success('Welcome back!');
         }
       } else {
         const newAttempts = loginAttempts + 1;

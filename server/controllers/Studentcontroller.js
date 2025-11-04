@@ -354,6 +354,9 @@ export const verifyStudentEmailOtp = async (req, res) => {
         contactNumber: tempContactNumber // Temporary unique value
       });
       isNewUser = true;
+      console.log('Created new student with email:', email);
+    } else {
+      console.log('Found existing student with email:', email);
     }
 
     // Clean up the used OTP
@@ -372,15 +375,28 @@ export const verifyStudentEmailOtp = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    // Check if profile is complete
+    // A profile is incomplete if:
+    // 1. It's a new user (just created)
+    // 2. Name is missing or is the default "New User"
+    // 3. Contact number is temporary (starts with TEMP-)
+    const hasValidName = student.name && student.name.trim() !== '' && student.name !== 'New User';
+    const hasValidContact = student.contactNumber && !student.contactNumber.startsWith('TEMP-');
+    const needsProfileCompletion = !hasValidName || !hasValidContact;
+
     // Prepare user check response
     const userCheck = {
       email: student.email,
-      hasName: !!student.name && student.name.trim() !== '',
-      hasContact: !!student.contactNumber && student.contactNumber.trim() !== '',
-      isNewUser: isNewUser || (!student.name && !student.contactNumber),
-      isNewUserFlag: isNewUser
+      hasName: hasValidName,
+      hasContact: hasValidContact,
+      isNewUser: needsProfileCompletion,  // true if profile needs completion, false if complete
+      profileComplete: !needsProfileCompletion
     };
 
+    console.log('Student name:', student.name);
+    console.log('Student contact:', student.contactNumber);
+    console.log('Has valid name:', hasValidName);
+    console.log('Has valid contact:', hasValidContact);
     console.log('User check response:', JSON.stringify(userCheck, null, 2));
 
     return res.json({

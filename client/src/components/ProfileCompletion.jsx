@@ -5,7 +5,7 @@ import { studentAuth } from '../services';
 import { useAppcontext } from '../context/Appcontext';
 
 const ProfileCompletion = () => {
-  const { setStudent } = useAppcontext();
+  const { setStudent, Student } = useAppcontext();
   const [formData, setFormData] = useState({
     name: '',
     contactNumber: '+91',
@@ -13,6 +13,19 @@ const ProfileCompletion = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  // Redirect to dashboard if profile is already complete
+  React.useEffect(() => {
+    if (Student) {
+      const hasValidName = Student.name && Student.name !== 'New User' && Student.name.trim() !== '';
+      const hasValidContact = Student.contactNumber && !Student.contactNumber.startsWith('TEMP-');
+      
+      if (hasValidName && hasValidContact) {
+        console.log('Profile already complete, redirecting to dashboard');
+        navigate('/student/dashboard', { replace: true });
+      }
+    }
+  }, [Student, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,15 +90,19 @@ const ProfileCompletion = () => {
     }
     
     setLoading(true);
+    
+    // Remove +91 prefix before sending to server (server expects only 10 digits)
+    const contactNumberWithoutPrefix = formData.contactNumber.replace('+91', '');
+    
     console.log('Updating profile with data:', {
       name: formData.name.trim(),
-      contactNumber: formData.contactNumber
+      contactNumber: contactNumberWithoutPrefix
     });
     
     try {
       const response = await studentAuth.updateProfile({
         name: formData.name.trim(),
-        contactNumber: formData.contactNumber
+        contactNumber: contactNumberWithoutPrefix
       });
       
       console.log('Profile update response:', response);
