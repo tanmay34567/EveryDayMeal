@@ -153,7 +153,7 @@ const StudentLogin = ({ onClose }) => {
         </button>
 
         <p className="text-2xl font-medium text-center w-full">
-          <span className="text-indigo-500">Student</span> Login
+          <span className="text-green-600">Student</span> Login
         </p>
 
         <div className="w-full">
@@ -162,7 +162,7 @@ const StudentLogin = ({ onClose }) => {
             onChange={handleEmailChange}
             value={email}
             placeholder="Type here"
-            className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
+            className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500"
             type="email"
             required
           />
@@ -175,7 +175,7 @@ const StudentLogin = ({ onClose }) => {
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
               value={otp}
               placeholder="6-digit OTP"
-              className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
+              className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500"
               type="tel"
               maxLength="6"
               required
@@ -200,7 +200,7 @@ const StudentLogin = ({ onClose }) => {
                     setLoading(false);
                   }
                 }}
-                className={`${resendTimer > 0 ? 'text-gray-400' : 'text-indigo-600'} hover:opacity-90`}
+                className={`${resendTimer > 0 ? 'text-gray-400' : 'text-green-600'} hover:opacity-90`}
               >
                 {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
               </button>
@@ -213,7 +213,7 @@ const StudentLogin = ({ onClose }) => {
         <button
           type="submit"
           disabled={loading}
-          className={`${loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-600'} transition-all text-white w-full py-2 rounded-md`}
+          className={`${loading ? 'bg-green-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'} transition-all text-white w-full py-2 rounded-md`}
         >
           {loading
             ? 'Processing...'

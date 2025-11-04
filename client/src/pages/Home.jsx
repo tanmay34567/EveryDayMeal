@@ -7,7 +7,7 @@ const Home = () => {
 
   // Show Mainbanner only for non-logged-in users
   return (
-    <div className="mt-10">
+    <div>
       <Mainbanner />
     </div>
   );

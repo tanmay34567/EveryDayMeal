@@ -75,14 +75,14 @@ const Navbar = () => {
       {/* Add ref to the container element you want to scroll to */}
       <div ref={topRef} />
 
-      <nav className="h-[70px] fixed top-0 left-0 w-full px-6 md:px-16 lg:px-24 xl:px-32 flex items-center justify-between z-50 bg-transparent backdrop-blur-md bg-white/50 transition-all">
+      <nav className="h-[70px] fixed top-0 left-0 w-full px-6 md:px-16 lg:px-24 xl:px-32 flex items-center justify-between z-50 backdrop-blur-md bg-green-50/95 border-b border-green-200 shadow-sm transition-all">
         <NavLink
           to={redirectPath}
           onClick={handleScrollToTop}  // Scroll to top when the logo is clicked
-          className="flex items-center gap-2 text-black font-bold text-lg"
+          className="flex items-center gap-2 text-gray-900 font-bold text-lg hover:text-green-600 transition-colors"
         >
           <img className="h-9" src={assets.icon} alt="icon" />
-          EveryDayMeal
+          <span className="text-green-600">EveryDayMeal</span>
         </NavLink>
 
         {/* Desktop Navigation Links */}
@@ -90,6 +90,9 @@ const Navbar = () => {
           <NavLink
             to={redirectPath}
             onClick={handleScrollToTop}  // Scroll to top when Home is clicked
+            className={({ isActive }) =>
+              isActive ? "font-semibold text-green-600" : "text-gray-700 hover:text-green-600 transition-colors"
+            }
           >
             Home
           </NavLink>
@@ -97,7 +100,7 @@ const Navbar = () => {
             to="/about"
             onClick={(e) => handleNavigation('/about', e)}
             className={({ isActive }) =>
-              isActive ? "font-medium text-indigo-600" : "text-black hover:text-indigo-600"
+              isActive ? "font-semibold text-green-600" : "text-gray-700 hover:text-green-600 transition-colors"
             }
           >
             About
@@ -106,7 +109,7 @@ const Navbar = () => {
             to="/contact"
             onClick={(e) => handleNavigation('/contact', e)}
             className={({ isActive }) =>
-              isActive ? "font-medium text-indigo-600" : "text-black hover:text-indigo-600"
+              isActive ? "font-semibold text-green-600" : "text-gray-700 hover:text-green-600 transition-colors"
             }
           >
             Contact
@@ -119,13 +122,13 @@ const Navbar = () => {
             <>
               <button
                 onClick={() => setShowStudentLogin(true)}
-                className="px-6 py-2 bg-indigo-600 text-white font-medium rounded-full hover:opacity-90 active:scale-95 transition"
+                className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-full hover:scale-105 active:scale-95 transition-all duration-300 shadow-md"
               >
                 Student Login
               </button>
               <button
                 onClick={() => setShowVendorLogin(true)}
-                className="px-6 py-2 bg-indigo-600 text-white font-medium rounded-full hover:opacity-90 active:scale-95 transition"
+                className="px-6 py-2 bg-white border-2 border-green-500 text-green-600 hover:bg-green-50 font-medium rounded-full hover:scale-105 active:scale-95 transition-all duration-300"
               >
                 Vendor Login
               </button>
@@ -134,7 +137,7 @@ const Navbar = () => {
             <>
               <button
                 onClick={toggleProfileDropdown}
-                className="text-white flex items-center gap-2 bg-indigo-600 px-3 py-1 rounded-full shadow-md hover:bg-indigo-700 transition"
+                className="text-white flex items-center gap-2 bg-green-500 hover:bg-green-600 px-4 py-2 rounded-full shadow-md hover:scale-105 transition-all duration-300"
               >
                 <span role="img" aria-label="profile">👤</span>
                 <span>{capitalize(user.name)}</span>
@@ -155,32 +158,32 @@ const Navbar = () => {
                   <p className="text-sm text-gray-500">
                     {user.contactNumber ? `+91 ${user.contactNumber}` : 'No contact'}
                   </p>
-                  <p className="text-sm text-indigo-600 mt-1 font-medium">
+                  <p className="text-sm text-green-600 mt-1 font-medium">
                     {userType === "student" ? "Student Account" : "Vendor Account"}
                   </p>
                   
                   {/* Vendor Profile Section - Only show for vendors */}
                   {seller && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
-                      <h3 className="font-semibold text-sm mb-2">Vendor Profile</h3>
+                      <h3 className="font-semibold text-sm mb-2 text-gray-900">Vendor Profile</h3>
                       <div className="space-y-1 text-xs text-gray-600">
                         {seller.messName && (
-                          <p><span className="font-medium">Mess Name:</span> {seller.messName}</p>
+                          <p><span className="font-medium text-green-600">Mess Name:</span> {seller.messName}</p>
                         )}
                         {seller.address && (
-                          <p><span className="font-medium">Address:</span> {seller.address}</p>
+                          <p><span className="font-medium text-green-600">Address:</span> {seller.address}</p>
                         )}
                         {seller.city && (
-                          <p><span className="font-medium">City:</span> {seller.city}</p>
+                          <p><span className="font-medium text-green-600">City:</span> {seller.city}</p>
                         )}
                         {seller.pincode && (
-                          <p><span className="font-medium">Pincode:</span> {seller.pincode}</p>
+                          <p><span className="font-medium text-green-600">Pincode:</span> {seller.pincode}</p>
                         )}
                         {seller.gstinOrImages && (
-                          <p><span className="font-medium">GSTIN/Images:</span> {seller.gstinOrImages}</p>
+                          <p><span className="font-medium text-green-600">GSTIN/Images:</span> {seller.gstinOrImages}</p>
                         )}
                         {seller.gstinNumber && (
-                          <p><span className="font-medium">GSTIN Number:</span> {seller.gstinNumber}</p>
+                          <p><span className="font-medium text-green-600">GSTIN Number:</span> {seller.gstinNumber}</p>
                         )}
                       </div>
                     </div>
@@ -188,7 +191,7 @@ const Navbar = () => {
                   
                   <button
                     onClick={handleLogout}
-                    className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-full text-sm transition"
+                    className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm transition"
                   >
                     Logout
                   </button>
@@ -205,14 +208,14 @@ const Navbar = () => {
           className="inline-block md:hidden active:scale-90 transition"
           onClick={() => setMenuOpen(!MenuOpen)}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#000" viewBox="0 0 24 24">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#16a34a" viewBox="0 0 24 24">
             <path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z" />
           </svg>
         </button>
 
         {/* Mobile Menu Content */}
         {MenuOpen && (
-          <div className="absolute top-[70px] left-0 w-full bg-white shadow-lg p-6 md:hidden max-h-[70vh] overflow-auto">
+          <div className="absolute top-[70px] left-0 w-full bg-green-50 backdrop-blur-md border-b border-green-200 shadow-lg p-6 md:hidden max-h-[70vh] overflow-auto">
             {/* Mobile Navigation Links */}
             <div className="flex flex-col space-y-4 mb-6">
               <NavLink
@@ -222,7 +225,7 @@ const Navbar = () => {
                   handleScrollToTop();  // Scroll to top when Home is clicked on mobile
                 }}
                 className={({ isActive }) =>
-                  isActive ? "font-medium text-indigo-600" : "text-black"
+                  isActive ? "font-semibold text-green-600" : "text-gray-700 hover:text-green-600 transition-colors"
                 }
               >
                 Home
@@ -234,7 +237,7 @@ const Navbar = () => {
                   handleNavigation('/about', e);
                 }}
                 className={({ isActive }) =>
-                  isActive ? "font-medium text-indigo-600" : "text-black"
+                  isActive ? "font-semibold text-green-600" : "text-gray-700 hover:text-green-600 transition-colors"
                 }
               >
                 About
@@ -246,7 +249,7 @@ const Navbar = () => {
                   handleNavigation('/contact', e);
                 }}
                 className={({ isActive }) =>
-                  isActive ? "font-medium text-indigo-600" : "text-black"
+                  isActive ? "font-semibold text-green-600" : "text-gray-700 hover:text-green-600 transition-colors"
                 }
               >
                 Contact
@@ -261,7 +264,7 @@ const Navbar = () => {
                     setShowStudentLogin(true);
                     setMenuOpen(false);
                   }}
-                  className="text-sm bg-indigo-600 text-white hover:opacity-90 active:scale-95 transition w-full h-10 rounded-full"
+                  className="text-sm bg-green-500 hover:bg-green-600 text-white hover:scale-105 active:scale-95 transition-all duration-300 w-full h-10 rounded-full shadow-md"
                 >
                   Student Login
                 </button>
@@ -270,18 +273,18 @@ const Navbar = () => {
                     setShowVendorLogin(true);
                     setMenuOpen(false);
                   }}
-                  className="text-sm bg-indigo-600 text-white hover:opacity-90 active:scale-95 transition w-full h-10 rounded-full"
+                  className="text-sm bg-green-500 hover:bg-green-600 text-white hover:scale-105 active:scale-95 transition-all duration-300 w-full h-10 rounded-full shadow-md"
                 >
                   Vendor Login
                 </button>
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                <p className="text-indigo-600 font-medium">
+                <p className="text-green-600 font-medium">
                   {capitalize(user.name)} ({userType})
                 </p>
-                <p className="text-sm text-gray-500">{user.email}</p>
-                <p className="text-sm text-gray-500">{user.contactNumber}</p>
+                <p className="text-sm text-gray-600">{user.email}</p>
+                <p className="text-sm text-gray-600">{user.contactNumber}</p>
 
                 <button
                   onClick={() => {

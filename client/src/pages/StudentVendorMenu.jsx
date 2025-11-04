@@ -168,113 +168,111 @@ const StudentVendorMenu = () => {
 
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
-      {/* Fixed Background Image */}
-      <img
-        src={assets.bg}
-        alt="Background"
-        className="fixed top-0 left-0 w-full h-full object-cover z-[-1] bg-animation"
-      />
+      {/* Background with Image */}
+      <div className="fixed inset-0 z-[-1]">
+        <img
+          src={assets.bg}
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+      </div>
     
-      <div className="max-w-4xl mx-auto bg-white p-4 sm:p-8 rounded-2xl shadow-lg">
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 justify-between items-center mb-6 text-center sm:text-left">
-          <button 
-            onClick={handleGoBack}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors w-full sm:w-auto"
-          >
-            &larr; Back to Dashboard
-          </button>
-          <h1 className="text-2xl sm:text-3xl font-bold text-indigo-700">
-            {capitalize(vendorName)} Menu
-          </h1>
-          <div className="w-24 hidden sm:block"></div> {/* Empty div for balance on larger screens */}
-        </div>
-
-        {/* Vendor Information */}
-        {vendorInfo && (
-          <div className="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-100">
-            <div className="space-y-1 text-sm">
-              <p className="text-gray-700">
-                <span className="font-medium">Email:</span> {vendorInfo.email}
-              </p>
-              {vendorInfo.contactNumber && (
-                <p className="text-gray-700">
-                  <span className="font-medium">Contact:</span> +91 {vendorInfo.contactNumber}
-                </p>
-              )}
-              {vendorInfo.address && (
-                <p className="text-gray-700">
-                  <span className="font-medium">Address:</span> {vendorInfo.address}
-                  {vendorInfo.city && `, ${vendorInfo.city}`}
-                  {vendorInfo.pincode && ` - ${vendorInfo.pincode}`}
-                </p>
-              )}
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        {/* Compact Header with Vendor Info */}
+        <div className="mb-4 bg-white border border-gray-200 rounded-xl shadow-md p-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={handleGoBack}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-all duration-300 font-semibold text-sm"
+              >
+                ← Back
+              </button>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">
+                  <span className="text-green-600">{capitalize(vendorName)}</span> 🍽️
+                </h1>
+                {vendorInfo && (
+                  <div className="flex flex-wrap gap-3 text-xs text-gray-600 mt-1">
+                    <span>📧 {vendorInfo.email}</span>
+                    {vendorInfo.contactNumber && <span>📞 +91 {vendorInfo.contactNumber}</span>}
+                    {vendorInfo.address && <span>📍 {vendorInfo.address}{vendorInfo.city && `, ${vendorInfo.city}`}</span>}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="text-xs bg-green-50 px-3 py-2 rounded-full border border-green-200 shadow-sm whitespace-nowrap">
+              <span className="text-yellow-600 font-bold text-sm">⭐ {averageRating}</span>
+              <span className="text-gray-700"> / 5 ({reviewCount})</span>
             </div>
           </div>
-        )}
+        </div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          <div className="flex justify-center items-center py-16">
+            <div className="h-12 w-12 border-4 border-green-300 border-t-green-600 rounded-full animate-spin"></div>
           </div>
         ) : error ? (
-          <div className="text-center py-8">
-            <p className="text-red-500 mb-4">{error}</p>
+          <div className="text-center bg-red-50 border border-red-300 rounded-2xl p-8">
+            <p className="text-red-600 font-semibold mb-4">{error}</p>
             <Link 
               to="/student/dashboard" 
-              className="text-indigo-600 hover:underline"
+              className="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg font-semibold"
             >
-              Return to dashboard
+              Return to Dashboard
             </Link>
           </div>
         ) : !menu ? (
-          <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200 p-6">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <h3 className="text-xl font-medium text-gray-800 mb-2">No Menu Available</h3>
-            <p className="text-gray-600 mb-4">{capitalize(vendorName)} hasn't created a menu yet.</p>
+          <div className="text-center bg-green-50 border border-green-200 rounded-2xl p-8">
+            <div className="text-6xl mb-4">🍱</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Menu Available</h3>
+            <p className="text-gray-600 mb-6">{capitalize(vendorName)} hasn't created a menu yet.</p>
             <Link 
               to="/student/dashboard" 
-              className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+              className="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg font-semibold"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-              </svg>
-              Return to Dashboard
+              ← Return to Dashboard
             </Link>
           </div>
         ) : (
           <>
-            <div className="mb-6 text-center">
-              <p className="text-gray-600 font-bold text-xl">Day: {menu.day}</p>
-              <p className="text-gray-600 font-bold text-md">Date: {menu.date}</p>
+            {/* Menu Section - Main Focus */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-2xl font-bold text-gray-900">🍴 Today's Menu</h2>
+                <div className="text-center bg-green-50 border border-green-200 rounded-lg px-4 py-2">
+                  <p className="text-green-600 font-bold text-sm">{menu.day}</p>
+                  <p className="text-gray-600 text-xs">{menu.date}</p>
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               {Object.entries(menu.meals).map(([meal, data]) => (
                 <div
                   key={meal}
-                  className="bg-blue-50 p-4 rounded-xl border border-blue-100 shadow-sm"
+                  className="group bg-white border-2 border-gray-200 rounded-2xl shadow-lg hover:shadow-green-500/40 hover:border-green-400 transition-all duration-300 p-6 relative overflow-hidden"
                 >
-                  <h3 className="text-xl font-bold capitalize text-indigo-600 mb-2">{meal}</h3>
-                  <p className="text-gray-700"><strong>Items:</strong> {data.items}</p>
-                  <p className="text-gray-700"><strong>Start:</strong> {data.startTime}</p>
-                  <p className="text-gray-700"><strong>End:</strong> {data.endTime}</p>
+                  <div className="absolute top-0 right-0 bg-green-500 text-white text-sm font-bold px-4 py-2 rounded-bl-xl shadow-md">
+                    {data.startTime} - {data.endTime}
+                  </div>
+                  <h3 className="text-2xl font-bold capitalize text-gray-900 mb-4 relative z-10 group-hover:text-green-600 transition-colors">🍴 {meal}</h3>
+                  <div className="relative z-10">
+                    <p className="text-gray-700 text-base leading-relaxed">{data.items}</p>
+                  </div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-10">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-semibold text-indigo-700">Student Reviews</h2>
-                <div className="text-sm text-gray-600">Avg: <span className="font-bold">{averageRating}</span> / 5 • {reviewCount} review{reviewCount === 1 ? '' : 's'}</div>
-              </div>
+            {/* Reviews Section - Compact */}
+            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4 shadow-md">
+              <h2 className="text-lg font-bold text-gray-900 mb-3">⭐ Student Reviews</h2>
 
               {Student ? (
-                <form onSubmit={handleSubmitReview} className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-                  <div className="flex flex-col md:flex-row md:items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <label className="mr-2 font-medium">Your Rating</label>
+                <form onSubmit={handleSubmitReview} className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 hover:border-green-300 transition-all duration-300">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <label className="font-semibold text-gray-900 text-sm">Your Rating:</label>
                       {[1,2,3,4,5].map((n) => (
                         <Star
                           key={n}
@@ -285,66 +283,66 @@ const StudentVendorMenu = () => {
                         />
                       ))}
                       {myRating > 0 && (
-                        <button type="button" onClick={() => setMyRating(0)} className="text-xs text-gray-500 underline ml-2">Clear</button>
+                        <button type="button" onClick={() => setMyRating(0)} className="text-xs text-green-600 underline ml-2 hover:text-green-700">Clear</button>
                       )}
                     </div>
                     <input
                       type="text"
-                      className="flex-1 border rounded px-3 py-2"
+                      className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500"
                       placeholder="Write a short review (optional)"
                       value={myComment}
                       onChange={(e) => setMyComment(e.target.value)}
                     />
-                    <button
-                      type="submit"
-                      disabled={saving || !myRating}
-                      className="bg-indigo-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
-                    >
-                      {myRating ? 'Save Review' : 'Select Rating'}
-                    </button>
-                    {reviews.find(r => r?.student?.email === (Student?.email || "")) && (
+                    <div className="flex flex-wrap gap-2">
                       <button
-                        type="button"
-                        onClick={handleDeleteReview}
-                        disabled={saving}
-                        className="bg-red-500 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+                        type="submit"
+                        disabled={saving || !myRating}
+                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 text-sm rounded-lg disabled:opacity-50 hover:scale-105 transition-all duration-300 font-semibold"
                       >
-                        Delete
+                        {saving ? '⏳ Saving...' : myRating ? '💾 Save Review' : 'Select Rating'}
                       </button>
-                    )}
+                      {reviews.find(r => r?.student?.email === (Student?.email || "")) && (
+                        <button
+                          type="button"
+                          onClick={handleDeleteReview}
+                          disabled={saving}
+                          className="bg-red-500/80 text-white px-4 py-2 text-sm rounded-lg disabled:opacity-50 hover:bg-red-600 transition-all font-semibold"
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </form>
               ) : (
-                <div className="text-sm text-gray-600 mb-4">Login as student to add a review.</div>
+                <div className="text-xs text-gray-700 mb-3 bg-green-50 border border-green-200 rounded-lg p-2">Login as student to add a review.</div>
               )}
 
-              <div className="space-y-4">
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                 {reviews.length === 0 ? (
-                  <div className="text-gray-600">No reviews yet.</div>
+                  <div className="text-center text-gray-600 italic py-3 text-sm">No reviews yet. Be the first to review! 📝</div>
                 ) : (
                   reviews.map((r) => (
-                    <div key={r._id} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="font-medium text-gray-800 break-words">{r?.student? `${r.student.name || 'Student'} (${r.student.email || 'No Email'})`: 'Unknown Student'}</div>
-                        <div className="text-sm text-indigo-700 font-semibold">{r.rating} / 5</div>
+                    <div key={r._id} className="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-white hover:border-green-300 transition-all duration-300">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                        <div className="font-semibold text-gray-900 break-words text-sm">{r?.student? `${r.student.name || 'Student'}`: 'Unknown Student'}</div>
+                        <span className="text-yellow-600 font-bold text-xs">⭐ {r.rating}/5</span>
                       </div>
-                      {r.comment ? (
-                        <div className="text-gray-700 mt-2 break-words">{r.comment}</div>
-                      ) : null}
-                      <div className="text-xs text-gray-400 mt-1">{new Date(r.createdAt).toLocaleString()}</div>
+                      {r.comment && <p className="text-xs text-gray-700 italic mt-1">"{r.comment}"</p>}
+                      <div className="text-xs text-gray-400 mt-1">{new Date(r.createdAt).toLocaleDateString()}</div>
                     </div>
                   ))
                 )}
               </div>
 
               {hasMore && (
-                <div className="mt-4 flex justify-center">
+                <div className="mt-3 flex justify-center">
                   <button
                     onClick={handleLoadMore}
                     disabled={loadingMore}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-md disabled:opacity-50 w-full sm:w-auto"
+                    className="px-4 py-2 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg disabled:opacity-50 transition-all duration-300 font-semibold"
                   >
-                    {loadingMore ? 'Loading...' : 'Load More'}
+                    {loadingMore ? '⏳ Loading...' : '📥 Load More Reviews'}
                   </button>
                 </div>
               )}

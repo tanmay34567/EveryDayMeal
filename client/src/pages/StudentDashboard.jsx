@@ -89,47 +89,79 @@ const StudentDashboard = () => {
 
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
-          {/* Fixed Background Image */}
-          <img
-            src={assets.bg}
-            alt="Background"
-            className="fixed top-0 left-0 w-full h-full object-cover z-[-1] bg-animation"
-          />
-      <div className="max-w-3xl mx-auto bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center text-indigo-700 mb-4 sm:mb-6">Student Dashboard</h1>
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-3 sm:mb-4">Available Vendors:</h2>
+      {/* Background with Image */}
+      <div className="fixed inset-0 z-[-1]">
+        <img
+          src={assets.bg}
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+      </div>
 
+      {/* Main Content */}
+      <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-24">
+        <div className="text-center mb-12 animate-fade-up">
+          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight text-gray-900">
+            🎓 Student{" "}
+            <span className="text-green-600">
+              Dashboard
+            </span>
+          </h1>
+          <p className="text-gray-700 mt-4 text-lg max-w-3xl mx-auto leading-relaxed">
+            Explore the list of food vendors serving delicious and affordable
+            meals around your campus. Click on any vendor to view their live
+            menu 🍽️.
+          </p>
+        </div>
+
+        {/* Vendors Section */}
         {loading ? (
-          <div className="flex justify-center items-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          <div className="flex justify-center items-center py-16">
+            <div className="h-12 w-12 border-4 border-green-300 border-t-green-600 rounded-full animate-spin"></div>
           </div>
         ) : error ? (
-          <p className="text-red-500 text-center py-4">{error}</p>
+          <div className="text-center bg-red-50 border border-red-300 rounded-2xl p-8 hover:border-red-400 transition-all duration-300">
+            <div className="text-5xl mb-4">⚠️</div>
+            <p className="text-red-600 font-semibold text-lg">{error}</p>
+          </div>
         ) : vendors.length === 0 ? (
-          <p className="text-gray-500 text-center">No vendors have uploaded menus yet.</p>
+          <div className="text-center bg-green-50 border border-green-200 rounded-2xl p-8 hover:border-green-300 transition-all duration-300">
+            <div className="text-6xl mb-4">🍱</div>
+            <p className="text-gray-600 italic text-lg">
+              No vendors have uploaded menus yet
+            </p>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            {vendors.map((vendor) => (
-              <button
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
+            {vendors.map((vendor, index) => (
+              <div
                 key={vendor.email}
                 onClick={() => goToMenu(vendor.email)}
-                className="bg-indigo-50 text-indigo-900 text-left p-3 sm:p-4 rounded-lg shadow hover:bg-indigo-100 transition-all border border-indigo-100 w-full"
+                className="group bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-green-500/30 hover:shadow-2xl hover:scale-[1.05] hover:border-green-400 transition-all duration-500 p-6 cursor-pointer relative overflow-hidden"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="flex items-center justify-between">
-                  <div className="text-base sm:text-lg font-semibold">
-                    {capitalize(vendor.messName) || capitalize(vendor.name)}
-                  </div>
-                  <div className="text-xs sm:text-sm text-indigo-700 font-medium">
-                    {Number(vendor.averageRating || 0).toFixed(2)} / 5 • {vendor.reviewCount || 0}
-                  </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2 relative z-10 group-hover:text-green-600 transition-colors">
+                  🏪 {capitalize(vendor.messName) || capitalize(vendor.name)}
+                </h2>
+                <p className="text-gray-600 text-sm mb-4 relative z-10 group-hover:text-gray-700 transition-colors">
+                  📧 {vendor.email}
+                </p>
+
+                <div className="flex items-center justify-between text-sm relative z-10 bg-green-50 rounded-lg p-3 group-hover:bg-green-100 transition-all">
+                  <span className="font-bold text-yellow-600">
+                    ⭐ {Number(vendor.averageRating || 0).toFixed(2)} / 5
+                  </span>
+                  <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
+                    {vendor.reviewCount || 0} reviews
+                  </span>
                 </div>
-              </button>
+
+              </div>
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
-   
   );
 };
 

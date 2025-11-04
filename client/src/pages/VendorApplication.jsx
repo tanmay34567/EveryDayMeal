@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { api } from "../services";
+import { assets } from "../assets/assets";
 
 const VendorApplication = () => {
   const navigate = useNavigate();
@@ -151,32 +152,44 @@ toast.error(error.response?.data?.message || "An error occurred.");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Vendor Application</h1>
+    <div className="relative w-full min-h-screen overflow-hidden">
+      {/* Background with Image */}
+      <div className="fixed inset-0 z-[-1]">
+        <img
+          src={assets.bg}
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900">
+            📝 <span className="text-green-600">Vendor Application</span>
+          </h1>
           <button
             onClick={() => navigate(-1)}
-            className="text-indigo-600 hover:underline text-sm"
+            className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300 font-semibold"
           >
-            &larr; Back
+            ← Back
           </button>
         </div>
 
         {isSubmitted ? (
-          <div className="text-center py-10">
-            <h2 className="text-2xl font-bold text-green-600 mb-4">Application Submitted!</h2>
-            <p className="text-gray-600 mb-6">Thank you for applying. We will review your application and get back to you soon.</p>
-            <button onClick={() => navigate('/')} className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700">
-              Back to Home
+          <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-lg">
+            <div className="text-6xl mb-6 animate-bounce">✅</div>
+            <h2 className="text-3xl font-bold text-green-600 mb-4">Application Submitted!</h2>
+            <p className="text-gray-700 mb-8 max-w-md mx-auto">Thank you for applying. We will review your application and get back to you soon.</p>
+            <button onClick={() => navigate('/')} className="bg-green-500 hover:bg-green-600 text-white py-3 px-8 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg font-semibold">
+              🏠 Back to Home
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           {/* Personal & Business Details */}
-          <div className="p-4 border rounded-lg bg-gray-50">
-            <h2 className="text-lg font-semibold mb-4 text-gray-700">
-              Personal & Business Details
+          <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-green-500/20 transition-all duration-300">
+            <h2 className="text-2xl font-bold mb-6 text-gray-900">
+              👤 Personal & Business Details
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Name */}
@@ -187,11 +200,11 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Full Name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`p-2 border rounded w-full ${
+                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
                     errors.name ? "border-red-500" : "border-gray-300"
                   }`}
                 />
-                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name}</p>}
               </div>
 
               {/* Contact */}
@@ -203,8 +216,8 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   value={formData.contactNumber}
                   onChange={handleChange}
                   maxLength="10"
-                  className={`p-2 border rounded w-full ${
-                    errors.contactNumber ? "border-red-500" : "border-gray-300"
+                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
+                    errors.contactNumber ? "border-red-500" : "border-purple-300/30"
                   }`}
                 />
                 {errors.contactNumber && (
@@ -220,8 +233,8 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`p-2 border rounded w-full ${
-                    errors.email ? "border-red-500" : "border-gray-300"
+                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
+                    errors.email ? "border-red-500" : "border-purple-300/30"
                   }`}
                 />
                 {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -235,8 +248,8 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Mess/Restaurant Name"
                   value={formData.messName}
                   onChange={handleChange}
-                  className={`p-2 border rounded w-full ${
-                    errors.messName ? "border-red-500" : "border-gray-300"
+                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
+                    errors.messName ? "border-red-500" : "border-purple-300/30"
                   }`}
                 />
                 {errors.messName && (
@@ -252,8 +265,8 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="Full Address"
                   value={formData.address}
                   onChange={handleChange}
-                  className={`p-2 border rounded w-full ${
-                    errors.address ? "border-red-500" : "border-gray-300"
+                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
+                    errors.address ? "border-red-500" : "border-purple-300/30"
                   }`}
                 />
                 {errors.address && (
@@ -269,8 +282,8 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   placeholder="City"
                   value={formData.city}
                   onChange={handleChange}
-                  className={`p-2 border rounded w-full ${
-                    errors.city ? "border-red-500" : "border-gray-300"
+                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
+                    errors.city ? "border-red-500" : "border-purple-300/30"
                   }`}
                 />
                 {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
@@ -285,8 +298,8 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   value={formData.pincode}
                   onChange={handleChange}
                   maxLength="6"
-                  className={`p-2 border rounded w-full ${
-                    errors.pincode ? "border-red-500" : "border-gray-300"
+                  className={`p-3 rounded-lg bg-white/10 border text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 w-full ${
+                    errors.pincode ? "border-red-500" : "border-purple-300/30"
                   }`}
                 />
                 {errors.pincode && (
@@ -297,28 +310,30 @@ toast.error(error.response?.data?.message || "An error occurred.");
           </div>
 
           {/* GSTIN / Images Section */}
-          <div className="p-4 border rounded-lg bg-gray-50">
-            <h2 className="text-lg font-semibold mb-4 text-gray-700">Business Verification</h2>
-            <div className="flex gap-6 mb-4">
-              <label className="flex items-center gap-2 cursor-pointer">
+          <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-green-500/20 transition-all duration-300">
+            <h2 className="text-2xl font-bold mb-6 text-gray-900">✅ Business Verification</h2>
+            <div className="flex gap-6 mb-6">
+              <label className="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-gray-900 transition-colors">
                 <input
                   type="radio"
                   name="gstinOrImages"
                   value="gstin"
                   checked={formData.gstinOrImages === "gstin"}
                   onChange={handleChange}
+                  className="w-4 h-4"
                 />
-                GSTIN Number
+                💼 GSTIN Number
               </label>
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-gray-900 transition-colors">
                 <input
                   type="radio"
                   name="gstinOrImages"
                   value="images"
                   checked={formData.gstinOrImages === "images"}
                   onChange={handleChange}
+                  className="w-4 h-4"
                 />
-                Restaurant Images
+                📸 Restaurant Images
               </label>
             </div>
 
@@ -329,7 +344,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                 placeholder="Enter 15-digit GSTIN Number"
                 value={formData.gstinNumber}
                 onChange={handleChange}
-                className={`p-2 border rounded w-full ${
+                className={`p-3 rounded-lg bg-gray-50 border text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-green-500 w-full ${
                   errors.gstin ? "border-red-500" : "border-gray-300"
                 }`}
               />
@@ -340,7 +355,7 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   multiple
                   accept="image/*"
                   onChange={handleFileChange}
-                  className={`p-2 border rounded w-full ${
+                  className={`p-3 rounded-lg bg-gray-50 border text-gray-900 focus:ring-2 focus:ring-green-500 w-full ${
                     errors.restaurantImages ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -377,9 +392,9 @@ toast.error(error.response?.data?.message || "An error occurred.");
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-3 rounded-md text-lg font-medium hover:bg-indigo-700 transition-all disabled:bg-indigo-400"
+            className="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-xl text-lg font-bold hover:scale-[1.02] transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Submitting..." : "Submit Application"}
+            {loading ? "⏳ Submitting..." : "🚀 Submit Application"}
           </button>
         </form>
         )}
