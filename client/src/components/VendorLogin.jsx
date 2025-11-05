@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAppcontext } from '../context/Appcontext';
 import { toast } from 'react-hot-toast';
 import { vendorAuth } from '../services';
+import axios from 'axios';
 
 const VendorLogin = ({ onClose }) => {
   const { setseller, navigate } = useAppcontext();
@@ -11,6 +12,8 @@ const VendorLogin = ({ onClose }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const [checkingStatus, setCheckingStatus] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState(null);
 
   const handleApplyNow = () => {
     onClose();
@@ -21,6 +24,41 @@ const VendorLogin = ({ onClose }) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   };
+
+  // Check application status when email is entered
+  const checkApplicationStatus = async (email) => {
+    if (!validateEmail(email)) return;
+    
+    try {
+      setCheckingStatus(true);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/status/${email}`);
+      
+      if (response.data.success && response.data.hasApplication) {
+        setApplicationStatus(response.data.application);
+      } else {
+        setApplicationStatus(null);
+      }
+    } catch (error) {
+      if (error.response?.status !== 404) {
+        console.error('Error checking application status:', error);
+      }
+      setApplicationStatus(null);
+    } finally {
+      setCheckingStatus(false);
+    }
+  };
+
+  // Debounce email check
+  useEffect(() => {
+    if (email && validateEmail(email)) {
+      const timer = setTimeout(() => {
+        checkApplicationStatus(email);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setApplicationStatus(null);
+    }
+  }, [email]);
 
   const handleSendOtp = async () => {
     if (!validateEmail(email)) {
@@ -135,6 +173,62 @@ const VendorLogin = ({ onClose }) => {
         <div className="w-full">
           <p>Email</p>
           <input onChange={(e) => setEmail(e.target.value)} value={email} placeholder="Enter your registered email" className="border border-gray-200 rounded w-full p-2 mt-1 outline-green-500 text-black" type="email" required disabled={isOtpSent} />
+          
+          {/* Application Status Display */}
+          {checkingStatus && (
+            <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+              <div className="h-3 w-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-xs text-blue-700">Checking status...</span>
+            </div>
+          )}
+          
+          {applicationStatus && (
+            <div className={`mt-2 p-3 rounded-lg border ${
+              applicationStatus.status === 'pending' 
+                ? 'bg-yellow-50 border-yellow-300' 
+                : applicationStatus.status === 'approved'
+                ? 'bg-green-50 border-green-300'
+                : 'bg-red-50 border-red-300'
+            }`}>
+              <div className="flex items-start gap-2">
+                <div className="text-lg">
+                  {applicationStatus.status === 'pending' && '⏳'}
+                  {applicationStatus.status === 'approved' && '✅'}
+                  {applicationStatus.status === 'rejected' && '❌'}
+                </div>
+                <div className="flex-1">
+                  <h3 className={`font-bold text-xs mb-1 ${
+                    applicationStatus.status === 'pending' 
+                      ? 'text-yellow-800' 
+                      : applicationStatus.status === 'approved'
+                      ? 'text-green-800'
+                      : 'text-red-800'
+                  }`}>
+                    {applicationStatus.status === 'pending' && 'Application Under Review'}
+                    {applicationStatus.status === 'approved' && 'Application Approved'}
+                    {applicationStatus.status === 'rejected' && 'Application Rejected'}
+                  </h3>
+                  <p className={`text-xs ${
+                    applicationStatus.status === 'pending' 
+                      ? 'text-yellow-700' 
+                      : applicationStatus.status === 'approved'
+                      ? 'text-green-700'
+                      : 'text-red-700'
+                  }`}>
+                    {applicationStatus.status === 'pending' && 
+                      `Your application for "${applicationStatus.messName}" is being reviewed.`
+                    }
+                    {applicationStatus.status === 'approved' && 
+                      `You can now log in to manage "${applicationStatus.messName}".`
+                    }
+                    {applicationStatus.status === 'rejected' && 
+                      'Your application was not approved. Contact support for details.'
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {isOtpSent && (

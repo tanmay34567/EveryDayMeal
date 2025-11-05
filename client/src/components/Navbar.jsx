@@ -75,7 +75,7 @@ const Navbar = () => {
       {/* Add ref to the container element you want to scroll to */}
       <div ref={topRef} />
 
-      <nav className="h-[70px] fixed top-0 left-0 w-full px-6 md:px-16 lg:px-24 xl:px-32 flex items-center justify-between z-50 backdrop-blur-md bg-green-50/95 border-b border-green-200 shadow-sm transition-all">
+      <nav className="h-[60px] sm:h-[70px] fixed top-0 left-0 w-full px-4 sm:px-6 md:px-16 lg:px-24 xl:px-32 flex items-center justify-between z-50 backdrop-blur-md bg-green-50/95 border-b border-green-200 shadow-sm transition-all">
         <NavLink
           to={redirectPath}
           onClick={handleScrollToTop}  // Scroll to top when the logo is clicked

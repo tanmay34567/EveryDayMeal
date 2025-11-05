@@ -1,3 +1,4 @@
+
 import VendorApplication from '../models/VendorApplication.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
@@ -97,5 +98,36 @@ export const apply = async (req, res) => {
   } catch (error) {
     console.error('Error submitting vendor application:', error);
     res.status(500).json({ success: false, message: 'An error occurred while submitting the application.' });
+  }
+};
+
+// Check application status by email
+export const checkApplicationStatus = async (req, res) => {
+  try {
+    const { email } = req.params;
+    
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+
+    const application = await VendorApplication.findOne({ email });
+    
+    if (!application) {
+      return res.status(404).json({ success: false, message: 'No application found', hasApplication: false });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      hasApplication: true,
+      application: {
+        status: application.status,
+        messName: application.messName,
+        email: application.email,
+        submittedAt: application.createdAt
+      }
+    });
+  } catch (error) {
+    console.error('Error checking application status:', error);
+    res.status(500).json({ success: false, message: 'An error occurred while checking application status.' });
   }
 };
