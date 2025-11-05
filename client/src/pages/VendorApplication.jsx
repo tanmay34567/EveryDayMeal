@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { api } from "../services";
 import { assets } from "../assets/assets";
+import axios from "axios";
 
 const VendorApplication = () => {
   const navigate = useNavigate();
@@ -21,6 +22,43 @@ const VendorApplication = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState(null);
+
+  // Check application status when email is entered
+  const checkApplicationStatus = async (email) => {
+    if (!regex.email.test(email)) return;
+    
+    try {
+      setCheckingStatus(true);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/status/${email}`);
+      
+      if (response.data.success && response.data.hasApplication) {
+        setApplicationStatus(response.data.application);
+      } else {
+        setApplicationStatus(null);
+      }
+    } catch (error) {
+      if (error.response?.status !== 404) {
+        console.error('Error checking application status:', error);
+      }
+      setApplicationStatus(null);
+    } finally {
+      setCheckingStatus(false);
+    }
+  };
+
+  // Debounce email check
+  useEffect(() => {
+    if (formData.email && regex.email.test(formData.email)) {
+      const timer = setTimeout(() => {
+        checkApplicationStatus(formData.email);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setApplicationStatus(null);
+    }
+  }, [formData.email]);
 
   // Regex patterns for validation
   const regex = {
@@ -238,6 +276,71 @@ toast.error(error.response?.data?.message || "An error occurred.");
                   }`}
                 />
                 {errors.email && <p className="text-red-600 text-xs mt-1">{errors.email}</p>}
+                
+                {/* Application Status Display */}
+                {checkingStatus && (
+                  <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+                    <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-xs text-blue-700">Checking application status...</span>
+                  </div>
+                )}
+                
+                {applicationStatus && (
+                  <div className={`mt-3 p-3 sm:p-4 rounded-xl border-2 ${
+                    applicationStatus.status === 'pending' 
+                      ? 'bg-yellow-50 border-yellow-300' 
+                      : applicationStatus.status === 'approved'
+                      ? 'bg-green-50 border-green-300'
+                      : 'bg-red-50 border-red-300'
+                  }`}>
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <div className="text-xl sm:text-2xl">
+                        {applicationStatus.status === 'pending' && '⏳'}
+                        {applicationStatus.status === 'approved' && '✅'}
+                        {applicationStatus.status === 'rejected' && '❌'}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className={`font-bold text-xs sm:text-sm mb-1 ${
+                          applicationStatus.status === 'pending' 
+                            ? 'text-yellow-800' 
+                            : applicationStatus.status === 'approved'
+                            ? 'text-green-800'
+                            : 'text-red-800'
+                        }`}>
+                          {applicationStatus.status === 'pending' && 'Application Under Review'}
+                          {applicationStatus.status === 'approved' && 'Application Approved'}
+                          {applicationStatus.status === 'rejected' && 'Application Rejected'}
+                        </h3>
+                        <p className={`text-xs mb-2 ${
+                          applicationStatus.status === 'pending' 
+                            ? 'text-yellow-700' 
+                            : applicationStatus.status === 'approved'
+                            ? 'text-green-700'
+                            : 'text-red-700'
+                        }`}>
+                          {applicationStatus.status === 'pending' && 
+                            `Your application for "${applicationStatus.messName}" is currently being reviewed by our admin team. We'll notify you once a decision is made.`
+                          }
+                          {applicationStatus.status === 'approved' && 
+                            `Your application for "${applicationStatus.messName}" has been approved! You can now log in as a vendor.`
+                          }
+                          {applicationStatus.status === 'rejected' && 
+                            `Your application for "${applicationStatus.messName}" was not approved. Please contact support for more information.`
+                          }
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          Submitted: {new Date(applicationStatus.submittedAt).toLocaleDateString('en-IN', { 
+                            day: 'numeric', 
+                            month: 'short', 
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Mess Name */}
@@ -391,11 +494,17 @@ toast.error(error.response?.data?.message || "An error occurred.");
           {/* Submit */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || applicationStatus !== null}
             className="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-xl text-lg font-bold hover:scale-[1.02] transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "⏳ Submitting..." : "🚀 Submit Application"}
+            {loading ? "⏳ Submitting..." : applicationStatus ? "⚠️ Application Already Exists" : "🚀 Submit Application"}
           </button>
+          
+          {applicationStatus && (
+            <p className="text-center text-sm text-gray-600 -mt-2">
+              You cannot submit a new application as one already exists for this email.
+            </p>
+          )}
         </form>
         )}
       </div>

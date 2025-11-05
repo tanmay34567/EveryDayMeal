@@ -177,31 +177,31 @@ const StudentVendorMenu = () => {
         />
       </div>
     
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4">
         {/* Compact Header with Vendor Info */}
-        <div className="mb-4 bg-white border border-gray-200 rounded-xl shadow-md p-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div className="flex items-center gap-3">
+        <div className="mb-3 sm:mb-4 bg-white border border-gray-200 rounded-xl shadow-md p-3 sm:p-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <button 
                 onClick={handleGoBack}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-all duration-300 font-semibold text-sm"
+                className="bg-green-500 hover:bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 font-semibold text-xs sm:text-sm whitespace-nowrap"
               >
                 ← Back
               </button>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">
+              <div className="flex-1">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900">
                   <span className="text-green-600">{capitalize(vendorName)}</span> 🍽️
                 </h1>
                 {vendorInfo && (
-                  <div className="flex flex-wrap gap-3 text-xs text-gray-600 mt-1">
-                    <span>📧 {vendorInfo.email}</span>
-                    {vendorInfo.contactNumber && <span>📞 +91 {vendorInfo.contactNumber}</span>}
-                    {vendorInfo.address && <span>📍 {vendorInfo.address}{vendorInfo.city && `, ${vendorInfo.city}`}</span>}
+                  <div className="flex flex-wrap gap-2 text-xs text-gray-600 mt-1">
+                    <span className="break-all">📧 {vendorInfo.email}</span>
+                    {vendorInfo.contactNumber && <span className="whitespace-nowrap">📞 +91 {vendorInfo.contactNumber}</span>}
+                    {vendorInfo.address && <span className="break-words">📍 {vendorInfo.address}{vendorInfo.city && `, ${vendorInfo.city}`}</span>}
                   </div>
                 )}
               </div>
             </div>
-            <div className="text-xs bg-green-50 px-3 py-2 rounded-full border border-green-200 shadow-sm whitespace-nowrap">
+            <div className="text-xs bg-green-50 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full border border-green-200 shadow-sm whitespace-nowrap self-start sm:self-auto">
               <span className="text-yellow-600 font-bold text-sm">⭐ {averageRating}</span>
               <span className="text-gray-700"> / 5 ({reviewCount})</span>
             </div>

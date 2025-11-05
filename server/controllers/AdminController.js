@@ -165,13 +165,26 @@ export const rejectApplication = async (req, res) => {
       // Continue even if email fails
     }
 
-    // Delete the application from database
-    await VendorApplication.findByIdAndDelete(applicationId);
-    console.log('🗑️ Application deleted from database');
+    // Update the application status to 'rejected' instead of deleting it
+    const updatedApplication = await VendorApplication.findByIdAndUpdate(
+      applicationId,
+      { 
+        status: 'rejected',
+        rejectionReason: reason || 'No reason provided',
+        rejectedAt: new Date()
+      },
+      { new: true }
+    );
+    
+    if (!updatedApplication) {
+      return res.status(404).json({ success: false, message: 'Failed to update application status' });
+    }
+    
+    console.log('❌ Application marked as rejected');
 
     res.status(200).json({ 
       success: true, 
-      message: 'Application rejected and deleted successfully',
+      message: 'Application rejected successfully',
       reason: reason || 'No reason provided'
     });
   } catch (error) {
